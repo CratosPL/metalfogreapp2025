@@ -1,0 +1,13 @@
+// Version: 1.0.0
+type User =
+  {
+    avatarUrl : ?Text;
+    hasAccount : Bool;
+    principal : Principal;
+    role : Text;
+    username : ?Text;
+    usernameChanges : Nat
+  };
+actor {
+  stable var users : [(Principal, User)]
+};
