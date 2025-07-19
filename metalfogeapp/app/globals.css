@@ -1,0 +1,240 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Professional Metal Forge Design System */
+:root {
+  /* PRIMARY COLORS - Professional 7-color system */
+  --primary-bg: #0A0A0A;
+  --secondary-bg: #1A1A1A;
+  --accent-color: #E60012;
+  --text-primary: #FFFFFF;
+  --text-secondary: #B3B3B3;
+  --text-muted: #666666;
+  --border-color: #333333;
+  
+  /* TYPOGRAPHY */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  
+  /* SPACING & SIZING */
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* TRANSITIONS */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
+
+/* BASE STYLES */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--primary-bg);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* UTILITY CLASSES */
+.bg-primary { background-color: var(--primary-bg); }
+.bg-secondary { background-color: var(--secondary-bg); }
+.bg-accent { background-color: var(--accent-color); }
+
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted { color: var(--text-muted); }
+.text-accent { color: var(--accent-color); }
+
+.border-primary { border-color: var(--border-color); }
+.border-accent { border-color: var(--accent-color); }
+
+.font-inter { font-family: var(--font-family); }
+
+/* COMPONENT STYLES */
+.metal-button {
+  background: var(--accent-color);
+  color: var(--text-primary);
+  border: 2px solid var(--accent-color);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-family: var(--font-family);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all var(--transition-normal);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.metal-button:hover {
+  background: rgba(230, 0, 18, 0.9);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(230, 0, 18, 0.3);
+}
+
+.metal-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.metal-button-secondary {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 2px solid var(--text-muted);
+}
+
+.metal-button-secondary:hover {
+  background: var(--secondary-bg);
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+}
+
+/* MARQUEE ANIMATION */
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+/* SCROLLBAR STYLING */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--primary-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
+}
+
+/* SELECTION STYLING */
+::selection {
+  background: var(--accent-color);
+  color: var(--text-primary);
+}
+
+/* LOADING STATES */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* FOCUS STYLES */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+/* RESPONSIVE TYPOGRAPHY */
+@media (max-width: 768px) {
+  :root {
+    font-size: 14px;
+  }
+}
+
+/* Dodaj te style na końcu pliku */
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+/* Glitch effect */
+@keyframes glitch {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0); }
+}
+
+.glitch {
+  animation: glitch 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Scrollbar dla mobile menu */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #111;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #dc2626;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ef4444;
+}
+
+/* Shadow effects */
+.shadow-neon {
+  box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+}
+
+.shadow-neon:hover {
+  box-shadow: 0 0 20px rgba(220, 38, 38, 0.8);
+}
+
+/* Logo effects */
+.logo-glow {
+  box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+  transition: all 0.3s ease;
+}
+
+.logo-glow:hover {
+  box-shadow: 0 0 30px rgba(220, 38, 38, 0.6);
+  transform: scale(1.05);
+}
+
+/* Mobile menu animation */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lg\:hidden .bg-gray-900 {
+  animation: slideDown 0.2s ease-out;
+}
+
+
