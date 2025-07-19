@@ -1,5 +1,9 @@
 {
-  "opRetro": {
-    "projectId": "0xf82e835f4ba5ce558d9c15ed5d9703eac1db3132dae06ab91e19528c8b153474"
+  "opRetroFunding": {
+    "round": 6,
+    "category": "Developer Ecosystem",
+    "subcategory": "Libraries and Tools",
+    "description": "Metal Forge - Underground Metal Community Platform built on Optimism blockchain"
   }
 }
+
