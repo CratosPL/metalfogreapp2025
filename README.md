@@ -1,90 +1,98 @@
 # 🤘 Metal Forge - Underground Metal Community Platform
 
-[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)](https://nextjs.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)](https://typescriptlang.org)
-[![Optimism](https://img.shields.io/badge/Optimism-Blockchain-red?style=for-the-badge&logo=ethereum)](https://optimism.io)
-
-**The Underground Metal Gazette & Social Platform** - Revolutionary Web3 platform for the global extreme metal community.
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.io/badge/TypeScript-5.0-blue?style=ism](https://img.shields.io/badge/Optimism-Blockchain-red?style=for-the-badge&logoMetal Encyclopedia & Streaming Platform** - Build your Metal DNA and earn crypto rewards on Optimism blockchain.
 
 ## 🎯 Vision
 
-Metal Forge is the world's first blockchain-powered underground metal platform, built on Optimism for fast, affordable transactions. We combine the raw authenticity of underground metal culture with cutting-edge Web3 technology.
+Metal Forge is the world's first gamified blockchain platform for underground metal, built on Optimism for fast, affordable transactions. Users earn reputation points and crypto rewards for contributing to the metal database, stream demos with micropayments, and compete with metalheads worldwide.
 
 ## ✨ Features
 
 ### 🏛️ Core Platform
-- **Legion Database** - Complete band archives with discographies and histories
-- **Demo Vault** - HQ audio streaming with crypto micropayments (0.001 ETH per play)
-- **Community Hub** - Social features, Metal DNA profiles, achievement systems
-- **NFT Marketplace** - Unique metal collectibles and band memorabilia
-- **Underground Map** - Global metal scene visualization
+- **Legion Database** - Add bands to earn reputation, community verification system
+- **Demo Vault** - Stream rare demos with instant micropayments to artists (0.001 ETH per play)
+- **User Profiles** - Metal DNA profiles with reputation system and contribution tracking
+- **Smart Contracts** - MetalForgeRegistry deployed on Optimism for decentralized band registry
+- **Wallet Authentication** - Reown AppKit integration with email/social login options
 
 ### 🎨 Technical Features
-- **Professional UI/UX** - Authentic underground metal aesthetic
-- **Responsive Design** - Works on all devices
-- **Nordic Runes** - Animated background elements
-- **Advanced Header** - Professional navigation with logo
-- **Dark Theme** - Black-red color scheme
+- **Web3 Native** - Wallet-based authentication and blockchain integration
+- **Responsive Design** - Mobile-optimized for global metal community
+- **Nordic Runes** - Authentic Elder Futhark animated background elements
+- **Professional UI/UX** - Dark theme with underground metal aesthetic
+- **Real-time Stats** - Live user activity and contribution tracking
 
-### 🔮 Upcoming Features
-- **AI Integration** - Band biography generation and music analysis
-- **Smart Contracts** - Revenue distribution and NFT minting
-- **Mobile App** - iOS and Android versions
-- **Advanced Analytics** - User behavior and recommendations
+### 🔮 Current Development (Q3 2025)
+- **Smart Contract Integration** - On-chain band registration and verification
+- **Reputation System** - Points for adding bands, genre diversity, country exploration
+- **Community Features** - User rankings, Metal DNA analytics, achievement badges
+- **NFT Marketplace** - Band collectibles and exclusive metal artwork
 
 ## 🛠 Tech Stack
 
 - **Frontend**: Next.js 14, TypeScript, Tailwind CSS
+- **Authentication**: Reown AppKit, Wagmi, Viem
 - **Animation**: Framer Motion
-- **Icons**: React Icons (Game Icons, Font Awesome)
-- **Blockchain**: Optimism Network
-- **Fonts**: Inter, Playfair Display, Crimson Text, Old Standard TT
+- **Blockchain**: Solidity 0.8.20, OpenZeppelin, Optimism Mainnet
+- **Smart Contracts**: MetalForgeRegistry for decentralized band database
 
 ## 🚀 Getting Started
 
+1. Clone the repository
+   ```bash
+   git clone https://github.com/CratosPL/metalfogreapp2025.git
+   cd metalfogreapp2025/metalfogeapp
+   ```
 
+2. Install dependencies
+   ```bash
+   npm install
+   ```
 
+3. Create `.env.local` for development:
+   ```bash
+   NEXT_PUBLIC_PROJECT_ID=your_reown_project_id
+   ```
+
+4. Run development server
+   ```bash
+   npm run dev
+   ```
+
+5. Connect your Optimism wallet to start contributing to the metal database!
 
 ## 🎯 Roadmap
 
-### Phase 1: Backend & Infrastructure (Q2-Q3 2025)
-- [ ] Backend API development
-- [ ] Smart contracts on Optimism
-- [ ] Audio streaming system
-- [ ] User authentication
+### Phase 1: Smart Contract Integration (Q3 2025)
+- [x] Reown AppKit authentication system
+- [x] User profile system with reputation tracking
+- [ ] MetalForgeRegistry smart contract deployment
+- [ ] On-chain band registration functionality
 
-### Phase 2: Core Features (Q3-Q4 2025)
-- [ ] Community features implementation
-- [ ] NFT marketplace launch
-- [ ] Advanced search & discovery
-- [ ] Mobile optimization
+### Phase 2: Community & Rewards (Q4 2025)
+- [ ] Crypto reward distribution system
+- [ ] Community verification and governance
+- [ ] Advanced Metal DNA analytics
+- [ ] Cross-chain compatibility preparation
 
-### Phase 3: AI & Web3 (Q4 2025 - Q1 2026)
-- [ ] AI content generation
-- [ ] Advanced music analysis
-- [ ] Cross-chain compatibility
-- [ ] DAO governance
+### Phase 3: Marketplace & Streaming (Q1 2026)
+- [ ] NFT marketplace for metal collectibles
+- [ ] Micropayment streaming system
+- [ ] Mobile app development
+- [ ] DAO governance implementation
 
 ## 🤝 Contributing
 
-We welcome contributions from the metal community! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting PRs.
+We welcome contributions from the metal community! The platform is built for metalheads, by metalheads.
 
 ## 📜 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🔥 Community
-
-- **Discord**: [Join our underground community](https://discord.gg/metalforge)
-- **Twitter**: [@MetalForgeApp](https://twitter.com/MetalForgeApp)
-- **Website**: [metalforge.io](https://metalforge.io)
-
 ## 🎵 Manifesto
 
-*"Metal Forge is not just another sterile music platform. It's a digital crypt for the true underground. Born from the ashes of the corporate music industry, Metal Forge serves as a sanctum for black, death, doom, grind, and all forms of extreme music that the mainstream refuses to understand."*
+*"Metal Forge transforms underground metal knowledge into valuable digital assets. Every band you add, every verification you make, every stream you play contributes to the decentralized metal economy. Your passion for underground music becomes your crypto reward."*
 
----
+**Metal Forge** - *Where Underground Knowledge Becomes Valuable* 🤘
 
-**Metal Forge** - *Where the Underground Meets the Future* 🤘
-
-Built with 🖤 by [CratosPL](https://github.com/CratosPL) for the global metal community.
+Built with 🖤 by [CratosPL](https://github.com/CratosPL) for the global metal community on Optimism blockchain.

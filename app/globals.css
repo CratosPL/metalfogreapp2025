@@ -4,7 +4,6 @@
 
 /* Professional Metal Forge Design System */
 :root {
-  /* PRIMARY COLORS - Professional 7-color system */
   --primary-bg: #0A0A0A;
   --secondary-bg: #1A1A1A;
   --accent-color: #E60012;
@@ -12,17 +11,11 @@
   --text-secondary: #B3B3B3;
   --text-muted: #666666;
   --border-color: #333333;
-  
-  /* TYPOGRAPHY */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  
-  /* SPACING & SIZING */
   --spacing-sm: 0.5rem;
   --spacing-md: 1rem;
   --spacing-lg: 1.5rem;
   --spacing-xl: 2rem;
-  
-  /* TRANSITIONS */
   --transition-fast: 0.15s ease;
   --transition-normal: 0.3s ease;
   --transition-slow: 0.5s ease;
@@ -62,6 +55,124 @@ body {
 .border-accent { border-color: var(--accent-color); }
 
 .font-inter { font-family: var(--font-family); }
+
+/* HEADER LAYOUT FIXES - Kluczowe poprawki */
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  position: relative;
+  z-index: 10;
+  width: 100%;
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+  max-width: calc(100% - 400px); /* Zapewnia miejsce na nawigację */
+  position: relative;
+  z-index: 20;
+}
+
+.brand-text-container {
+  border-left: 2px solid var(--accent-color);
+  padding-left: var(--spacing-sm);
+  min-width: 0; /* Pozwala na text overflow */
+}
+
+.brand-title {
+  font-size: clamp(1rem, 4vw, 2rem);
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: var(--text-primary);
+  line-height: 1.2;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brand-subtitle {
+  font-size: clamp(0.625rem, 2vw, 0.75rem);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-top: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.navigation-section {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 15;
+}
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 15;
+}
+
+/* RESPONSIVE BREAKPOINTS */
+@media (max-width: 1024px) {
+  .brand-section {
+    max-width: calc(100% - 250px);
+  }
+  
+  .brand-subtitle {
+    display: none; /* Ukryj subtitle na mniejszych ekranach */
+  }
+  
+  .navigation-section {
+    gap: var(--spacing-md);
+  }
+}
+
+@media (max-width: 768px) {
+  .brand-section {
+    max-width: calc(100% - 150px);
+  }
+  
+  .brand-title {
+    font-size: 1.25rem;
+  }
+  
+  .header-container {
+    gap: var(--spacing-sm);
+  }
+}
+
+@media (max-width: 640px) {
+  .brand-section {
+    max-width: calc(100% - 120px);
+    gap: var(--spacing-sm);
+  }
+  
+  .brand-title {
+    font-size: 1rem;
+  }
+  
+  .brand-text-container {
+    padding-left: 0.5rem;
+  }
+  
+  .action-buttons {
+    gap: 0.25rem;
+  }
+}
 
 /* COMPONENT STYLES */
 .metal-button {
@@ -160,7 +271,7 @@ input:focus-visible {
   }
 }
 
-/* Dodaj te style na końcu pliku */
+/* ANIMATION DELAYS */
 .animation-delay-2000 {
   animation-delay: 2s;
 }
@@ -169,7 +280,11 @@ input:focus-visible {
   animation-delay: 4s;
 }
 
-/* Glitch effect */
+.animation-delay-1000 {
+  animation-delay: 1s;
+}
+
+/* GLITCH EFFECT */
 @keyframes glitch {
   0% { transform: translate(0); }
   20% { transform: translate(-2px, 2px); }
@@ -183,45 +298,7 @@ input:focus-visible {
   animation: glitch 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* Scrollbar dla mobile menu */
-::-webkit-scrollbar {
-  width: 4px;
-}
-
-::-webkit-scrollbar-track {
-  background: #111;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #dc2626;
-  border-radius: 2px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #ef4444;
-}
-
-/* Shadow effects */
-.shadow-neon {
-  box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
-}
-
-.shadow-neon:hover {
-  box-shadow: 0 0 20px rgba(220, 38, 38, 0.8);
-}
-
-/* Logo effects */
-.logo-glow {
-  box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
-  transition: all 0.3s ease;
-}
-
-.logo-glow:hover {
-  box-shadow: 0 0 30px rgba(220, 38, 38, 0.6);
-  transform: scale(1.05);
-}
-
-/* Mobile menu animation */
+/* MOBILE MENU ANIMATION */
 @keyframes slideDown {
   from {
     opacity: 0;
@@ -237,4 +314,64 @@ input:focus-visible {
   animation: slideDown 0.2s ease-out;
 }
 
+/* SHADOW EFFECTS */
+.shadow-neon {
+  box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+}
 
+.shadow-neon:hover {
+  box-shadow: 0 0 20px rgba(220, 38, 38, 0.8);
+}
+
+/* LOGO EFFECTS */
+.logo-glow {
+  box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+  transition: all 0.3s ease;
+}
+
+.logo-glow:hover {
+  box-shadow: 0 0 30px rgba(220, 38, 38, 0.6);
+  transform: scale(1.05);
+}
+
+/* MOBILE SCROLLBAR */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #111;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #dc2626;
+    border-radius: 2px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #ef4444;
+  }
+}
+
+/* FLEXBOX FIXES */
+.container {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.flex-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.flex-item {
+  flex-shrink: 0;
+}
+
+.flex-item-grow {
+  flex-grow: 1;
+  min-width: 0;
+}

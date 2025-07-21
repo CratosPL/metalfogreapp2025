@@ -5,10 +5,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAppKit, useAppKitAccount } from '@reown/appkit/react'
 import { 
-  GiDragonHead, 
   GiCrossedSwords, 
   GiThorHammer,
-  GiDeathSkull,
   GiFlame
 } from 'react-icons/gi'
 import { 
@@ -19,8 +17,6 @@ import {
   FaUsers,
   FaMusic,
   FaNewspaper,
-  FaStore,
-  FaCog,
   FaUser
 } from 'react-icons/fa'
 
@@ -29,23 +25,20 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [glitchActive, setGlitchActive] = useState(false)
   
-  // Reown AppKit hooks
   const { open } = useAppKit()
   const { isConnected, address } = useAppKitAccount()
 
-  // Efekt glitch co 5 sekund
   useEffect(() => {
     const interval = setInterval(() => {
       setGlitchActive(true)
-      setTimeout(() => setGlitchActive(false), 300)
-    }, 5000)
+      setTimeout(() => setGlitchActive(false), 200)
+    }, 8000)
     return () => clearInterval(interval)
   }, [])
 
-  // Zsynchronizowane ścieżki z główną aplikacją + Profile
   const navigationItems = [
     { name: 'LEGIONS', icon: FaUsers, href: '/bands' },
-    { name: 'DEMO VAULT', icon: FaMusic, href: '/player' },
+    { name: 'VAULT', icon: FaMusic, href: '/player' },
     { name: 'PROFILE', icon: FaUser, href: '/profile' },
     { name: 'NEWS', icon: FaNewspaper, href: '/news' },
     { name: 'COMMUNITY', icon: GiCrossedSwords, href: '/community' },
@@ -62,35 +55,32 @@ const Header = () => {
 
   const isActiveLink = (href: string) => pathname === href
 
-  // Enhanced Wallet/Login Button Component
   const WalletButton = () => {
     if (isConnected) {
       return (
         <div className="flex items-center gap-2">
-          {/* Connection Status Indicator */}
-          <div className="hidden sm:flex flex-col items-end">
+          <div className="hidden xl:flex flex-col items-end">
             <div className="flex items-center gap-1">
               <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-xs text-green-400 uppercase tracking-wider font-bold">Online</span>
+              <span className="text-xs text-green-400 uppercase font-bold">Connected</span>
             </div>
             <span className="text-xs text-white font-mono">
               {address?.slice(0, 6)}...{address?.slice(-4)}
             </span>
           </div>
           
-          {/* Profile/Account Button */}
           <div className="flex gap-2">
             <Link 
               href="/profile"
-              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 px-3 py-2 text-xs sm:text-sm font-bold text-white uppercase tracking-wider transition-all duration-200 border border-blue-500 shadow-lg hover:shadow-blue-500/50 whitespace-nowrap"
+              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 px-2 lg:px-3 py-2 text-xs font-bold text-white uppercase transition-all duration-200 border border-blue-500 shadow-lg hover:shadow-blue-500/50 whitespace-nowrap rounded"
             >
               <FaUser className="inline mr-1" />
-              <span className="hidden sm:inline">MY</span> FORGE
+              <span className="hidden lg:inline">MY</span> FORGE
             </Link>
             
             <button 
               onClick={() => open({ view: 'Account' })}
-              className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 px-3 py-2 text-xs font-bold text-white uppercase tracking-wider transition-all duration-200 border border-green-500 shadow-lg hover:shadow-green-500/50"
+              className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 px-2 lg:px-3 py-2 text-xs font-bold text-white uppercase transition-all duration-200 border border-green-500 shadow-lg hover:shadow-green-500/50 rounded"
               title="Wallet Settings"
             >
               <FaWallet />
@@ -103,10 +93,10 @@ const Header = () => {
     return (
       <button 
         onClick={() => open()}
-        className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 px-3 sm:px-6 py-2 text-xs sm:text-sm font-bold text-white uppercase tracking-wider transition-all duration-200 border border-red-500 shadow-lg hover:shadow-red-500/50 whitespace-nowrap"
+        className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 px-3 lg:px-6 py-2 text-xs lg:text-sm font-bold text-white uppercase transition-all duration-200 border border-red-500 shadow-lg hover:shadow-red-500/50 whitespace-nowrap rounded"
       >
-        <FaWallet className="inline mr-1 sm:mr-2" />
-        <span className="hidden sm:inline">CONNECT </span>WALLET
+        <FaWallet className="inline mr-1 lg:mr-2" />
+        <span className="hidden lg:inline">CONNECT </span>WALLET
       </button>
     )
   }
@@ -117,7 +107,6 @@ const Header = () => {
       <div className="bg-gray-900 border-b border-gray-700 py-2">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between items-center text-xs">
-            {/* Left Stats */}
             <div className="hidden sm:flex text-gray-400 items-center gap-4">
               <span className="flex items-center gap-1">
                 <GiFlame className="text-red-500" />
@@ -127,13 +116,12 @@ const Header = () => {
               <span className="hidden lg:inline">8,921 Users</span>
               {isConnected && (
                 <span className="text-green-400 flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 bg-green-400 rounded-full"></div>
+                  <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
                   Connected to Optimism
                 </span>
               )}
             </div>
             
-            {/* Mobile Stats */}
             <div className="sm:hidden text-gray-400 flex items-center gap-2 text-xs">
               <GiFlame className="text-red-500" />
               <span>2,847 Bands • 15K Demos</span>
@@ -142,9 +130,8 @@ const Header = () => {
               )}
             </div>
 
-            {/* Right Info */}
             <div className="text-red-400 flex items-center gap-1 text-xs">
-              <span>⚡</span>
+              <span className="text-yellow-400">⚡</span>
               <span className="hidden sm:inline">Powered by Optimism Blockchain</span>
               <span className="sm:hidden">Optimism Chain</span>
             </div>
@@ -153,97 +140,114 @@ const Header = () => {
       </div>
 
       {/* Main Header */}
-      <div className="max-w-7xl mx-auto px-4 py-4 relative overflow-hidden">
-        {/* Animated Background Runes */}
-        <div className="absolute inset-0 pointer-events-none opacity-10">
-          <div className="animate-pulse text-red-300 absolute top-4 right-4 text-2xl">ᚦ</div>
-          <div className="animate-pulse text-blue-300 absolute top-8 left-8 text-xl animation-delay-2000">ᚱ</div>
-          <div className="animate-pulse text-yellow-300 absolute bottom-4 right-1/3 text-lg animation-delay-4000">ᚢ</div>
+      <div className="max-w-7xl mx-auto px-4 py-3 lg:py-4 relative overflow-hidden">
+        {/* Background Runes */}
+        <div className="absolute inset-0 pointer-events-none opacity-5">
+          <div className="animate-pulse text-red-300 absolute top-4 right-4 text-xl">ᚦ</div>
+          <div className="animate-pulse text-blue-300 absolute top-8 left-8 text-lg animation-delay-2000">ᚱ</div>
+          <div className="animate-pulse text-yellow-300 absolute bottom-4 right-1/3 text-base animation-delay-4000">ᚢ</div>
           {isConnected && (
             <div className="animate-pulse text-green-300 absolute top-1/2 left-1/2 text-sm animation-delay-1000">ᚠ</div>
           )}
         </div>
 
-        {/* Main Header Content */}
-        <div className="flex items-center justify-between relative z-10">
-          {/* Logo Section */}
-          <Link href="/" className="flex items-center gap-3 sm:gap-4 flex-shrink-0 group">
-            <div className={`relative transition-all duration-200 ${glitchActive ? 'glitch filter brightness-125' : ''} group-hover:scale-105`}>
-              <div className="relative w-12 h-12 sm:w-16 sm:h-16 rounded-full overflow-hidden border-2 border-red-600 shadow-lg">
-                <Image
-                  src="/logometalforge.jpeg"
-                  alt="Metal Forge Logo"
-                  fill
-                  sizes="(max-width: 640px) 48px, 64px"
-                  className="object-cover"
-                  priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-br from-red-600/20 to-transparent"></div>
-              </div>
-              {/* Decorative elements */}
-              <div className="absolute -top-1 -right-1 text-xs text-yellow-400">⚡</div>
-              <div className="absolute -bottom-1 -left-1 text-xs text-blue-400">
-                <GiDeathSkull />
-              </div>
-              {isConnected && (
-                <div className="absolute -top-2 -left-2 text-xs text-green-400">🔥</div>
-              )}
-            </div>
+        {/* Header Container - Simplified Layout */}
+        <div className="relative z-10">
+          {/* Top Row: Logo + Desktop Nav + Actions */}
+          <div className="flex items-center justify-between mb-3">
+            {/* Logo Section */}
+            <div className="flex-shrink-0">
+              <Link href="/" className="flex items-center gap-2 lg:gap-3 group">
+                <div className={`relative transition-all duration-200 ${glitchActive ? 'filter brightness-125 saturate-150' : ''} group-hover:scale-105`}>
+                  <div className="relative w-10 h-10 lg:w-12 lg:h-12 xl:w-16 xl:h-16 rounded-full overflow-hidden border-2 border-red-600 shadow-lg">
+                    <Image
+                      src="/logometalforge.jpeg"
+                      alt="Metal Forge Logo"
+                      fill
+                      sizes="(max-width: 640px) 40px, (max-width: 1024px) 48px, 64px"
+                      className="object-cover"
+                      priority
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-br from-red-600/20 to-transparent"></div>
+                  </div>
+                  {isConnected && (
+                    <div className="absolute -top-1 -right-1 w-3 h-3 lg:w-4 lg:h-4 bg-green-500 rounded-full border-2 border-black flex items-center justify-center">
+                      <div className="w-1.5 h-1.5 lg:w-2 lg:h-2 bg-green-300 rounded-full animate-pulse"></div>
+                    </div>
+                  )}
+                </div>
 
-            {/* Brand text */}
-            <div className="border-l-2 border-red-600 pl-3 sm:pl-4">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-wider text-white drop-shadow-lg leading-tight group-hover:text-red-100 transition-colors">
-                METAL FORGE
-              </h1>
-              <p className="text-xs text-gray-400 uppercase tracking-widest font-bold leading-tight mt-1">
-                <span className="hidden sm:inline">Underground • Uncompromising • Eternal</span>
-                <span className="sm:hidden">Underground Metal</span>
-              </p>
-            </div>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
-            {navigationItems.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`flex flex-col items-center gap-1 transition-colors duration-200 group ${
-                  isActiveLink(item.href) 
-                    ? 'text-red-500' 
-                    : 'text-gray-300 hover:text-red-500'
-                } ${item.name === 'PROFILE' && isConnected ? 'animate-pulse' : ''}`}
-              >
-                <item.icon className={`text-xl group-hover:scale-110 transition-transform duration-200 ${
-                  isActiveLink(item.href) ? 'text-red-500' : ''
-                } ${item.name === 'PROFILE' && isConnected ? 'text-green-400' : ''}`} />
-                <span className="text-xs font-bold uppercase tracking-wider">
-                  {item.name}
-                </span>
-                {item.name === 'PROFILE' && isConnected && (
-                  <div className="w-1 h-1 bg-green-400 rounded-full"></div>
-                )}
+                <div className="border-l-2 border-red-600 pl-2 lg:pl-3">
+                  <h1 className="text-base lg:text-xl xl:text-2xl font-black tracking-wider text-white drop-shadow-lg leading-tight group-hover:text-red-100 transition-colors">
+                    METAL FORGE
+                  </h1>
+                  <p className="text-xs text-gray-400 uppercase tracking-widest font-bold leading-tight mt-1">
+                    <span className="hidden lg:inline">Underground • Eternal</span>
+                    <span className="lg:hidden">Underground</span>
+                  </p>
+                </div>
               </Link>
-            ))}
-          </nav>
+            </div>
 
-          {/* Action Buttons */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-            {/* Search Button */}
-            <button className="p-2 text-gray-400 hover:text-red-500 transition-colors duration-200 hidden sm:block">
-              <FaSearch className="text-lg sm:text-xl" />
-            </button>
-            
-            {/* Wallet Button Component */}
-            <WalletButton />
+            {/* Desktop Navigation - Center */}
+            <nav className="hidden lg:flex flex-1 justify-center max-w-2xl mx-8">
+              <div className="flex items-center gap-4 xl:gap-6">
+                {navigationItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={`flex flex-col items-center gap-1 transition-all duration-200 group hover:transform hover:scale-105 px-3 py-2 rounded ${
+                      isActiveLink(item.href) 
+                        ? 'text-red-500' 
+                        : 'text-gray-300 hover:text-red-400'
+                    } ${item.name === 'PROFILE' && isConnected ? 'text-green-400' : ''}`}
+                  >
+                    <item.icon className={`text-lg xl:text-xl group-hover:scale-110 transition-transform duration-200 ${
+                      isActiveLink(item.href) ? 'text-red-500' : ''
+                    } ${item.name === 'PROFILE' && isConnected ? 'text-green-400' : ''}`} />
+                    <span className="text-xs font-bold uppercase tracking-wider">
+                      {item.name}
+                    </span>
+                    {isActiveLink(item.href) && (
+                      <div className="w-1 h-1 bg-red-500 rounded-full"></div>
+                    )}
+                    {item.name === 'PROFILE' && isConnected && !isActiveLink(item.href) && (
+                      <div className="w-1 h-1 bg-green-400 rounded-full animate-pulse"></div>
+                    )}
+                  </Link>
+                ))}
+              </div>
+            </nav>
 
-            {/* Mobile Menu Button */}
-            <button 
-              className="lg:hidden p-2 text-gray-300 hover:text-red-500 transition-colors duration-200"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? <FaTimes className="text-xl" /> : <FaBars className="text-xl" />}
-            </button>
+            {/* Action Buttons */}
+            <div className="flex items-center justify-end gap-2 lg:gap-3 flex-shrink-0">
+              <WalletButton />
+
+              {/* Mobile Menu Button */}
+              <button 
+                className="lg:hidden p-2 text-gray-300 hover:text-red-500 transition-all duration-200 hover:scale-110 rounded"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
+                {mobileMenuOpen ? <FaTimes className="text-xl" /> : <FaBars className="text-xl" />}
+              </button>
+            </div>
+          </div>
+
+          {/* Bottom Row: Search Bar - Full Width */}
+          <div className="hidden md:block">
+            <div className="flex items-center bg-gray-800/80 backdrop-blur-sm rounded-lg border border-gray-600 px-4 py-3 hover:border-red-500 transition-colors shadow-lg">
+              <FaSearch className="text-gray-400 text-lg mr-3 flex-shrink-0" />
+              <input 
+                type="text" 
+                placeholder="Search bands, genres, labels, demos..." 
+                className="bg-transparent text-white placeholder-gray-400 outline-none flex-1 text-sm font-medium"
+              />
+              <div className="hidden lg:flex items-center gap-2 ml-4 text-xs text-gray-500">
+                <span className="px-2 py-1 bg-gray-700 rounded border">Ctrl</span>
+                <span>+</span>
+                <span className="px-2 py-1 bg-gray-700 rounded border">K</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -257,9 +261,9 @@ const Header = () => {
                 <React.Fragment key={item.name}>
                   <Link 
                     href={item.href} 
-                    className={`transition-colors ${
+                    className={`transition-all duration-200 hover:scale-105 ${
                       isActiveLink(item.href) 
-                        ? 'text-red-500' 
+                        ? 'text-red-500 font-bold' 
                         : 'text-gray-400 hover:text-white'
                     }`}
                   >
@@ -277,9 +281,20 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-gray-900 border-t border-gray-700 absolute w-full z-40 shadow-2xl">
+        <div className="lg:hidden bg-gray-900 border-t border-gray-700 absolute w-full z-40 shadow-2xl backdrop-blur-sm">
           <nav className="flex flex-col px-4 py-4">
-            {/* Mobile Connection Status */}
+            {/* Mobile Search - Enhanced */}
+            <div className="mb-4 p-4 bg-gray-800 rounded-lg border border-gray-600 shadow-inner">
+              <div className="flex items-center">
+                <FaSearch className="text-gray-400 text-lg mr-3 flex-shrink-0" />
+                <input 
+                  type="text" 
+                  placeholder="Search bands, genres, labels, demos..." 
+                  className="bg-transparent text-white placeholder-gray-400 outline-none flex-1 text-sm font-medium"
+                />
+              </div>
+            </div>
+
             {isConnected && (
               <div className="flex items-center gap-3 py-3 mb-4 border-b border-gray-800 bg-green-600/10 rounded px-3">
                 <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center">
@@ -294,14 +309,13 @@ const Header = () => {
               </div>
             )}
             
-            {/* Main Navigation */}
             {navigationItems.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex items-center gap-3 py-4 transition-all duration-200 font-bold uppercase tracking-wider border-b border-gray-800 last:border-b-0 rounded px-2 ${
+                className={`flex items-center gap-3 py-4 transition-all duration-200 font-bold uppercase tracking-wider border-b border-gray-800 last:border-b-0 rounded px-2 hover:transform hover:translateX-2 ${
                   isActiveLink(item.href)
-                    ? 'text-red-500 bg-gray-800/50'
+                    ? 'text-red-500 bg-gray-800/50 border-l-4 border-l-red-500'
                     : 'text-gray-300 hover:text-red-500 hover:bg-gray-800/50'
                 } ${item.name === 'PROFILE' && isConnected ? 'bg-green-600/10' : ''}`}
                 onClick={() => setMobileMenuOpen(false)}
@@ -309,25 +323,27 @@ const Header = () => {
                 <item.icon className={`text-xl flex-shrink-0 ${
                   item.name === 'PROFILE' && isConnected ? 'text-green-400' : ''
                 }`} />
-                <span>{item.name}</span>
-                {item.name === 'PROFILE' && isConnected && (
+                <span>{item.name === 'VAULT' ? 'DEMO VAULT' : item.name}</span>
+                {isActiveLink(item.href) && (
+                  <div className="ml-auto w-2 h-2 bg-red-500 rounded-full"></div>
+                )}
+                {item.name === 'PROFILE' && isConnected && !isActiveLink(item.href) && (
                   <div className="ml-auto w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                 )}
               </Link>
             ))}
 
-            {/* Sub Navigation for Mobile */}
             <div className="mt-4 pt-4 border-t border-gray-800">
-              <p className="text-xs text-gray-500 uppercase tracking-wider mb-3 px-2">Quick Links</p>
+              <p className="text-xs text-gray-500 uppercase tracking-wider mb-3 px-2 font-bold">Quick Links</p>
               <div className="grid grid-cols-2 gap-2">
                 {subNavItems.map((item) => (
                   <Link 
                     key={item.name}
                     href={item.href} 
-                    className={`text-xs transition-colors py-2 px-2 ${
+                    className={`text-xs transition-all duration-200 py-2 px-2 rounded hover:transform hover:scale-105 ${
                       isActiveLink(item.href)
-                        ? 'text-red-500'
-                        : 'text-gray-400 hover:text-white'
+                        ? 'text-red-500 bg-gray-800/50 font-bold'
+                        : 'text-gray-400 hover:text-white hover:bg-gray-800/30'
                     }`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
@@ -337,14 +353,13 @@ const Header = () => {
               </div>
             </div>
 
-            {/* Mobile Wallet Action */}
             <div className="mt-4 pt-4 border-t border-gray-800">
               {isConnected ? (
                 <div className="flex gap-2">
                   <Link
                     href="/profile"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex-1 flex items-center justify-center gap-2 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded font-bold uppercase tracking-wider"
+                    className="flex-1 flex items-center justify-center gap-2 py-3 text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded font-bold uppercase tracking-wider transition-all duration-200 hover:transform hover:scale-105"
                   >
                     <FaUser />
                     <span className="text-sm">My Forge</span>
@@ -354,7 +369,7 @@ const Header = () => {
                       open({ view: 'Account' })
                       setMobileMenuOpen(false)
                     }}
-                    className="flex items-center justify-center gap-2 px-4 py-3 text-white bg-green-600 hover:bg-green-700 rounded"
+                    className="flex items-center justify-center gap-2 px-4 py-3 text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 rounded transition-all duration-200 hover:transform hover:scale-105"
                   >
                     <FaWallet />
                   </button>
@@ -365,7 +380,7 @@ const Header = () => {
                     open()
                     setMobileMenuOpen(false)
                   }}
-                  className="w-full flex items-center justify-center gap-2 py-3 text-white hover:text-red-500 transition-colors bg-red-600 hover:bg-red-700 rounded font-bold uppercase tracking-wider"
+                  className="w-full flex items-center justify-center gap-2 py-3 text-white bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded font-bold uppercase tracking-wider transition-all duration-200 hover:transform hover:scale-105"
                 >
                   <FaWallet />
                   <span className="text-sm">Connect Wallet</span>
@@ -374,6 +389,13 @@ const Header = () => {
             </div>
           </nav>
         </div>
+      )}
+
+      {mobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        />
       )}
     </header>
   )
