@@ -1,5 +1,11 @@
-🤘 Metal Forge - Underground Metal Community Platform
-[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=.shields.io/badge/Optimism-Blockchain-FF0420?style=for-the-badge&logo=ethereumEncyclopedia & Streaming Platform** - Build your Metal DNA and earn crypto rewards on Optimism blockchain.
+# 🤘 Metal Forge - Underground Metal Community Platform
+
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=nextdotjs)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)](https://typescriptlang.org)
+[![Optimism](https://img.shields.io/badge/Optimism-Blockchain-FF0420?style=for-the-badge&logo=optimism)](https://optimism.io)
+
+**Decentralized Metal Encyclopedia & Streaming Platform** - Build your Metal DNA and earn crypto rewards on Optimism blockchain.
+
 
 ## 🎯 Vision
 
