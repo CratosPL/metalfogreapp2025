@@ -71,10 +71,10 @@ const MetalForgeApp = () => {
 
   const randomQuotes = [
     "No posers. No compromise. Only true underground.",
-    "In the night side eclipse, only darkness reigns.",
-    "Support the underground – the mainstream is dead.",
-    "From the ashes of the old, we forge the new.",
-    "Metal is not just music. It's a way of life.",
+    "Where Web3 meets the true underground spirit.",
+    "Your underground knowledge becomes valuable.",
+    "Every stream rewards both fans and artists.",
+    "Build the ultimate metal database on blockchain.",
   ]
 
   const stats = {
@@ -143,7 +143,7 @@ const MetalForgeApp = () => {
       setRandomBand(bandName)
 
       alert(
-        `🔥 DISCOVERED: ${bandName} from ${country}\nGenre: ${genre}\nListeners: ${listeners}\n\nCheck them out in Legion Database!`
+        `🔥 DISCOVERED: ${bandName} from ${country}\nGenre: ${genre}\nListeners: ${listeners}\n\n💰 Earned +5 reputation points!\n\nCheck them out in Legion Database!`
       )
     } catch (error) {
       console.error("Error in discoverRandomBand:", error)
@@ -287,7 +287,7 @@ const MetalForgeApp = () => {
           </div>
         </div>
 
-        {/* Hero content */}
+        {/* Hero content - ZAKTUALIZOWANE */}
         <div className="relative z-10 flex flex-col items-center text-center px-4">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -307,13 +307,14 @@ const MetalForgeApp = () => {
             METAL FORGE
           </motion.h1>
 
+          {/* ZAKTUALIZOWANY OPIS */}
           <motion.h2
             className="text-lg md:text-2xl font-inter uppercase tracking-widest text-white mb-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 1 }}
           >
-            The Underground Metal Gazette & Social Platform
+            Build Your Metal DNA • Earn Crypto Rewards
           </motion.h2>
 
           <motion.p
@@ -322,10 +323,11 @@ const MetalForgeApp = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 1 }}
           >
-            Raw, black-and-white, and unfiltered. Discover, contribute, and trade in the true underground spirit.{" "}
-            <span className="hidden md:inline"> Old-school zine meets modern metal community.</span>
+            The first gamified metal platform on blockchain. Add bands to earn reputation, stream demos for micropayments, and compete with metalheads worldwide.{" "}
+            <span className="hidden md:inline">Your underground knowledge becomes valuable.</span>
           </motion.p>
 
+          {/* ZAKTUALIZOWANE BUTTONS */}
           <motion.div
             className="flex flex-wrap gap-4 justify-center"
             initial={{ opacity: 0, y: 20 }}
@@ -334,21 +336,21 @@ const MetalForgeApp = () => {
           >
             <button
               onClick={discoverRandomBand}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 uppercase font-bold text-xs tracking-wide border-2 border-red-600 shadow-lg transition-all duration-300"
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 uppercase font-bold text-xs tracking-wide border-2 border-red-600 shadow-lg transition-all duration-300 hover:shadow-red-600/50"
             >
-              <GiDragonHead className="inline mr-2 animate-bounce" /> RANDOM LEGION
+              <GiDragonHead className="inline mr-2 animate-bounce" /> DISCOVER & EARN
             </button>
             <Link
-              href="/register"
-              className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 uppercase font-bold tracking-widest border-2 border-red-600 shadow-lg transition inline-block"
+              href="/profile"
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 uppercase font-bold tracking-widest border-2 border-green-600 shadow-lg transition inline-block hover:shadow-green-600/50"
             >
-              <FaWallet className="inline mr-2" /> Join the Horde
+              <FaWallet className="inline mr-2" /> Connect Wallet
             </Link>
             <Link
               href="/bands"
-              className="bg-transparent border-2 border-white text-white hover:bg-gray-800 px-6 py-3 uppercase font-bold tracking-widest transition inline-block"
+              className="bg-transparent border-2 border-white text-white hover:bg-gray-800 hover:border-blue-400 px-6 py-3 uppercase font-bold tracking-widest transition inline-block"
             >
-              <GiCrossedSwords className="inline mr-2" /> Explore Bands
+              <GiCrossedSwords className="inline mr-2" /> Explore Database
             </Link>
           </motion.div>
         </div>
@@ -367,7 +369,7 @@ const MetalForgeApp = () => {
         </div>
       </div>
 
-      {/* RANDOM QUOTE */}
+      {/* RANDOM QUOTE - ZAKTUALIZOWANE */}
       <div className="bg-gray-800 border-b-2 border-gray-600 py-4 text-center flex items-center justify-center gap-2">
         <FaQuoteLeft className="text-red-600 text-xl" />
         <span className="italic text-gray-300 font-inter text-lg">{randomQuotes[quoteIdx]}</span>
@@ -406,56 +408,59 @@ const MetalForgeApp = () => {
           </nav>
 
           <div className="mt-2 flex justify-center">
-            <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 text-xs uppercase font-bold tracking-wide transition-colors">
-              <FaWallet className="inline mr-2" /> CONNECT OPTIMISM WALLET
-            </button>
+            <Link href="/profile">
+              <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 text-xs uppercase font-bold tracking-wide transition-colors">
+                <FaWallet className="inline mr-2" /> CONNECT OPTIMISM WALLET
+              </button>
+            </Link>
           </div>
         </div>
       </header>
 
-      {/* MANIFEST & STATS */}
+      {/* MANIFEST & STATS - ZAKTUALIZOWANE */}
       <section className="bg-gray-900 py-8 border-b-4 border-gray-600">
         <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2 flex flex-col justify-center">
             <h2 className="text-2xl font-black uppercase tracking-widest mb-3 flex items-center gap-2">
-              <GiCrossedBones className="text-red-600" /> Underground Manifesto
+              <GiCrossedBones className="text-red-600" /> Web3 Underground Manifesto
             </h2>
             <p className="text-gray-300 leading-relaxed mb-3">
-              Metal Forge is not just another sterile music platform. It's a digital crypt for the true underground.
-              Born from the ashes of the corporate music industry, Metal Forge serves as a sanctum for black, death,
-              doom, grind, and all forms of extreme music that the mainstream refuses to understand.
+              Metal Forge is the first decentralized platform built for the extreme metal underground. 
+              Where every contribution earns crypto rewards, every stream pays artists instantly, 
+              and your metal knowledge becomes valuable digital assets on the Optimism blockchain.
             </p>
             <ul className="list-disc list-inside text-gray-500 text-sm mb-3">
-              <li>Legion Database – Complete band archives, lineups, discographies</li>
-              <li>Demo Vault – Stream rare demos, support bands with crypto</li>
-              <li>War Chronicles – Raw news from the underground battlefield</li>
-              <li>Trading Post – Physical releases, rare vinyl, tapes</li>
-              <li>NFT Forge – Mint your dark legacy on blockchain</li>
-              <li>Brotherhood – Connect with true metal maniacs worldwide</li>
+              <li>🏆 Earn reputation points and crypto rewards for adding bands</li>
+              <li>💸 Stream demos with instant micropayments to artists</li>
+              <li>🎭 Mint exclusive NFTs and build your digital metal legacy</li>
+              <li>📊 Develop your Metal DNA profile based on discoveries</li>
+              <li>🌐 Trade rare collectibles in our Web3 marketplace</li>
+              <li>⚡ All transactions powered by Optimism for low fees</li>
             </ul>
           </div>
 
           <div className="flex flex-col justify-center gap-4">
             <div className="bg-gray-800 border border-gray-600 p-4 text-center">
               <div className="text-red-600 font-bold text-2xl">{displayStats.bands}</div>
-              <div className="text-xs uppercase text-gray-500">Bands</div>
+              <div className="text-xs uppercase text-gray-500">Bands in Registry</div>
             </div>
             <div className="bg-gray-800 border border-gray-600 p-4 text-center">
               <div className="text-blue-400 font-bold text-2xl">{displayStats.demos}</div>
-              <div className="text-xs uppercase text-gray-500">Demos</div>
+              <div className="text-xs uppercase text-gray-500">Demos & Tracks</div>
             </div>
             <div className="bg-gray-800 border border-gray-600 p-4 text-center">
               <div className="text-green-400 font-bold text-2xl">{displayStats.users}</div>
-              <div className="text-xs uppercase text-gray-500">Users</div>
+              <div className="text-xs uppercase text-gray-500">Active Metalheads</div>
             </div>
             <div className="bg-gray-800 border border-gray-600 p-4 text-center">
-              <div className="text-yellow-400 font-bold text-2xl">{displayStats.news}</div>
-              <div className="text-xs uppercase text-gray-500">News</div>
+              <div className="text-yellow-400 font-bold text-2xl">⚡ Optimism</div>
+              <div className="text-xs uppercase text-gray-500">Blockchain Network</div>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Reszta kodu pozostaje taka sama... */}
       {/* HALL OF FAME */}
       <section className="bg-gray-800 border-y-4 border-gray-600 py-8">
         <div className="max-w-5xl mx-auto text-center">
@@ -520,7 +525,7 @@ const MetalForgeApp = () => {
         </div>
       </section>
 
-      {/* MAIN FEATURES GRID */}
+      {/* MAIN FEATURES GRID - Również z Web3 focus */}
       <section className="py-8 md:py-12 bg-gray-900">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -537,13 +542,13 @@ const MetalForgeApp = () => {
               </div>
               <div className="p-4">
                 <p className="text-gray-300 mb-4 text-sm leading-relaxed">
-                  Complete band archives with lineups, discographies, and histories. Add your band and get discovered.
+                  Add bands to our blockchain registry and earn reputation points. Get verified by the community for bonus rewards.
                 </p>
                 <div className="space-y-2 mb-4">
                   {featuredBands.map((band, i) => (
                     <div key={i} className="flex justify-between text-xs border-b border-gray-600 pb-1">
                       <span className="text-gray-300">{band.name}</span>
-                      <span className="text-red-600">{band.listeners}</span>
+                      <span className="text-red-600">{band.listeners} pts</span>
                     </div>
                   ))}
                 </div>
@@ -555,7 +560,7 @@ const MetalForgeApp = () => {
                     EXPLORE
                   </Link>
                   <Link
-                    href="/bands/add"
+                    href="/profile"
                     className="bg-transparent border border-gray-500 text-gray-300 hover:bg-gray-700 px-3 py-2 text-xs uppercase font-bold tracking-wide transition-colors flex-1 text-center"
                   >
                     ADD BAND
@@ -577,7 +582,7 @@ const MetalForgeApp = () => {
               </div>
               <div className="p-4">
                 <p className="text-gray-300 mb-4 text-sm leading-relaxed">
-                  Stream underground demos and earn crypto. Bands get paid for each listen via Optimism micropayments.
+                  Stream underground demos with micropayments. Artists get paid instantly via Optimism smart contracts.
                 </p>
                 <div className="bg-gray-900 border border-gray-600 p-3 mb-4">
                   <div className="flex items-center gap-2 mb-2">
@@ -605,7 +610,7 @@ const MetalForgeApp = () => {
                     PLAYER
                   </Link>
                   <Link
-                    href="/upload"
+                    href="/profile"
                     className="bg-transparent border border-gray-500 text-gray-300 hover:bg-gray-700 px-3 py-2 text-xs uppercase font-bold tracking-wide transition-colors flex-1 text-center"
                   >
                     UPLOAD
@@ -627,13 +632,13 @@ const MetalForgeApp = () => {
               </div>
               <div className="p-4">
                 <p className="text-gray-300 mb-4 text-sm leading-relaxed">
-                  Connect with metalheads worldwide. Earn rewards for activity, get badges, and build your reputation.
+                  Build your Metal DNA profile, compete in rankings, and earn crypto rewards for community contributions.
                 </p>
                 <div className="bg-gray-900 border border-gray-600 p-3 mb-4">
                   <div className="text-center">
                     <FaTrophy className="text-yellow-400 text-xl mx-auto mb-2" />
                     <div className="text-xs text-gray-300">Your Metal Score</div>
-                    <div className="text-lg font-bold text-yellow-400">666</div>
+                    <div className="text-lg font-bold text-yellow-400">666 ⚡</div>
                     <div className="text-xs text-gray-500">Top 13% Metalhead</div>
                   </div>
                 </div>
@@ -667,7 +672,7 @@ const MetalForgeApp = () => {
               </div>
               <div className="p-4">
                 <p className="text-gray-300 mb-4 text-sm leading-relaxed">
-                  Trade rare vinyl, CDs, and metal collectibles. Both digital NFTs and physical items.
+                  Trade rare vinyl, CDs, and exclusive NFTs. All transactions secured on Optimism blockchain.
                 </p>
                 <div className="space-y-2 mb-4">
                   {marketplaceItems.slice(0, 2).map((item, i) => (
@@ -688,7 +693,7 @@ const MetalForgeApp = () => {
                     BROWSE
                   </Link>
                   <Link
-                    href="/sell"
+                    href="/marketplace"
                     className="bg-transparent border border-gray-500 text-gray-300 hover:bg-gray-700 px-3 py-2 text-xs uppercase font-bold tracking-wide transition-colors flex-1 text-center"
                   >
                     SELL
@@ -710,12 +715,12 @@ const MetalForgeApp = () => {
               </div>
               <div className="p-4">
                 <p className="text-gray-300 mb-4 text-sm leading-relaxed">
-                  Breaking news from the metal underground. Submit stories, festival reports, and band updates.
+                  Breaking news from the metal underground. Submit stories and earn reputation tokens for quality content.
                 </p>
                 <div className="space-y-2 mb-4 text-xs">
                   <div className="border-l-2 border-yellow-600 pl-2">
-                    <p className="font-bold text-yellow-400">FESTIVAL ALERT</p>
-                    <p className="text-gray-500">Brutal Assault 2025 lineup revealed</p>
+                    <p className="font-bold text-yellow-400">WEB3 UPDATE</p>
+                    <p className="text-gray-500">NFT Forge launches on Optimism</p>
                   </div>
                   <div className="border-l-2 border-red-600 pl-2">
                     <p className="font-bold text-red-600">BAND NEWS</p>
@@ -730,7 +735,7 @@ const MetalForgeApp = () => {
                     READ
                   </Link>
                   <Link
-                    href="/news/submit"
+                    href="/news"
                     className="bg-transparent border border-gray-500 text-gray-300 hover:bg-gray-700 px-3 py-2 text-xs uppercase font-bold tracking-wide transition-colors flex-1 text-center"
                   >
                     SUBMIT
@@ -752,13 +757,13 @@ const MetalForgeApp = () => {
               </div>
               <div className="p-4">
                 <p className="text-gray-300 mb-4 text-sm leading-relaxed">
-                  Mint unique metal collectibles on Optimism. Band logos, album art, and exclusive memorabilia.
+                  Mint exclusive metal NFTs on Optimism. Band logos, rare artwork, and achievement badges for collectors.
                 </p>
                 <div className="grid grid-cols-3 gap-2 mb-4">
                   {[1, 2, 3].map((i) => (
                     <div
                       key={i}
-                      className="aspect-square bg-gray-900 border border-gray-600 flex items-center justify-center"
+                      className="aspect-square bg-gray-900 border border-gray-600 flex items-center justify-center hover:border-green-500 transition-colors"
                     >
                       <GiDeathSkull className="text-lg text-green-400" />
                     </div>
@@ -767,7 +772,7 @@ const MetalForgeApp = () => {
                 <div className="bg-gray-900 border border-gray-600 p-2 mb-4 text-center text-xs">
                   <div className="text-green-400 font-bold">Latest Mint</div>
                   <div className="text-gray-300">Bathory Logo #47</div>
-                  <div className="text-gray-500">0.08 ETH</div>
+                  <div className="text-gray-500">0.08 ETH on Optimism</div>
                 </div>
                 <div className="flex gap-2">
                   <Link
@@ -777,7 +782,7 @@ const MetalForgeApp = () => {
                     MINT
                   </Link>
                   <Link
-                    href="/nft/gallery"
+                    href="/nft"
                     className="bg-transparent border border-gray-500 text-gray-300 hover:bg-gray-700 px-3 py-2 text-xs uppercase font-bold tracking-wide transition-colors flex-1 text-center"
                   >
                     GALLERY
@@ -789,47 +794,47 @@ const MetalForgeApp = () => {
         </div>
       </section>
 
-      {/* CALL TO ACTION */}
+      {/* CALL TO ACTION - ZAKTUALIZOWANE */}
       <section className="bg-gray-800 border-y-4 border-gray-600 py-8 md:py-12">
         <div className="max-w-4xl mx-auto text-center px-4">
           <div className="mb-8">
             <GiWolfHead className="text-4xl md:text-6xl text-red-600 mx-auto mb-4" />
-            <h2 className="text-2xl md:text-3xl font-black uppercase tracking-widest mb-4">FORGE YOUR LEGACY</h2>
+            <h2 className="text-2xl md:text-3xl font-black uppercase tracking-widest mb-4">FORGE YOUR WEB3 LEGACY</h2>
             <p className="text-gray-300 text-base md:text-lg leading-relaxed mb-6">
-              Join the most uncompromising metal community. Earn rewards, discover underground bands, and help shape the
-              future of extreme music.
+              Join the first decentralized metal community on blockchain. Earn crypto for your contributions, 
+              build your digital Metal DNA, and be part of the underground revolution.
             </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               <div className="bg-gray-900 border border-gray-600 p-3">
                 <FaTrophy className="text-yellow-400 text-xl mx-auto mb-2" />
-                <div className="text-xs text-gray-300">EARN REWARDS</div>
+                <div className="text-xs text-gray-300">EARN CRYPTO</div>
               </div>
               <div className="bg-gray-900 border border-gray-600 p-3">
                 <FaHeadphones className="text-blue-400 text-xl mx-auto mb-2" />
-                <div className="text-xs text-gray-300">DISCOVER BANDS</div>
+                <div className="text-xs text-gray-300">STREAM & PAY</div>
               </div>
               <div className="bg-gray-900 border border-gray-600 p-3">
                 <FaStore className="text-orange-400 text-xl mx-auto mb-2" />
-                <div className="text-xs text-gray-300">TRADE COLLECTIBLES</div>
+                <div className="text-xs text-gray-300">TRADE NFTS</div>
               </div>
               <div className="bg-gray-900 border border-gray-600 p-3">
                 <GiThorHammer className="text-green-400 text-xl mx-auto mb-2" />
-                <div className="text-xs text-gray-300">MINT NFTS</div>
+                <div className="text-xs text-gray-300">MINT & COLLECT</div>
               </div>
             </div>
           </div>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link
-              href="/register"
+              href="/profile"
               className="bg-red-600 hover:bg-red-700 text-white px-6 md:px-8 py-3 md:py-4 uppercase font-bold tracking-wide transition-colors inline-block"
             >
-              <FaWallet className="inline mr-2" /> CONNECT & JOIN
+              <FaWallet className="inline mr-2" /> CONNECT & EARN
             </Link>
             <Link
               href="/about"
               className="bg-transparent border-2 border-gray-500 text-gray-300 hover:bg-gray-700 px-6 md:px-8 py-3 md:py-4 uppercase font-bold tracking-wide transition-colors inline-block"
             >
-              LEARN MORE
+              LEARN WEB3 METAL
             </Link>
           </div>
         </div>
@@ -872,7 +877,7 @@ const MetalForgeApp = () => {
                 <Link href="/community" className="block hover:text-red-500">
                   Join Community
                 </Link>
-                <Link href="/rewards" className="block hover:text-red-500">
+                <Link href="/profile" className="block hover:text-red-500">
                   Rewards Program
                 </Link>
                 <Link href="/leaderboard" className="block hover:text-red-500">
@@ -886,10 +891,10 @@ const MetalForgeApp = () => {
             <div>
               <h4 className="text-sm font-bold text-gray-300 mb-2 uppercase">For Artists</h4>
               <div className="space-y-1 text-xs text-gray-500">
-                <Link href="/artists/signup" className="block hover:text-red-500">
+                <Link href="/profile" className="block hover:text-red-500">
                   Artist Signup
                 </Link>
-                <Link href="/upload" className="block hover:text-red-500">
+                <Link href="/profile" className="block hover:text-red-500">
                   Upload Demo
                 </Link>
                 <Link href="/analytics" className="block hover:text-red-500">
@@ -901,7 +906,7 @@ const MetalForgeApp = () => {
               </div>
             </div>
             <div>
-              <h4 className="text-sm font-bold text-gray-300 mb-2 uppercase">Support</h4>
+              <h4 className="text-sm font-bold text-gray-300 mb-2 uppercase">Web3</h4>
               <div className="space-y-1 text-xs text-gray-500">
                 <Link href="/help" className="block hover:text-red-500">
                   Help Center
@@ -926,10 +931,10 @@ const MetalForgeApp = () => {
               <GiGhost className="text-xl text-gray-500" />
             </div>
             <p className="text-gray-500 text-sm uppercase tracking-widest mb-2">
-              © {new Date().getFullYear()} METAL FORGE • POWERED BY OPTIMISM
+              © {new Date().getFullYear()} METAL FORGE • POWERED BY OPTIMISM BLOCKCHAIN
             </p>
             <p className="text-gray-500 text-xs">
-              Decentralized • Underground • Uncompromising • For the metal community, by the metal community
+              Decentralized • Underground • Web3 Native • For the metal community, by the metal community
             </p>
           </div>
         </div>
