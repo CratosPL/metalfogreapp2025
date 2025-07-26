@@ -1,21 +1,21 @@
-// src/app/bands/page.tsx - LEGION DATABASE
 "use client";
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   FaSearch, FaPlus, FaFilter, FaSort, FaMapMarkerAlt,
-  FaCalendarAlt, FaMusic, FaUsers, FaEye, FaHeart
+  FaCalendarAlt, FaMusic, FaUsers, FaEye, FaHeart,
+  FaEthereum, FaBolt, FaChartLine, FaFire
 } from 'react-icons/fa';
 import { 
   GiDeathSkull, GiCrossedSwords, GiDragonHead, GiWolfHead,
-  GiThorHammer, GiCoffin, GiGhost, GiSwordman
+  GiThorHammer, GiCoffin, GiGhost, GiSwordman, GiSkullCrossedBones,
+  GiVikingHelmet, GiGothicCross, GiBloodySword, GiBattleAxe,
+  GiBlackFlag, GiFlame
 } from 'react-icons/gi';
 import Link from 'next/link';
 import BandCard from '@/app/bands/components/BandCard';
 import BandFilter from '@/app/bands/components/BandFilter';
-
-
 
 const LegionDatabase = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -25,8 +25,18 @@ const LegionDatabase = () => {
   const [sortBy, setSortBy] = useState('name');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showFilters, setShowFilters] = useState(false);
+  const [glitchActive, setGlitchActive] = useState(false);
 
-  // Mock data - w przyszłości z Supabase
+  // Enhanced glitch effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setGlitchActive(true)
+      setTimeout(() => setGlitchActive(false), 300)
+    }, 6000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Enhanced mock data
   const mockBands = [
     {
       id: '1',
@@ -39,8 +49,11 @@ const LegionDatabase = () => {
       members: ['Fenriz', 'Nocturno Culto'],
       albums: 19,
       followers: 15420,
-      description: 'Norwegian black metal pioneers who helped define the genre in the early 90s.',
-      tags: ['Black Metal', 'Norwegian', 'Underground', 'Cult']
+      reputation: 950,
+      verified: true,
+      description: 'Norwegian black metal pioneers who helped define the genre in the early 90s with their raw, uncompromising sound.',
+      tags: ['Black Metal', 'Norwegian', 'Underground', 'Cult', 'KVLT'],
+      recentActivity: 'Added 2 hours ago by DEATH_SCRIBE'
     },
     {
       id: '2',
@@ -50,11 +63,14 @@ const LegionDatabase = () => {
       formedYear: 1983,
       status: 'Active',
       image: 'https://images.unsplash.com/photo-1574406939292-0ed7b26b93c0?w=300&h=300&fit=crop',
-      members: ['Trey Azagthoth', 'Steve Tucker'],
+      members: ['Trey Azagthoth', 'Steve Tucker', 'Dan Vadim Von'],
       albums: 9,
       followers: 12890,
-      description: 'Legendary death metal band from Florida, technical masters of extreme music.',
-      tags: ['Death Metal', 'Technical', 'Florida', 'Legendary']
+      reputation: 875,
+      verified: true,
+      description: 'Legendary Florida death metal masters, technical innovators of extreme music with occult themes.',
+      tags: ['Death Metal', 'Technical', 'Florida', 'Legendary', 'Occult'],
+      recentActivity: 'Added 5 hours ago by NECRO_HERALD'
     },
     {
       id: '3',
@@ -64,11 +80,14 @@ const LegionDatabase = () => {
       formedYear: 1991,
       status: 'Split-up',
       image: 'https://images.unsplash.com/photo-1571974599782-87624638275b?w=300&h=300&fit=crop',
-      members: ['Ihsahn', 'Samoth', 'Trym'],
+      members: ['Ihsahn', 'Samoth', 'Trym Torson'],
       albums: 4,
       followers: 9876,
-      description: 'Symphonic black metal masters who elevated the genre to orchestral heights.',
-      tags: ['Symphonic Black Metal', 'Norwegian', 'Progressive', 'Epic']
+      reputation: 820,
+      verified: true,
+      description: 'Symphonic black metal masters who elevated the genre to orchestral heights with epic compositions.',
+      tags: ['Symphonic Black Metal', 'Norwegian', 'Progressive', 'Epic', 'Atmospheric'],
+      recentActivity: 'Added 1 day ago by KVLT_WARRIOR'
     },
     {
       id: '4',
@@ -81,8 +100,11 @@ const LegionDatabase = () => {
       members: ['Quorthon'],
       albums: 12,
       followers: 18765,
-      description: 'Swedish black metal pioneer, creator of the viking metal subgenre.',
-      tags: ['Black Metal', 'Viking Metal', 'Swedish', 'Pioneer']
+      reputation: 999,
+      verified: true,
+      description: 'Swedish black metal pioneer, creator of the viking metal subgenre. Eternal influence on extreme music.',
+      tags: ['Black Metal', 'Viking Metal', 'Swedish', 'Pioneer', 'Legendary'],
+      recentActivity: 'Added 3 days ago by VIKING_KEEPER'
     },
     {
       id: '5',
@@ -95,8 +117,11 @@ const LegionDatabase = () => {
       members: ['Necrobutcher', 'Hellhammer', 'Attila Csihar'],
       albums: 6,
       followers: 14532,
-      description: 'Notorious Norwegian black metal band with a dark and controversial history.',
-      tags: ['Black Metal', 'Norwegian', 'Controversial', 'True Kvlt']
+      reputation: 888,
+      verified: true,
+      description: 'Notorious Norwegian black metal band with dark history. True pioneers of the underground scene.',
+      tags: ['Black Metal', 'Norwegian', 'Controversial', 'True Kvlt', 'Underground'],
+      recentActivity: 'Added 1 week ago by FROST_WARRIOR'
     },
     {
       id: '6',
@@ -109,8 +134,11 @@ const LegionDatabase = () => {
       members: ['Varg Vikernes'],
       albums: 11,
       followers: 11234,
-      description: 'Atmospheric black metal project exploring Nordic mythology and philosophy.',
-      tags: ['Atmospheric Black Metal', 'Ambient', 'Norwegian', 'Solo Project']
+      reputation: 777,
+      verified: false,
+      description: 'Atmospheric black metal project exploring Nordic mythology, philosophy and ambient soundscapes.',
+      tags: ['Atmospheric Black Metal', 'Ambient', 'Norwegian', 'Solo Project', 'Philosophical'],
+      recentActivity: 'Submitted for verification by PHILOSOPHICAL_VOID'
     }
   ];
 
@@ -118,11 +146,12 @@ const LegionDatabase = () => {
   const countries = ['all', 'Norway', 'Sweden', 'Finland', 'USA', 'Germany', 'Poland', 'France', 'UK'];
   const decades = ['all', '1980s', '1990s', '2000s', '2010s', '2020s'];
 
-  // Filtrowanie zespołów
+  // Enhanced filtering
   const filteredBands = mockBands.filter(band => {
     const matchesSearch = band.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          band.genre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         band.country.toLowerCase().includes(searchTerm.toLowerCase());
+                         band.country.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         band.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesGenre = selectedGenre === 'all' || band.genre === selectedGenre;
     const matchesCountry = selectedCountry === 'all' || band.country === selectedCountry;
     const matchesDecade = selectedDecade === 'all' || 
@@ -135,7 +164,7 @@ const LegionDatabase = () => {
     return matchesSearch && matchesGenre && matchesCountry && matchesDecade;
   });
 
-  // Sortowanie zespołów
+  // Enhanced sorting
   const sortedBands = [...filteredBands].sort((a, b) => {
     switch (sortBy) {
       case 'name':
@@ -146,101 +175,166 @@ const LegionDatabase = () => {
         return b.followers - a.followers;
       case 'albums':
         return b.albums - a.albums;
+      case 'reputation':
+        return b.reputation - a.reputation;
       default:
         return 0;
     }
   });
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-[#e0e0e0] font-mono">
+    <div className="min-h-screen bg-gray-900 text-white font-inter overflow-x-hidden">
       
-      {/* HEADER */}
-      <header className="bg-[#111] border-b-4 border-[#333] p-6">
+      {/* Enhanced Background */}
+      <div className="absolute inset-0 opacity-5 pointer-events-none">
+        <div className="animate-pulse text-6xl text-red-300 absolute top-20 left-20 transform rotate-15" style={{ animationDuration: '8s' }}>ᚦ</div>
+        <div className="animate-pulse text-5xl text-blue-300 absolute top-40 right-40 transform -rotate-12" style={{ animationDuration: '10s', animationDelay: '2s' }}>ᚱ</div>
+        <div className="animate-pulse text-4xl text-yellow-300 absolute bottom-40 left-1/3 transform rotate-10" style={{ animationDuration: '7s', animationDelay: '4s' }}>ᚠ</div>
+        <div className="animate-pulse text-5xl text-purple-300 absolute bottom-20 right-20 transform -rotate-8" style={{ animationDuration: '9s', animationDelay: '6s' }}>ᚹ</div>
+      </div>
+
+      {/* ENHANCED HEADER */}
+      <header className="bg-gradient-to-b from-gray-800 to-gray-900 border-b-4 border-red-600 p-8 relative z-10 shadow-2xl">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-4 mb-6">
-            <GiCrossedSwords className="text-4xl text-red-400" />
+          {/* Title Section */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="flex items-center gap-6 mb-8"
+          >
+            <div className={`relative transition-all duration-300 ${glitchActive ? 'filter brightness-125 saturate-150' : ''}`}>
+              <GiCrossedSwords className="text-6xl md:text-7xl text-red-500 drop-shadow-2xl" />
+              {glitchActive && (
+                <GiCrossedSwords className="absolute top-0 left-0 text-6xl md:text-7xl text-red-400 animate-ping opacity-30" />
+              )}
+            </div>
             <div>
-              <h1 className="text-3xl md:text-5xl font-black uppercase tracking-widest text-[#e0e0e0]" style={{
-                fontFamily: 'Impact, Arial Black, sans-serif',
-                textShadow: '2px 2px 0 #333, 4px 4px 0 #666'
-              }}>
+              <h1 className={`text-4xl md:text-6xl lg:text-7xl font-black uppercase tracking-widest text-white mb-2 ${glitchActive ? 'animate-pulse text-red-100' : ''}`} 
+                  style={{
+                    textShadow: glitchActive 
+                      ? '0 0 20px rgba(239, 68, 68, 0.8), 0 0 40px rgba(239, 68, 68, 0.5)' 
+                      : '2px 2px 4px rgba(0,0,0,0.8), 0 0 15px rgba(239, 68, 68, 0.3)'
+                  }}>
                 LEGION DATABASE
               </h1>
-              <p className="text-[#999] text-sm md:text-base uppercase tracking-wide">
-                Underground Metal Encyclopedia • {mockBands.length} Legions Archived
-              </p>
+              <div className="flex items-center gap-4 flex-wrap">
+                <p className="text-gray-400 text-lg uppercase tracking-wide flex items-center gap-2">
+                  <GiSkullCrossedBones className="text-red-500" />
+                  Underground Metal Encyclopedia
+                </p>
+                <div className="flex items-center gap-4">
+                  <span className="bg-red-600/20 text-red-400 px-3 py-1 rounded-full text-sm font-bold border border-red-600/50">
+                    {mockBands.length} Legions Archived
+                  </span>
+                  <span className="bg-green-600/20 text-green-400 px-3 py-1 rounded-full text-sm font-bold border border-green-600/50 flex items-center gap-1">
+                    <FaEthereum className="text-xs" />
+                    Web3 Verified
+                  </span>
+                </div>
+              </div>
             </div>
-          </div>
+          </motion.div>
 
-          {/* SEARCH BAR */}
-          <div className="relative mb-4">
-            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#666]" />
+          {/* Enhanced Search Bar */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="relative mb-6"
+          >
+            <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
             <input
               type="text"
-              placeholder="Search bands, genres, countries..."
+              placeholder="Search legions by name, genre, country, or tags..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-[#0a0a0a] border-2 border-[#333] text-[#e0e0e0] focus:border-red-600 focus:outline-none font-mono"
+              className="w-full pl-12 pr-6 py-4 bg-gray-800/80 backdrop-blur-sm border-2 border-gray-600 hover:border-red-500 focus:border-red-500 text-white rounded-lg outline-none font-medium text-lg transition-all duration-300 shadow-lg"
             />
-          </div>
+            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-xs text-gray-500 hidden lg:flex items-center gap-2">
+              <span className="px-2 py-1 bg-gray-700 rounded border">Ctrl</span>
+              <span>+</span>
+              <span className="px-2 py-1 bg-gray-700 rounded border">K</span>
+            </div>
+          </motion.div>
 
-          {/* CONTROLS */}
-          <div className="flex flex-wrap gap-4 items-center justify-between">
-            <div className="flex gap-2">
+          {/* Enhanced Controls */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between"
+          >
+            <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className={`px-4 py-2 border-2 transition-colors uppercase font-bold text-xs tracking-wide ${
+                className={`px-6 py-3 border-2 transition-all duration-300 uppercase font-bold text-sm tracking-wide rounded-lg hover:scale-105 ${
                   showFilters 
-                    ? 'bg-red-600 border-red-600 text-white' 
-                    : 'bg-transparent border-[#666] text-[#ccc] hover:border-red-600'
+                    ? 'bg-red-600 border-red-600 text-white shadow-lg shadow-red-600/50' 
+                    : 'bg-transparent border-gray-600 text-gray-300 hover:border-red-600 hover:text-red-400'
                 }`}
               >
-                <FaFilter className="inline mr-2" /> FILTERS
+                <FaFilter className="inline mr-2" /> 
+                {showFilters ? 'HIDE FILTERS' : 'SHOW FILTERS'}
               </button>
               
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-2 bg-[#0a0a0a] border-2 border-[#333] text-[#e0e0e0] focus:border-red-600 focus:outline-none font-mono text-xs uppercase"
+                className="px-4 py-3 bg-gray-800 border-2 border-gray-600 hover:border-red-500 focus:border-red-500 text-white rounded-lg outline-none font-medium text-sm uppercase transition-all duration-300"
               >
                 <option value="name">Sort by Name</option>
                 <option value="year">Sort by Year</option>
                 <option value="followers">Sort by Followers</option>
                 <option value="albums">Sort by Albums</option>
+                <option value="reputation">Sort by Reputation</option>
               </select>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`px-3 py-2 border-2 transition-colors ${
+                className={`px-4 py-3 border-2 transition-all duration-300 rounded-lg hover:scale-105 ${
                   viewMode === 'grid' 
-                    ? 'bg-red-600 border-red-600 text-white' 
-                    : 'bg-transparent border-[#666] text-[#ccc] hover:border-red-600'
+                    ? 'bg-red-600 border-red-600 text-white shadow-lg' 
+                    : 'bg-transparent border-gray-600 text-gray-300 hover:border-red-600'
                 }`}
               >
-                ⊞
+                <div className="grid grid-cols-2 gap-1 w-4 h-4">
+                  <div className="bg-current w-1.5 h-1.5 rounded-sm"></div>
+                  <div className="bg-current w-1.5 h-1.5 rounded-sm"></div>
+                  <div className="bg-current w-1.5 h-1.5 rounded-sm"></div>
+                  <div className="bg-current w-1.5 h-1.5 rounded-sm"></div>
+                </div>
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`px-3 py-2 border-2 transition-colors ${
+                className={`px-4 py-3 border-2 transition-all duration-300 rounded-lg hover:scale-105 ${
                   viewMode === 'list' 
-                    ? 'bg-red-600 border-red-600 text-white' 
-                    : 'bg-transparent border-[#666] text-[#ccc] hover:border-red-600'
+                    ? 'bg-red-600 border-red-600 text-white shadow-lg' 
+                    : 'bg-transparent border-gray-600 text-gray-300 hover:border-red-600'
                 }`}
               >
-                ☰
+                <div className="space-y-1 w-4 h-4">
+                  <div className="bg-current w-full h-0.5 rounded"></div>
+                  <div className="bg-current w-full h-0.5 rounded"></div>
+                  <div className="bg-current w-full h-0.5 rounded"></div>
+                  <div className="bg-current w-full h-0.5 rounded"></div>
+                </div>
               </button>
               
-              <Link href="/bands/add" className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 border-2 border-red-600 transition-colors uppercase font-bold text-xs tracking-wide">
+              <Link 
+                href="/bands/add" 
+                className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-6 py-3 border-2 border-red-600 transition-all duration-300 hover:scale-105 uppercase font-bold text-sm tracking-wide rounded-lg shadow-lg hover:shadow-red-600/50"
+              >
                 <FaPlus className="inline mr-2" /> ADD LEGION
               </Link>
             </div>
-          </div>
+          </motion.div>
         </div>
       </header>
 
-      {/* FILTERS */}
+      {/* Enhanced Filters */}
       {showFilters && (
         <BandFilter
           genres={genres}
@@ -255,52 +349,67 @@ const LegionDatabase = () => {
         />
       )}
 
-      {/* STATS BAR */}
-      <section className="bg-[#111] border-b-2 border-[#333] p-4">
+      {/* Enhanced Stats Bar */}
+      <section className="bg-gradient-to-r from-gray-800 to-gray-900 border-b-2 border-gray-600 p-6 relative z-10">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div className="bg-[#0a0a0a] border border-[#333] p-3">
-              <div className="text-red-400 font-bold text-lg">{filteredBands.length}</div>
-              <div className="text-xs uppercase text-[#999]">Found Legions</div>
-            </div>
-            <div className="bg-[#0a0a0a] border border-[#333] p-3">
-              <div className="text-blue-400 font-bold text-lg">{countries.length - 1}</div>
-              <div className="text-xs uppercase text-[#999]">Countries</div>
-            </div>
-            <div className="bg-[#0a0a0a] border border-[#333] p-3">
-              <div className="text-green-400 font-bold text-lg">{genres.length - 1}</div>
-              <div className="text-xs uppercase text-[#999]">Genres</div>
-            </div>
-            <div className="bg-[#0a0a0a] border border-[#333] p-3">
-              <div className="text-yellow-400 font-bold text-lg">
-                {mockBands.reduce((sum, band) => sum + band.albums, 0)}
-              </div>
-              <div className="text-xs uppercase text-[#999]">Total Albums</div>
-            </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { icon: GiCrossedSwords, value: filteredBands.length, label: 'Found Legions', color: 'from-red-600/20 to-red-800/20', borderColor: 'border-red-600' },
+              { icon: FaMapMarkerAlt, value: countries.length - 1, label: 'Countries', color: 'from-blue-600/20 to-blue-800/20', borderColor: 'border-blue-600' },
+              { icon: FaMusic, value: genres.length - 1, label: 'Genres', color: 'from-green-600/20 to-green-800/20', borderColor: 'border-green-600' },
+              { icon: FaFire, value: mockBands.reduce((sum, band) => sum + band.albums, 0), label: 'Total Albums', color: 'from-yellow-600/20 to-yellow-800/20', borderColor: 'border-yellow-600' }
+            ].map((stat, index) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                className={`bg-gradient-to-br ${stat.color} border-2 ${stat.borderColor} rounded-xl p-6 text-center backdrop-blur-sm shadow-lg hover:scale-105 transition-all duration-300`}
+              >
+                <stat.icon className={`text-4xl mx-auto mb-3 ${stat.borderColor.replace('border', 'text')}`} />
+                <div className="text-3xl font-black text-white mb-1">{stat.value}</div>
+                <div className="text-xs uppercase text-gray-400 font-bold tracking-wide">{stat.label}</div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* BANDS GRID/LIST */}
-      <main className="max-w-7xl mx-auto p-6">
+      {/* Enhanced Bands Grid/List */}
+      <main className="max-w-7xl mx-auto p-6 relative z-10">
         {sortedBands.length === 0 ? (
-          <div className="text-center py-12">
-            <GiDeathSkull className="text-6xl text-[#666] mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-[#999] mb-2 uppercase">No Legions Found</h3>
-            <p className="text-[#666]">Try adjusting your search or filters</p>
-          </div>
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center py-20"
+          >
+            <GiDeathSkull className="text-8xl text-gray-600 mx-auto mb-6 animate-pulse" />
+            <h3 className="text-2xl font-black text-gray-400 mb-4 uppercase tracking-wide">No Legions Found</h3>
+            <p className="text-gray-500 mb-8 text-lg">Try adjusting your search criteria or filters</p>
+            <button
+              onClick={() => {
+                setSearchTerm('');
+                setSelectedGenre('all');
+                setSelectedCountry('all');
+                setSelectedDecade('all');
+              }}
+              className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-bold uppercase tracking-wide transition-all duration-300 hover:scale-105"
+            >
+              Clear All Filters
+            </button>
+          </motion.div>
         ) : (
           <div className={`${
             viewMode === 'grid' 
-              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' 
-              : 'space-y-4'
+              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8' 
+              : 'space-y-6'
           }`}>
             {sortedBands.map((band, index) => (
               <motion.div
                 key={band.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
               >
                 <BandCard band={band} viewMode={viewMode} />
               </motion.div>
@@ -309,31 +418,35 @@ const LegionDatabase = () => {
         )}
       </main>
 
-      {/* FOOTER INFO */}
-      <footer className="bg-[#111] border-t-4 border-[#333] p-6 mt-12">
+      {/* Enhanced Footer */}
+      <footer className="bg-gradient-to-b from-gray-900 to-black border-t-4 border-red-600 p-8 mt-16 relative z-10">
         <div className="max-w-7xl mx-auto text-center">
-          <div className="flex justify-center gap-6 mb-4">
-            <GiDeathSkull className="text-xl text-[#666]" />
-            <GiCrossedSwords className="text-xl text-[#666]" />
-            <GiCoffin className="text-xl text-[#666]" />
-            <GiGhost className="text-xl text-[#666]" />
+          <div className="flex justify-center gap-8 mb-6">
+            {[GiDeathSkull, GiCrossedSwords, GiCoffin, GiGhost, GiSkullCrossedBones].map((Icon, index) => (
+              <motion.div 
+                key={index}
+                whileHover={{ scale: 1.2, rotate: 15 }} 
+                className="cursor-pointer"
+              >
+                <Icon className="text-3xl text-gray-600 hover:text-red-500 transition-colors duration-300" />
+              </motion.div>
+            ))}
           </div>
-          <p className="text-[#666] text-sm uppercase tracking-widest">
-            LEGION DATABASE • UNDERGROUND METAL ENCYCLOPEDIA
+          <h3 className="text-2xl font-black uppercase tracking-widest text-white mb-2">
+            LEGION DATABASE
+          </h3>
+          <p className="text-gray-400 uppercase tracking-wider mb-4">
+            Underground Metal Encyclopedia • Web3 Verified
           </p>
-          <p className="text-[#444] text-xs mt-2">
-            Preserving the history of extreme music • Add your legion to the archives
+          <p className="text-gray-600 text-sm">
+            Preserving the history of extreme music • Add your legion to the eternal archives
           </p>
+          <div className="mt-6 flex justify-center items-center gap-2 text-xs text-gray-500">
+            <FaEthereum className="text-blue-400" />
+            <span>Powered by Optimism Blockchain</span>
+          </div>
         </div>
       </footer>
-
-      {/* Global Styles */}
-      <style jsx global>{`
-        body {
-          background: #0a0a0a;
-          font-family: 'Courier New', monospace;
-        }
-      `}</style>
     </div>
   );
 };
