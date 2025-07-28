@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
+import { FaSkullCrossbones } from 'react-icons/fa'
 
 interface WorldMapProps {
   countries: any[]
@@ -33,32 +34,56 @@ const WorldMap = ({ countries, viewMode, onCountrySelect, selectedCountry }: Wor
 
   const getCountryColor = (country: any) => {
     const intensity = getCountryIntensity(country)
-    if (intensity > 0.8) return '#dc2626' // red-600
-    if (intensity > 0.6) return '#ea580c' // orange-600
-    if (intensity > 0.4) return '#ca8a04' // yellow-600
-    if (intensity > 0.2) return '#65a30d' // lime-600
-    return '#6b7280' // gray-500
+    if (intensity > 0.8) return '#8b0000' // Dark red - wysoka intensywność
+    if (intensity > 0.6) return '#a52a2a' // Brown-red - średnio-wysoka
+    if (intensity > 0.4) return '#696969' // Dim gray - średnia
+    if (intensity > 0.2) return '#2f2f2f' // Dark gray - niska
+    return '#1a1a1a' // Bardzo ciemny - brak aktywności
   }
 
   return (
-    <div className="relative w-full h-full bg-gray-900 overflow-hidden">
+    <div 
+      className="relative w-full h-full bg-[#f5f5e8] overflow-hidden border-4 border-black zine-card"
+      style={{
+        backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundColor: "rgba(245, 245, 232, 0.95)"
+      }}
+    >
       {/* World Map SVG */}
       <svg
         ref={svgRef}
         viewBox="0 0 800 400"
         className="w-full h-full"
-        style={{ filter: 'drop-shadow(0 0 10px rgba(239, 68, 68, 0.3))' }}
+        style={{ filter: 'drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5))' }}
       >
-        {/* Background */}
-        <rect width="800" height="400" fill="#111827" />
+        {/* Background - paper texture */}
+        <rect width="800" height="400" fill="#f5f5e8" />
         
-        {/* Grid Lines */}
+        {/* Grid Lines - w stylu zine */}
         <defs>
-          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#374151" strokeWidth="0.5" opacity="0.3"/>
+          <pattern id="zineGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#000000" strokeWidth="0.5" opacity="0.2"/>
+          </pattern>
+          {/* Distressed texture pattern */}
+          <pattern id="distressed" width="100" height="100" patternUnits="userSpaceOnUse">
+            <rect width="100" height="100" fill="#f0f0e0" opacity="0.3"/>
+            <circle cx="20" cy="30" r="1" fill="#000" opacity="0.1"/>
+            <circle cx="60" cy="70" r="1.5" fill="#000" opacity="0.1"/>
+            <circle cx="80" cy="20" r="0.8" fill="#000" opacity="0.1"/>
           </pattern>
         </defs>
-        <rect width="800" height="400" fill="url(#grid)" />
+        <rect width="800" height="400" fill="url(#zineGrid)" />
+        <rect width="800" height="400" fill="url(#distressed)" />
+
+        {/* Decorative skull corners */}
+        <g className="skull-decorations">
+          <text x="20" y="30" className="fill-red-800 text-xl font-bold" style={{fontFamily: 'serif'}}>☠</text>
+          <text x="760" y="30" className="fill-red-800 text-xl font-bold" style={{fontFamily: 'serif'}}>☠</text>
+          <text x="20" y="380" className="fill-red-800 text-xl font-bold" style={{fontFamily: 'serif'}}>☠</text>
+          <text x="760" y="380" className="fill-red-800 text-xl font-bold" style={{fontFamily: 'serif'}}>☠</text>
+        </g>
 
         {/* Country Regions */}
         {countries.map((country) => {
@@ -71,14 +96,18 @@ const WorldMap = ({ countries, viewMode, onCountrySelect, selectedCountry }: Wor
               key={country.id}
               d={path}
               fill={getCountryColor(country)}
-              stroke={isSelected ? '#fbbf24' : isHovered ? '#f59e0b' : '#4b5563'}
+              stroke={isSelected ? '#8b0000' : isHovered ? '#a52a2a' : '#000000'}
               strokeWidth={isSelected ? 3 : isHovered ? 2 : 1}
               className="cursor-pointer transition-all duration-300"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ 
-                opacity: 1, 
+                opacity: isSelected ? 0.9 : isHovered ? 0.8 : 0.7, 
                 scale: isSelected ? 1.1 : isHovered ? 1.05 : 1,
-                filter: isSelected ? 'brightness(1.2)' : isHovered ? 'brightness(1.1)' : 'brightness(1)'
+                filter: isSelected 
+                  ? 'brightness(1.2) contrast(1.3)' 
+                  : isHovered 
+                    ? 'brightness(1.1) contrast(1.2)' 
+                    : 'brightness(1) contrast(1.1)'
               }}
               transition={{ duration: 0.3 }}
               onMouseEnter={() => setHoveredCountry(country.id)}
@@ -100,8 +129,8 @@ const WorldMap = ({ countries, viewMode, onCountrySelect, selectedCountry }: Wor
                 cx={mapX}
                 cy={mapY}
                 r={viewMode === 'festivals' ? 8 : 6}
-                fill={selectedCountry?.id === country.id ? '#fbbf24' : '#dc2626'}
-                stroke="#fff"
+                fill={selectedCountry?.id === country.id ? '#8b0000' : '#a52a2a'}
+                stroke="#000"
                 strokeWidth="2"
                 className="cursor-pointer"
                 initial={{ scale: 0 }}
@@ -114,10 +143,14 @@ const WorldMap = ({ countries, viewMode, onCountrySelect, selectedCountry }: Wor
                 x={mapX}
                 y={mapY - 15}
                 textAnchor="middle"
-                className="fill-white text-xs font-bold pointer-events-none select-none"
+                className="fill-black text-xs font-bold pointer-events-none select-none font-zine-body"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7, duration: 0.3 }}
+                style={{
+                  textShadow: '1px 1px 2px rgba(255, 255, 255, 0.5)',
+                  filter: 'contrast(2)'
+                }}
               >
                 {country.flag}
               </motion.text>
@@ -125,23 +158,45 @@ const WorldMap = ({ countries, viewMode, onCountrySelect, selectedCountry }: Wor
           )
         })}
 
-        {/* Legend */}
+        {/* Legend - w stylu Zine */}
         <g className="legend">
-          <rect x="20" y="320" width="200" height="70" fill="#1f2937" stroke="#4b5563" strokeWidth="1" rx="5" />
-          <text x="30" y="340" className="fill-white text-sm font-bold">INTENSITY</text>
+          <rect 
+            x="20" 
+            y="320" 
+            width="200" 
+            height="70" 
+            fill="#f5f5e8" 
+            stroke="#000000" 
+            strokeWidth="2" 
+            rx="0"
+          />
+          <rect 
+            x="22" 
+            y="322" 
+            width="196" 
+            height="66" 
+            fill="url(#distressed)" 
+          />
+          
+          <text x="30" y="340" className="fill-black text-sm font-bold font-zine-title uppercase tracking-wide">
+            INTENSITY
+          </text>
           
           {['Low', 'Medium', 'High', 'Extreme'].map((level, index) => (
             <g key={level}>
-              <circle 
-                cx={35 + index * 35} 
-                cy={355} 
-                r="6" 
-                fill={['#6b7280', '#ca8a04', '#ea580c', '#dc2626'][index]} 
+              <rect
+                x={28 + index * 35} 
+                y={348}
+                width="12"
+                height="12"
+                fill={['#1a1a1a', '#2f2f2f', '#a52a2a', '#8b0000'][index]}
+                stroke="#000"
+                strokeWidth="1"
               />
               <text 
-                x={35 + index * 35} 
+                x={34 + index * 35} 
                 y={375} 
-                className="fill-gray-400 text-xs" 
+                className="fill-black text-xs font-zine-body uppercase tracking-wide" 
                 textAnchor="middle"
               >
                 {level}
@@ -149,27 +204,46 @@ const WorldMap = ({ countries, viewMode, onCountrySelect, selectedCountry }: Wor
             </g>
           ))}
         </g>
+
+        {/* Title Banner */}
+        <g className="title-banner">
+          <rect x="250" y="10" width="300" height="40" fill="#000000" stroke="#8b0000" strokeWidth="2"/>
+          <text 
+            x="400" 
+            y="35" 
+            textAnchor="middle" 
+            className="fill-red-800 text-lg font-bold font-zine-title uppercase tracking-widest"
+          >
+            UNDERGROUND MAP
+          </text>
+        </g>
       </svg>
 
-      {/* Hover Tooltip */}
+      {/* Hover Tooltip - w stylu Zine */}
       {hoveredCountry && (
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="absolute top-4 right-4 bg-gray-800 border border-gray-600 rounded-lg p-4 shadow-xl pointer-events-none"
+          className="absolute top-4 right-4 bg-[#f5f5e8] border-4 border-black rounded-none p-4 shadow-metal pointer-events-none zine-card"
+          style={{
+            backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundColor: "rgba(245, 245, 232, 0.95)"
+          }}
         >
           {(() => {
             const country = countries.find(c => c.id === hoveredCountry)
             return country ? (
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-2xl">{country.flag}</span>
-                  <span className="font-bold text-white">{country.name}</span>
+                  <span className="text-2xl filter grayscale contrast-200">{country.flag}</span>
+                  <span className="font-bold text-black font-zine-title uppercase tracking-wide">{country.name}</span>
                 </div>
-                <div className="space-y-1 text-sm text-gray-300">
-                  <div>Bands: {country.metalScene.totalBands}</div>
-                  <div>Influence: {country.metalScene.influence}/100</div>
-                  <div>Festivals: {country.festivals.length}</div>
+                <div className="space-y-1 text-sm text-black font-zine-body">
+                  <div><span className="font-bold">Bands:</span> {country.metalScene.totalBands}</div>
+                  <div><span className="font-bold">Influence:</span> {country.metalScene.influence}/100</div>
+                  <div><span className="font-bold">Festivals:</span> {country.festivals.length}</div>
                 </div>
               </div>
             ) : null
@@ -177,16 +251,44 @@ const WorldMap = ({ countries, viewMode, onCountrySelect, selectedCountry }: Wor
         </motion.div>
       )}
 
-      {/* View Mode Indicator */}
-      <div className="absolute bottom-4 left-4 bg-gray-800/90 backdrop-blur-sm border border-gray-600 rounded-lg p-3">
-        <div className="text-sm font-bold text-white mb-1">VIEW: {viewMode.toUpperCase()}</div>
-        <div className="text-xs text-gray-400">
+      {/* View Mode Indicator - w stylu Zine */}
+      <div className="absolute bottom-4 left-4 bg-[#f5f5e8] border-4 border-black rounded-none p-3 zine-card">
+        <div className="flex items-center gap-2 text-sm font-bold text-black mb-1 font-zine-title uppercase tracking-wide">
+          <FaSkullCrossbones className="text-red-800" />
+          VIEW: {viewMode.toUpperCase()}
+        </div>
+        <div className="text-xs text-black font-zine-body">
           {viewMode === 'bands' && 'Band concentration by region'}
           {viewMode === 'festivals' && 'Major festival locations'}
           {viewMode === 'scenes' && 'Scene influence and activity'}
           {viewMode === 'timeline' && 'Historical development'}
         </div>
       </div>
+
+      <style jsx>{`
+        .zine-card {
+          border-image: url("/images/zine/jagged_border.png") 30 round;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .shadow-metal {
+          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8), 0 4px 8px rgba(255, 0, 0, 0.2);
+        }
+        
+        .font-zine-title {
+          font-family: "Blackletter", serif;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+        }
+
+        .font-zine-body {
+          font-family: "Special Elite", monospace;
+        }
+
+        .skull-decorations text {
+          filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.5));
+        }
+      `}</style>
     </div>
   )
 }

@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import {
   FaPlus, FaFilter, FaRegCommentDots, FaRegClock, FaRegBookmark,
   FaFire, FaTags, FaEthereum, FaBolt, FaEye, FaUser, FaNewspaper,
-  FaSearch, FaTrophy, FaCalendarAlt, FaArrowUp
+  FaSearch, FaTrophy, FaCalendarAlt, FaArrowUp, FaSkullCrossbones
 } from "react-icons/fa";
 import { 
   GiDeathSkull, GiCoffin, GiGhost, GiNewShoot, GiSkullCrossedBones,
@@ -13,15 +13,16 @@ import {
   GiFlame, GiWolfHead, GiThorHammer, GiCrossedSwords, GiBlackFlag
 } from "react-icons/gi";
 import Link from "next/link";
+import Footer from "../../components/Footer";
 
-// Enhanced categories
+// Enhanced categories w stylu Zine
 const categories = [
-  { key: "all", label: "All Chronicles", icon: FaNewspaper, color: "text-gray-400" },
-  { key: "scene", label: "Underground Scene", icon: GiCrossedSwords, color: "text-red-400" },
-  { key: "releases", label: "New Releases", icon: GiThorHammer, color: "text-blue-400" },
-  { key: "festivals", label: "War Gatherings", icon: GiBattleAxe, color: "text-green-400" },
-  { key: "interviews", label: "Legion Interviews", icon: FaUser, color: "text-purple-400" },
-  { key: "history", label: "Metal Archives", icon: GiVikingHelmet, color: "text-yellow-400" },
+  { key: "all", label: "All Chronicles", icon: FaNewspaper, color: "text-red-800" },
+  { key: "scene", label: "Underground Scene", icon: GiCrossedSwords, color: "text-red-800" },
+  { key: "releases", label: "New Releases", icon: GiThorHammer, color: "text-red-800" },
+  { key: "festivals", label: "War Gatherings", icon: GiBattleAxe, color: "text-red-800" },
+  { key: "interviews", label: "Legion Interviews", icon: FaUser, color: "text-red-800" },
+  { key: "history", label: "Metal Archives", icon: GiVikingHelmet, color: "text-red-800" },
 ];
 
 // Enhanced mock news data
@@ -134,6 +135,7 @@ export default function NewsroomPage() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [search, setSearch] = useState("");
   const [glitchActive, setGlitchActive] = useState(false);
+  const [displayStats] = useState({ bands: 2847, demos: 15392, users: 8921, earnings: 127.5 });
 
   // Enhanced glitch effect
   useEffect(() => {
@@ -163,18 +165,32 @@ export default function NewsroomPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white font-inter overflow-x-hidden">
-      
-      {/* Enhanced Background Runes */}
-      <div className="absolute inset-0 opacity-5 pointer-events-none">
-        <div className="animate-pulse text-6xl text-red-300 absolute top-20 left-20 transform rotate-15" style={{ animationDuration: '8s' }}>ᚦ</div>
-        <div className="animate-pulse text-5xl text-blue-300 absolute top-40 right-40 transform -rotate-12" style={{ animationDuration: '10s', animationDelay: '2s' }}>ᚱ</div>
-        <div className="animate-pulse text-4xl text-yellow-300 absolute bottom-40 left-1/3 transform rotate-10" style={{ animationDuration: '7s', animationDelay: '4s' }}>ᚠ</div>
-        <div className="animate-pulse text-5xl text-purple-300 absolute bottom-20 right-20 transform -rotate-8" style={{ animationDuration: '9s', animationDelay: '6s' }}>ᚹ</div>
+    <div 
+      className="min-h-screen bg-[#f5f5e8] text-black font-zine-body overflow-x-hidden zine-layout"
+      style={{
+        backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      {/* Decorative skulls w tle */}
+      <div className="absolute inset-0 opacity-10 pointer-events-none">
+        <div className="animate-pulse text-6xl text-red-800 absolute top-20 left-20 transform rotate-15">☠</div>
+        <div className="animate-pulse text-5xl text-black absolute top-40 right-40 transform -rotate-12">☠</div>
+        <div className="animate-pulse text-4xl text-red-800 absolute bottom-40 left-1/3 transform rotate-10">☠</div>
+        <div className="animate-pulse text-5xl text-black absolute bottom-20 right-20 transform -rotate-8">☠</div>
       </div>
 
-      {/* ENHANCED HEADER */}
-      <header className="bg-gradient-to-b from-gray-800 to-gray-900 border-b-4 border-red-600 p-8 relative z-10 shadow-2xl">
+      {/* ENHANCED HEADER w stylu Zine */}
+      <header 
+        className="bg-[#f5f5e8] border-b-4 border-black p-8 pt-32 relative z-10 zine-header"
+        style={{
+          backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundColor: "rgba(245, 245, 232, 0.95)"
+        }}
+      >
         <div className="max-w-7xl mx-auto">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
@@ -184,32 +200,32 @@ export default function NewsroomPage() {
           >
             <div className="flex items-center gap-6">
               <div className={`relative transition-all duration-300 ${glitchActive ? 'filter brightness-125 saturate-150' : ''}`}>
-                <FaFire className="text-6xl md:text-7xl text-red-500 drop-shadow-2xl" />
+                <FaSkullCrossbones className="text-6xl md:text-7xl text-red-800 drop-shadow-2xl filter grayscale contrast-200" />
                 {glitchActive && (
-                  <FaFire className="absolute top-0 left-0 text-6xl md:text-7xl text-red-400 animate-ping opacity-30" />
+                  <FaSkullCrossbones className="absolute top-0 left-0 text-6xl md:text-7xl text-red-600 animate-ping opacity-30" />
                 )}
               </div>
               <div>
                 <h1
-                  className={`text-4xl md:text-6xl lg:text-7xl font-black uppercase tracking-widest text-white mb-2 ${glitchActive ? 'animate-pulse text-red-100' : ''}`}
+                  className={`text-4xl md:text-6xl lg:text-7xl font-bold uppercase tracking-widest text-black mb-2 font-zine-title ${glitchActive ? 'animate-pulse text-red-800' : ''}`}
                   style={{
                     textShadow: glitchActive 
-                      ? '0 0 20px rgba(239, 68, 68, 0.8), 0 0 40px rgba(239, 68, 68, 0.5)' 
-                      : '2px 2px 4px rgba(0,0,0,0.8), 0 0 15px rgba(239, 68, 68, 0.3)'
+                      ? '0 0 20px rgba(139, 0, 0, 0.8), 0 0 40px rgba(139, 0, 0, 0.5)' 
+                      : '2px 2px 4px rgba(0,0,0,0.3)'
                   }}
                 >
                   WAR CHRONICLES
                 </h1>
                 <div className="flex items-center gap-4 flex-wrap">
-                  <p className="text-gray-400 text-xl uppercase tracking-wide flex items-center gap-2">
-                    <GiSkullCrossedBones className="text-red-500" />
+                  <p className="text-black text-xl uppercase tracking-wide flex items-center gap-2 font-zine-body">
+                    <GiSkullCrossedBones className="text-red-800" />
                     Underground Journalism • Metal Newsroom
                   </p>
                   <div className="flex items-center gap-4">
-                    <span className="bg-red-600/20 text-red-400 px-3 py-1 rounded-full text-sm font-bold border border-red-600/50">
+                    <span className="bg-red-800 text-white px-3 py-1 rounded-none text-sm font-bold border-2 border-black font-zine-body">
                       {mockNews.length} Active Stories
                     </span>
-                    <span className="bg-green-600/20 text-green-400 px-3 py-1 rounded-full text-sm font-bold border border-green-600/50 flex items-center gap-1">
+                    <span className="bg-black text-red-800 px-3 py-1 rounded-none text-sm font-bold border-2 border-red-800 flex items-center gap-1 font-zine-body">
                       <FaBolt className="text-xs" />
                       Breaking News
                     </span>
@@ -220,7 +236,7 @@ export default function NewsroomPage() {
             <div className="flex gap-4">
               <Link
                 href="/news/submit"
-                className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-6 py-3 border-2 border-red-600 transition-all duration-300 hover:scale-105 uppercase font-bold text-sm tracking-wide rounded-lg shadow-lg hover:shadow-red-600/50 flex items-center gap-2"
+                className="skull-button text-[#d0d0d0] px-6 py-3 border-2 border-red-800 transition-all duration-300 hover:scale-105 uppercase font-bold text-sm tracking-wide rounded-none shadow-metal flex items-center gap-2 font-zine-body"
               >
                 <FaPlus /> SUBMIT STORY
               </Link>
@@ -229,8 +245,16 @@ export default function NewsroomPage() {
         </div>
       </header>
 
-      {/* ENHANCED CATEGORY FILTERS */}
-      <nav className="bg-gradient-to-r from-gray-800 to-gray-900 border-b-2 border-gray-600 p-6 relative z-10">
+      {/* ENHANCED CATEGORY FILTERS w stylu Zine */}
+      <nav 
+        className="bg-[#e0e0d8] border-b-4 border-black p-6 relative z-10 zine-section"
+        style={{
+          backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundColor: "rgba(224, 224, 216, 0.95)"
+        }}
+      >
         <div className="max-w-7xl mx-auto">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -241,15 +265,15 @@ export default function NewsroomPage() {
               <button
                 key={cat.key}
                 onClick={() => setActiveCategory(cat.key)}
-                className={`px-6 py-3 text-sm font-bold uppercase tracking-wide border-2 transition-all duration-300 hover:scale-105 rounded-lg flex items-center gap-2 ${
+                className={`px-6 py-3 text-sm font-bold uppercase tracking-wide border-2 transition-all duration-300 hover:scale-105 rounded-none flex items-center gap-2 font-zine-body ${
                   activeCategory === cat.key
-                    ? "bg-red-600 border-red-600 text-white shadow-lg"
-                    : "bg-transparent border-gray-600 text-gray-300 hover:border-red-600 hover:text-red-400"
+                    ? "bg-red-800 border-red-800 text-white shadow-metal"
+                    : "bg-[#f5f5e8] border-black text-black hover:border-red-800 hover:text-red-800"
                 }`}
               >
-                <cat.icon className={cat.color} />
+                <cat.icon className={activeCategory === cat.key ? "text-white" : "text-red-800"} />
                 {cat.label}
-                <span className="bg-gray-700/50 text-gray-300 px-2 py-1 rounded-full text-xs">
+                <span className="bg-black text-white px-2 py-1 rounded-none text-xs border border-red-800 font-zine-body">
                   {cat.key === 'all' ? mockNews.length : mockNews.filter(n => n.category === cat.key).length}
                 </span>
               </button>
@@ -258,55 +282,60 @@ export default function NewsroomPage() {
         </div>
       </nav>
 
-      {/* ENHANCED SEARCH BAR */}
+      {/* ENHANCED SEARCH BAR w stylu Zine */}
       <div className="max-w-7xl mx-auto p-6 relative z-10">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="relative"
         >
-          <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
+          <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-black text-lg" />
           <input
             type="text"
             placeholder="Search war chronicles, tags, bands, authors..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-12 pr-6 py-4 bg-gray-800/80 backdrop-blur-sm border-2 border-gray-600 hover:border-red-500 focus:border-red-500 text-white rounded-lg outline-none font-medium text-lg transition-all duration-300 shadow-lg"
+            className="w-full pl-12 pr-6 py-4 bg-[#e0e0d8] backdrop-blur-sm border-2 border-black hover:border-red-800 focus:border-red-800 text-black rounded-none outline-none font-medium text-lg transition-all duration-300 shadow-metal zine-card font-zine-body"
           />
-          <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-xs text-gray-500 hidden lg:flex items-center gap-2">
-            <span className="px-2 py-1 bg-gray-700 rounded border">Ctrl</span>
+          <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-xs text-black hidden lg:flex items-center gap-2 font-zine-body">
+            <span className="px-2 py-1 bg-black text-white rounded-none border border-black">Ctrl</span>
             <span>+</span>
-            <span className="px-2 py-1 bg-gray-700 rounded border">K</span>
+            <span className="px-2 py-1 bg-black text-white rounded-none border border-black">K</span>
           </div>
         </motion.div>
         
         {/* Results count */}
-        <div className="mt-4 text-sm text-gray-400 flex items-center gap-2">
-          <GiFlame className="text-red-500" />
-          <span className="font-bold text-white">{sortedNews.length}</span> war chronicles found
+        <div className="mt-4 text-sm text-black flex items-center gap-2 font-zine-body">
+          <GiFlame className="text-red-800" />
+          <span className="font-bold text-black font-zine-title">{sortedNews.length}</span> war chronicles found
           {search && (
-            <span className="text-gray-500">for "<span className="text-red-400">{search}</span>"</span>
+            <span className="text-black">for "<span className="text-red-800 font-bold">{search}</span>"</span>
           )}
         </div>
       </div>
 
-      {/* ENHANCED NEWS LIST */}
+      {/* ENHANCED NEWS LIST w stylu Zine */}
       <main className="max-w-7xl mx-auto p-6 relative z-10">
         {sortedNews.length === 0 ? (
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center py-20"
+            className="text-center py-20 bg-[#f5f5e8] border-4 border-black zine-card"
+            style={{
+              backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
           >
-            <GiCoffin className="text-8xl text-gray-600 mx-auto mb-6 animate-pulse" />
-            <h3 className="text-2xl font-black text-gray-400 mb-4 uppercase tracking-wide">No Chronicles Found</h3>
-            <p className="text-gray-500 mb-8 text-lg">The underground archives are empty for this search</p>
+            <GiWolfHead className="text-8xl text-black mx-auto mb-6 opacity-50" />
+            <h3 className="text-2xl font-bold text-black mb-4 uppercase tracking-wide font-zine-title">No Chronicles Found</h3>
+            <p className="text-black mb-8 text-lg font-zine-body">The underground archives are empty for this search</p>
             <button
               onClick={() => {
                 setSearch('');
                 setActiveCategory('all');
               }}
-              className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-bold uppercase tracking-wide transition-all duration-300 hover:scale-105"
+              className="skull-button text-[#d0d0d0] px-8 py-3 rounded-none font-bold uppercase tracking-wide transition-all duration-300 hover:scale-105 font-zine-body"
             >
               Clear Filters
             </button>
@@ -320,32 +349,30 @@ export default function NewsroomPage() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 whileHover={{ y: -8, scale: 1.02 }}
-                className={`bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-gray-600 hover:border-red-600 transition-all duration-300 rounded-xl overflow-hidden shadow-2xl group ${
-                  news.featured ? 'border-yellow-600 shadow-yellow-600/20' : ''
+                className={`bg-[#f5f5e8] border-4 border-black hover:border-red-800 transition-all duration-300 rounded-none overflow-hidden shadow-metal group zine-card ${
+                  news.featured ? 'featured-article' : ''
                 }`}
+                style={{
+                  backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  backgroundColor: "rgba(245, 245, 232, 0.9)"
+                }}
               >
                 <Link href={`/news/${news.id}`}>
                   <div className="relative">
                     <img
                       src={news.image}
                       alt={news.title}
-                      className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500"
-                      style={{ filter: "grayscale(0.8) contrast(1.1) brightness(0.9)" }}
+                      className="w-full h-56 object-cover filter grayscale contrast-200 border-b-2 border-black transition-all duration-500"
                     />
                     
                     {/* Enhanced Overlays */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20"></div>
                     
                     {/* Category Badge */}
                     <div className="absolute top-3 left-3">
-                      <span className={`px-3 py-1 text-xs font-black uppercase rounded-full backdrop-blur-sm ${
-                        news.category === 'releases' ? 'bg-blue-600/90 text-white' :
-                        news.category === 'festivals' ? 'bg-green-600/90 text-white' :
-                        news.category === 'interviews' ? 'bg-purple-600/90 text-white' :
-                        news.category === 'history' ? 'bg-yellow-600/90 text-black' :
-                        news.category === 'scene' ? 'bg-red-600/90 text-white' :
-                        'bg-gray-600/90 text-white'
-                      }`}>
+                      <span className="bg-red-800 text-white px-3 py-1 text-xs font-bold uppercase rounded-none backdrop-blur-sm font-zine-body">
                         {categories.find((c) => c.key === news.category)?.label || news.category}
                       </span>
                     </div>
@@ -353,7 +380,7 @@ export default function NewsroomPage() {
                     {/* Featured Badge */}
                     {news.featured && (
                       <div className="absolute top-3 right-3">
-                        <span className="bg-yellow-500/90 text-black px-3 py-1 text-xs font-black uppercase rounded-full backdrop-blur-sm flex items-center gap-1">
+                        <span className="bg-black text-red-800 px-3 py-1 text-xs font-bold uppercase rounded-none backdrop-blur-sm flex items-center gap-1 font-zine-body border-2 border-red-800">
                           <FaTrophy /> FEATURED
                         </span>
                       </div>
@@ -362,7 +389,7 @@ export default function NewsroomPage() {
                     {/* Verified Badge */}
                     {news.verified && (
                       <div className="absolute bottom-3 right-3">
-                        <div className="bg-green-500/90 text-white p-2 rounded-full backdrop-blur-sm" title="Verified Story">
+                        <div className="bg-red-800 text-white p-2 rounded-none backdrop-blur-sm border-2 border-black" title="Verified Story">
                           <FaBolt className="text-sm" />
                         </div>
                       </div>
@@ -370,38 +397,38 @@ export default function NewsroomPage() {
                     
                     {/* Stats Overlay */}
                     <div className="absolute bottom-3 left-3 flex gap-2 text-xs">
-                      <span className="flex items-center gap-1 bg-black/80 px-3 py-1 rounded-full backdrop-blur-sm">
-                        <FaEye className="text-blue-400" /> {news.views}
+                      <span className="flex items-center gap-1 bg-black text-white px-3 py-1 rounded-none backdrop-blur-sm font-zine-body">
+                        <FaEye className="text-red-800" /> {news.views}
                       </span>
-                      <span className="flex items-center gap-1 bg-black/80 px-3 py-1 rounded-full backdrop-blur-sm">
-                        <FaRegCommentDots className="text-green-400" /> {news.comments}
+                      <span className="flex items-center gap-1 bg-black text-white px-3 py-1 rounded-none backdrop-blur-sm font-zine-body">
+                        <FaRegCommentDots className="text-red-800" /> {news.comments}
                       </span>
                     </div>
                   </div>
                   
                   <div className="p-6">
-                    <h3 className="text-xl font-black text-white group-hover:text-red-400 transition-colors duration-300 mb-3 line-clamp-2 leading-tight">
+                    <h3 className="text-xl font-bold text-black group-hover:text-red-800 transition-colors duration-300 mb-3 line-clamp-2 leading-tight font-zine-title uppercase">
                       {news.title}
                     </h3>
                     
-                    <p className="text-gray-300 mb-4 leading-relaxed text-sm line-clamp-3">
+                    <p className="text-black mb-4 leading-relaxed text-sm line-clamp-3 font-zine-body">
                       {news.excerpt}
                     </p>
                     
                     {/* Enhanced Author Info */}
                     <div className="flex items-center justify-between mb-4 text-sm">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-red-600/20 border border-red-600/50 rounded-full flex items-center justify-center">
-                          <FaUser className="text-red-400 text-xs" />
+                        <div className="w-8 h-8 bg-red-800 border-2 border-black rounded-none flex items-center justify-center">
+                          <FaUser className="text-white text-xs" />
                         </div>
                         <div>
-                          <span className="text-red-400 font-bold">{news.author}</span>
-                          <div className="text-xs text-gray-500">Rep: {news.authorReputation}</div>
+                          <span className="text-red-800 font-bold font-zine-body">{news.author}</span>
+                          <div className="text-xs text-black font-zine-body">Rep: {news.authorReputation}</div>
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-gray-400 text-xs">{news.readTime} read</div>
-                        <div className="flex items-center gap-1 text-yellow-400 text-xs">
+                        <div className="text-black text-xs font-zine-body">{news.readTime} read</div>
+                        <div className="flex items-center gap-1 text-red-800 text-xs font-zine-body">
                           <FaTrophy /> {news.likes}
                         </div>
                       </div>
@@ -412,27 +439,27 @@ export default function NewsroomPage() {
                       {news.tags.slice(0, 3).map((tag) => (
                         <span
                           key={tag}
-                          className="bg-gray-700/50 text-gray-300 px-2 py-1 text-xs uppercase rounded border border-gray-600 hover:border-red-600 transition-colors duration-300"
+                          className="bg-black text-red-800 px-2 py-1 text-xs uppercase rounded-none border border-red-800 hover:bg-red-800 hover:text-white transition-colors duration-300 font-zine-body"
                         >
                           #{tag}
                         </span>
                       ))}
                       {news.tags.length > 3 && (
-                        <span className="text-gray-500 text-xs">+{news.tags.length - 3} more</span>
+                        <span className="text-black text-xs font-zine-body">+{news.tags.length - 3} more</span>
                       )}
                     </div>
                     
                     {/* Enhanced Footer */}
-                    <div className="flex justify-between items-center text-xs text-gray-500 pt-4 border-t border-gray-700">
+                    <div className="flex justify-between items-center text-xs text-black pt-4 border-t-2 border-black font-zine-body">
                       <span className="flex items-center gap-1">
-                        <FaCalendarAlt className="text-blue-400" /> {news.date}
+                        <FaCalendarAlt className="text-red-800" /> {news.date}
                       </span>
                       <div className="flex items-center gap-3">
                         <span className="flex items-center gap-1">
-                          <FaEye /> {news.views}
+                          <FaEye className="text-red-800" /> {news.views}
                         </span>
                         <span className="flex items-center gap-1">
-                          <FaRegCommentDots /> {news.comments}
+                          <FaRegCommentDots className="text-red-800" /> {news.comments}
                         </span>
                       </div>
                     </div>
@@ -444,35 +471,78 @@ export default function NewsroomPage() {
         )}
       </main>
 
-      {/* ENHANCED FOOTER */}
-      <footer className="bg-gradient-to-b from-gray-900 to-black border-t-4 border-red-600 p-8 mt-16 relative">
-        <div className="max-w-7xl mx-auto text-center">
-          <div className="flex justify-center gap-8 mb-6">
-            {[GiDeathSkull, GiCoffin, GiGhost, GiSkullCrossedBones, GiBlackFlag].map((Icon, index) => (
-              <motion.div 
-                key={index}
-                whileHover={{ scale: 1.2, rotate: 15 }} 
-                className="cursor-pointer"
-              >
-                <Icon className="text-4xl text-gray-600 hover:text-red-500 transition-colors duration-300" />
-              </motion.div>
-            ))}
-          </div>
-          <h3 className="text-3xl font-black uppercase tracking-widest text-white mb-2">
-            WAR CHRONICLES
-          </h3>
-          <p className="text-gray-400 uppercase tracking-wider mb-4">
-            Metal Forge Newsroom • Underground Journalism • Breaking News
-          </p>
-          <p className="text-gray-600">
-            Submit your stories • Underground only • No posers allowed
-          </p>
-          <div className="mt-6 flex justify-center items-center gap-2 text-sm text-gray-500">
-            <FaEthereum className="text-blue-400" />
-            <span>Powered by Optimism Blockchain</span>
-          </div>
-        </div>
-      </footer>
+      <Footer displayStats={displayStats} />
+
+      <style jsx global>{`
+        .zine-layout {
+          background-color: #f5f5e8;
+          background-image: url("/images/zine/paper_texture_distressed.jpg");
+          background-size: cover;
+          background-position: center;
+          position: relative;
+          overflow-x: hidden;
+        }
+        
+        .zine-header {
+          border-image: url("/images/zine/jagged_border.png") 30 round;
+        }
+        
+        .zine-card {
+          border-image: url("/images/zine/jagged_border.png") 30 round;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .shadow-metal {
+          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8), 0 4px 8px rgba(255, 0, 0, 0.2);
+        }
+        
+        .skull-button {
+          background: linear-gradient(to right, #b71c1c, #000000);
+          border: 2px solid #ff0000;
+          box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .skull-button:hover {
+          transform: scale(1.05);
+          box-shadow: 0 8px 20px rgba(255, 0, 0, 0.5);
+          filter: brightness(1.2);
+        }
+        
+        .featured-article {
+          border-color: #dc2626 !important;
+          border-width: 4px !important;
+          box-shadow: 
+            0 0 20px rgba(220, 38, 38, 0.5),
+            inset 0 0 10px rgba(220, 38, 38, 0.1) !important;
+          transform: scale(1.02);
+        }
+
+        .featured-article:hover {
+          transform: scale(1.05) !important;
+          box-shadow: 
+            0 0 30px rgba(220, 38, 38, 0.7),
+            inset 0 0 15px rgba(220, 38, 38, 0.15) !important;
+        }
+        
+        .font-zine-title {
+          font-family: "Blackletter", serif;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+        }
+
+        .font-zine-body {
+          font-family: "Special Elite", monospace;
+        }
+        
+        @media (max-width: 640px) {
+          h1 {
+            font-size: 2.5rem !important;
+          }
+          h2 {
+            font-size: 1.5rem !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

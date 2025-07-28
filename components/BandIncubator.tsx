@@ -1,11 +1,10 @@
-// src/components/BandIncubator.tsx
 "use client";
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   FaRocket, FaCoins, FaMicrophone, FaUsers, FaCalendarAlt,
-  FaChartLine, FaHeart, FaShare, FaPlay, FaPlus
+  FaChartLine, FaHeart, FaShare, FaPlay, FaPlus, FaSkullCrossbones
 } from 'react-icons/fa';
 import { 
   GiThorHammer, GiDeathSkull, GiCrossedSwords, GiDragonHead
@@ -47,17 +46,17 @@ interface ProjectUpdate {
 const mockProjects: BandProject[] = [
   {
     id: "1",
-    bandName: "FROSTY TORMENT",
+    bandName: "VOID ETERNAL",
     projectTitle: "Debut Album Recording",
-    description: "Polish black metal band seeking funding for professional studio recording of their first full-length album. Raw, atmospheric black metal in the vein of early Darkthrone and Burzum.",
+    description: "Norwegian atmospheric black metal band seeking funding for professional studio recording of their first full-length album. Raw, hypnotic soundscapes inspired by northern wilderness and ancient traditions.",
     goal: 2.5,
     raised: 1.8,
     backers: 47,
     daysLeft: 23,
-    genre: "Black Metal",
-    country: "Poland",
+    genre: "Atmospheric Black Metal",
+    country: "Norway",
     image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop",
-    demoUrl: "/demo/frosty-torment-winter-winds.mp3",
+    demoUrl: "/demo/void-eternal-northern-winds.mp3",
     rewards: [
       {
         id: "r1",
@@ -95,15 +94,15 @@ const mockProjects: BandProject[] = [
   },
   {
     id: "2",
-    bandName: "SOLAR WISDOM",
+    bandName: "IRON COVENANT",
     projectTitle: "European Tour Support",
-    description: "Help us bring Polish atmospheric black metal across Europe. Funding will cover travel, equipment, and venue costs for 15-date tour.",
+    description: "Help us bring Swedish death metal across Europe. Funding will cover travel, equipment, and venue costs for 15-date underground tour supporting local scenes.",
     goal: 4.0,
     raised: 2.1,
     backers: 62,
     daysLeft: 18,
-    genre: "Atmospheric Black Metal", 
-    country: "Poland",
+    genre: "Death Metal", 
+    country: "Sweden",
     image: "https://images.unsplash.com/photo-1574406939292-0ed7b26b93c0?w=400&h=300&fit=crop",
     rewards: [
       {
@@ -131,6 +130,45 @@ const mockProjects: BandProject[] = [
         date: "2025-01-10"
       }
     ]
+  },
+  {
+    id: "3",
+    bandName: "MORBID SANCTUM",
+    projectTitle: "Music Video Production",
+    description: "Finnish doom metal band creating an atmospheric music video for our latest single. Professional cinematography capturing the essence of northern darkness and melancholy.",
+    goal: 1.2,
+    raised: 0.7,
+    backers: 31,
+    daysLeft: 12,
+    genre: "Doom Metal",
+    country: "Finland",
+    image: "https://images.unsplash.com/photo-1571974599782-87624638275b?w=400&h=300&fit=crop",
+    rewards: [
+      {
+        id: "r6",
+        title: "Digital Single",
+        description: "High-quality download + behind-the-scenes footage",
+        amount: 0.005,
+        backers: 18,
+        estimated: "February 2025"
+      },
+      {
+        id: "r7",
+        title: "Exclusive Merch",
+        description: "Limited t-shirt design + signed poster",
+        amount: 0.025,
+        backers: 10,
+        estimated: "March 2025"
+      }
+    ],
+    updates: [
+      {
+        id: "u3",
+        title: "Location Scouting Complete",
+        content: "Found the perfect abandoned church for filming!",
+        date: "2025-01-12"
+      }
+    ]
   }
 ];
 
@@ -143,15 +181,23 @@ export default function BandIncubator() {
   };
 
   return (
-    <div className="bg-[#111] border-2 border-[#333] p-6">
+    <div 
+      className="bg-[#f5f5e8] border-4 border-black p-6 zine-card"
+      style={{
+        backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundColor: "rgba(245, 245, 232, 0.9)"
+      }}
+    >
       {/* HEADER */}
-      <div className="flex items-center gap-3 mb-6 border-b border-[#333] pb-4">
-        <GiThorHammer className="text-3xl text-orange-400" />
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-black pb-4">
+        <GiThorHammer className="text-3xl text-red-800 skull-icon" />
         <div>
-          <h2 className="text-2xl font-black uppercase tracking-wide text-[#e0e0e0]">
+          <h2 className="text-2xl font-bold uppercase tracking-wide text-black font-zine-title">
             BAND INCUBATOR
           </h2>
-          <p className="text-[#999] text-sm">Support Underground Projects</p>
+          <p className="text-black text-sm font-zine-body">Support Underground Projects</p>
         </div>
       </div>
 
@@ -165,10 +211,10 @@ export default function BandIncubator() {
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key as any)}
-            className={`px-4 py-2 text-xs uppercase font-bold tracking-wide border-2 transition-colors flex items-center gap-2 ${
+            className={`px-4 py-2 text-xs uppercase font-bold tracking-wide border-2 transition-colors flex items-center gap-2 font-zine-body ${
               activeTab === tab.key
-                ? 'bg-orange-600 border-orange-600 text-white'
-                : 'bg-transparent border-[#333] text-[#ccc] hover:border-orange-600'
+                ? 'bg-red-800 border-red-800 text-white'
+                : 'bg-[#f5f5e8] border-black text-black hover:border-red-800'
             }`}
           >
             <tab.icon /> {tab.label}
@@ -183,58 +229,63 @@ export default function BandIncubator() {
             <motion.div
               key={project.id}
               whileHover={{ y: -2 }}
-              className="bg-[#0a0a0a] border border-[#333] hover:border-orange-600 transition-colors cursor-pointer"
+              className="bg-[#e0e0d8] border-2 border-black hover:border-red-800 transition-colors cursor-pointer zine-card"
               onClick={() => setSelectedProject(project)}
+              style={{
+                backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundColor: "rgba(224, 224, 216, 0.9)"
+              }}
             >
               <img
                 src={project.image}
                 alt={project.bandName}
-                className="w-full h-32 object-cover grayscale contrast-125 brightness-90"
-                style={{ filter: "grayscale(1) contrast(1.25) brightness(0.9)" }}
+                className="w-full h-32 object-cover grayscale contrast-200 border-b-2 border-black"
               />
               
               <div className="p-4">
                 <div className="flex justify-between items-start mb-2">
                   <div>
-                    <h3 className="font-bold text-[#e0e0e0] text-sm uppercase">
+                    <h3 className="font-bold text-black text-sm uppercase font-zine-title">
                       {project.bandName}
                     </h3>
-                    <p className="text-xs text-[#999]">{project.genre} • {project.country}</p>
+                    <p className="text-xs text-black font-zine-body">{project.genre} • {project.country}</p>
                   </div>
-                  <span className="text-xs bg-orange-600 text-white px-2 py-1 uppercase font-bold">
+                  <span className="text-xs bg-red-800 text-white px-2 py-1 uppercase font-bold font-zine-body">
                     {project.daysLeft}d LEFT
                   </span>
                 </div>
 
-                <h4 className="text-[#ccc] font-bold mb-2">{project.projectTitle}</h4>
-                <p className="text-xs text-[#999] mb-3 leading-tight">
+                <h4 className="text-black font-bold mb-2 font-zine-body">{project.projectTitle}</h4>
+                <p className="text-xs text-black mb-3 leading-tight font-zine-body">
                   {project.description.substring(0, 120)}...
                 </p>
 
                 {/* PROGRESS */}
                 <div className="mb-3">
                   <div className="flex justify-between text-xs mb-1">
-                    <span className="text-[#ccc]">{project.raised} ETH raised</span>
-                    <span className="text-[#999]">{getProgressPercentage(project.raised, project.goal).toFixed(0)}%</span>
+                    <span className="text-black font-zine-body">{project.raised} ETH raised</span>
+                    <span className="text-black font-zine-body">{getProgressPercentage(project.raised, project.goal).toFixed(0)}%</span>
                   </div>
-                  <div className="w-full bg-[#333] h-2">
+                  <div className="w-full bg-black h-3 border border-black">
                     <div 
-                      className="bg-orange-600 h-2 transition-all duration-500"
+                      className="bg-red-800 h-full transition-all duration-500"
                       style={{ width: `${getProgressPercentage(project.raised, project.goal)}%` }}
                     />
                   </div>
-                  <div className="flex justify-between text-xs mt-1 text-[#666]">
+                  <div className="flex justify-between text-xs mt-1 text-black font-zine-body">
                     <span>Goal: {project.goal} ETH</span>
                     <span>{project.backers} backers</span>
                   </div>
                 </div>
 
                 <div className="flex gap-2">
-                  <button className="flex-1 bg-orange-600 hover:bg-orange-700 text-white py-2 text-xs uppercase font-bold">
+                  <button className="flex-1 skull-button text-[#d0d0d0] py-2 text-xs uppercase font-bold font-zine-body">
                     BACK PROJECT
                   </button>
                   {project.demoUrl && (
-                    <button className="px-3 bg-transparent border border-[#666] text-[#ccc] hover:bg-[#222] py-2 text-xs">
+                    <button className="px-3 bg-[#f5f5e8] border-2 border-black text-black hover:bg-[#e0e0d8] py-2 text-xs">
                       <FaPlay />
                     </button>
                   )}
@@ -248,12 +299,12 @@ export default function BandIncubator() {
       {/* MY BACKING TAB */}
       {activeTab === 'backed' && (
         <div className="text-center py-12">
-          <GiDeathSkull className="text-6xl text-[#666] mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-[#999] mb-2 uppercase">No Projects Backed Yet</h3>
-          <p className="text-[#666] mb-4">Start supporting underground bands to see your backing history</p>
+          <FaSkullCrossbones className="text-6xl text-black mx-auto mb-4" />
+          <h3 className="text-xl font-bold text-black mb-2 uppercase font-zine-title">No Projects Backed Yet</h3>
+          <p className="text-black mb-4 font-zine-body">Start supporting underground bands to see your backing history</p>
           <button 
             onClick={() => setActiveTab('projects')}
-            className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 uppercase font-bold tracking-wide"
+            className="skull-button text-[#d0d0d0] px-6 py-3 uppercase font-bold tracking-wide font-zine-body"
           >
             EXPLORE PROJECTS
           </button>
@@ -262,35 +313,35 @@ export default function BandIncubator() {
 
       {/* CREATE PROJECT TAB */}
       {activeTab === 'create' && (
-        <div className="bg-[#0a0a0a] border border-[#333] p-6">
-          <h3 className="text-lg font-bold text-[#ccc] mb-4 uppercase">Launch Your Project</h3>
+        <div className="bg-[#e0e0d8] border-2 border-black p-6 zine-card">
+          <h3 className="text-lg font-bold text-black mb-4 uppercase font-zine-title">Launch Your Project</h3>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-bold text-[#ccc] mb-2 uppercase">Band Name</label>
+              <label className="block text-sm font-bold text-black mb-2 uppercase font-zine-body">Band Name</label>
               <input
                 type="text"
-                className="w-full p-3 bg-[#111] border-2 border-[#333] text-[#e0e0e0] focus:border-orange-600 focus:outline-none"
+                className="w-full p-3 bg-[#f5f5e8] border-2 border-black text-black focus:border-red-800 focus:outline-none font-zine-body"
                 placeholder="Your band name..."
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-[#ccc] mb-2 uppercase">Project Title</label>
+              <label className="block text-sm font-bold text-black mb-2 uppercase font-zine-body">Project Title</label>
               <input
                 type="text"
-                className="w-full p-3 bg-[#111] border-2 border-[#333] text-[#e0e0e0] focus:border-orange-600 focus:outline-none"
+                className="w-full p-3 bg-[#f5f5e8] border-2 border-black text-black focus:border-red-800 focus:outline-none font-zine-body"
                 placeholder="What are you funding?"
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-[#ccc] mb-2 uppercase">Funding Goal (ETH)</label>
+              <label className="block text-sm font-bold text-black mb-2 uppercase font-zine-body">Funding Goal (ETH)</label>
               <input
                 type="number"
                 step="0.1"
-                className="w-full p-3 bg-[#111] border-2 border-[#333] text-[#e0e0e0] focus:border-orange-600 focus:outline-none"
+                className="w-full p-3 bg-[#f5f5e8] border-2 border-black text-black focus:border-red-800 focus:outline-none font-zine-body"
                 placeholder="0.0"
               />
             </div>
-            <button className="w-full bg-orange-600 hover:bg-orange-700 text-white py-3 uppercase font-bold tracking-wide">
+            <button className="w-full skull-button text-[#d0d0d0] py-3 uppercase font-bold tracking-wide font-zine-body">
               CREATE PROJECT
             </button>
           </div>
@@ -303,18 +354,24 @@ export default function BandIncubator() {
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-[#111] border-2 border-[#333] max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            className="bg-[#f5f5e8] border-4 border-black max-w-4xl w-full max-h-[90vh] overflow-y-auto zine-card"
             onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundColor: "rgba(245, 245, 232, 0.95)"
+            }}
           >
             <div className="p-6">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-[#e0e0e0] uppercase">{selectedProject.bandName}</h2>
-                  <p className="text-[#999]">{selectedProject.projectTitle}</p>
+                  <h2 className="text-2xl font-bold text-black uppercase font-zine-title">{selectedProject.bandName}</h2>
+                  <p className="text-black font-zine-body">{selectedProject.projectTitle}</p>
                 </div>
                 <button
                   onClick={() => setSelectedProject(null)}
-                  className="text-white bg-black/50 w-8 h-8 flex items-center justify-center hover:bg-black/70"
+                  className="text-white bg-black w-8 h-8 flex items-center justify-center hover:bg-red-800"
                 >
                   ✕
                 </button>
@@ -323,24 +380,23 @@ export default function BandIncubator() {
               <img
                 src={selectedProject.image}
                 alt={selectedProject.bandName}
-                className="w-full h-48 object-cover grayscale contrast-125 brightness-90 mb-4"
-                style={{ filter: "grayscale(1) contrast(1.25) brightness(0.9)" }}
+                className="w-full h-48 object-cover grayscale contrast-200 mb-4 border-2 border-black"
               />
 
-              <p className="text-[#ccc] mb-6">{selectedProject.description}</p>
+              <p className="text-black mb-6 font-zine-body">{selectedProject.description}</p>
 
               {/* REWARDS */}
               <div className="mb-6">
-                <h3 className="text-lg font-bold text-[#ccc] mb-4 uppercase">Rewards</h3>
+                <h3 className="text-lg font-bold text-black mb-4 uppercase font-zine-title">Rewards</h3>
                 <div className="space-y-3">
                   {selectedProject.rewards.map(reward => (
-                    <div key={reward.id} className="bg-[#0a0a0a] border border-[#333] p-4">
+                    <div key={reward.id} className="bg-[#e0e0d8] border-2 border-black p-4 zine-card">
                       <div className="flex justify-between items-start mb-2">
-                        <h4 className="font-bold text-[#e0e0e0]">{reward.title}</h4>
-                        <span className="text-orange-400 font-bold">{reward.amount} ETH</span>
+                        <h4 className="font-bold text-black font-zine-body">{reward.title}</h4>
+                        <span className="text-red-800 font-bold font-zine-body">{reward.amount} ETH</span>
                       </div>
-                      <p className="text-sm text-[#999] mb-2">{reward.description}</p>
-                      <div className="flex justify-between text-xs text-[#666]">
+                      <p className="text-sm text-black mb-2 font-zine-body">{reward.description}</p>
+                      <div className="flex justify-between text-xs text-black font-zine-body">
                         <span>{reward.backers} backers</span>
                         <span>Est. {reward.estimated}</span>
                       </div>
@@ -349,13 +405,47 @@ export default function BandIncubator() {
                 </div>
               </div>
 
-              <button className="w-full bg-orange-600 hover:bg-orange-700 text-white py-3 uppercase font-bold tracking-wide">
+              <button className="w-full skull-button text-[#d0d0d0] py-3 uppercase font-bold tracking-wide font-zine-body">
                 BACK THIS PROJECT
               </button>
             </div>
           </motion.div>
         </div>
       )}
+
+      <style jsx>{`
+        .skull-icon {
+          text-shadow: 0 0 10px rgba(139, 0, 0, 0.6);
+          filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
+        }
+        
+        .zine-card {
+          border-image: url("/images/zine/jagged_border.png") 30 round;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .skull-button {
+          background: linear-gradient(to right, #b71c1c, #000000);
+          border: 2px solid #ff0000;
+          box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .skull-button:hover {
+          transform: scale(1.05);
+          box-shadow: 0 8px 20px rgba(255, 0, 0, 0.5);
+          filter: brightness(1.2);
+        }
+        
+        .font-zine-title {
+          font-family: "Blackletter", serif;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+        }
+
+        .font-zine-body {
+          font-family: "Special Elite", monospace;
+        }
+      `}</style>
     </div>
   );
 }

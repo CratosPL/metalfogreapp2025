@@ -5,7 +5,8 @@ import { motion } from 'framer-motion';
 import { 
   FaSearch, FaPlus, FaFilter, FaSort, FaMapMarkerAlt,
   FaCalendarAlt, FaMusic, FaUsers, FaEye, FaHeart,
-  FaEthereum, FaBolt, FaChartLine, FaFire
+  FaEthereum, FaBolt, FaChartLine, FaFire,
+  FaSkullCrossbones
 } from 'react-icons/fa';
 import { 
   GiDeathSkull, GiCrossedSwords, GiDragonHead, GiWolfHead,
@@ -183,18 +184,33 @@ const LegionDatabase = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white font-inter overflow-x-hidden">
+    <div 
+      className="min-h-screen bg-[#f5f5e8] text-black font-zine-body overflow-x-hidden zine-layout"
+      style={{
+        backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       
-      {/* Enhanced Background */}
-      <div className="absolute inset-0 opacity-5 pointer-events-none">
-        <div className="animate-pulse text-6xl text-red-300 absolute top-20 left-20 transform rotate-15" style={{ animationDuration: '8s' }}>ᚦ</div>
-        <div className="animate-pulse text-5xl text-blue-300 absolute top-40 right-40 transform -rotate-12" style={{ animationDuration: '10s', animationDelay: '2s' }}>ᚱ</div>
-        <div className="animate-pulse text-4xl text-yellow-300 absolute bottom-40 left-1/3 transform rotate-10" style={{ animationDuration: '7s', animationDelay: '4s' }}>ᚠ</div>
-        <div className="animate-pulse text-5xl text-purple-300 absolute bottom-20 right-20 transform -rotate-8" style={{ animationDuration: '9s', animationDelay: '6s' }}>ᚹ</div>
+      {/* Decorative skulls w tle */}
+      <div className="absolute inset-0 opacity-10 pointer-events-none">
+        <div className="animate-pulse text-6xl text-red-800 absolute top-20 left-20 transform rotate-15" style={{ animationDuration: '8s' }}>☠</div>
+        <div className="animate-pulse text-5xl text-black absolute top-40 right-40 transform -rotate-12" style={{ animationDuration: '10s', animationDelay: '2s' }}>☠</div>
+        <div className="animate-pulse text-4xl text-red-800 absolute bottom-40 left-1/3 transform rotate-10" style={{ animationDuration: '7s', animationDelay: '4s' }}>☠</div>
+        <div className="animate-pulse text-5xl text-black absolute bottom-20 right-20 transform -rotate-8" style={{ animationDuration: '9s', animationDelay: '6s' }}>☠</div>
       </div>
 
-      {/* ENHANCED HEADER */}
-      <header className="bg-gradient-to-b from-gray-800 to-gray-900 border-b-4 border-red-600 p-8 relative z-10 shadow-2xl">
+      {/* ENHANCED HEADER w stylu Zine */}
+      <header 
+        className="bg-[#f5f5e8] border-b-4 border-black p-8 relative z-10 shadow-metal zine-header"
+        style={{
+          backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundColor: "rgba(245, 245, 232, 0.95)"
+        }}
+      >
         <div className="max-w-7xl mx-auto">
           {/* Title Section */}
           <motion.div 
@@ -204,30 +220,30 @@ const LegionDatabase = () => {
             className="flex items-center gap-6 mb-8"
           >
             <div className={`relative transition-all duration-300 ${glitchActive ? 'filter brightness-125 saturate-150' : ''}`}>
-              <GiCrossedSwords className="text-6xl md:text-7xl text-red-500 drop-shadow-2xl" />
+              <GiCrossedSwords className="text-6xl md:text-7xl text-red-800 drop-shadow-2xl" />
               {glitchActive && (
-                <GiCrossedSwords className="absolute top-0 left-0 text-6xl md:text-7xl text-red-400 animate-ping opacity-30" />
+                <GiCrossedSwords className="absolute top-0 left-0 text-6xl md:text-7xl text-red-600 animate-ping opacity-30" />
               )}
             </div>
             <div>
-              <h1 className={`text-4xl md:text-6xl lg:text-7xl font-black uppercase tracking-widest text-white mb-2 ${glitchActive ? 'animate-pulse text-red-100' : ''}`} 
+              <h1 className={`text-4xl md:text-6xl lg:text-7xl font-bold uppercase tracking-widest text-black mb-2 font-zine-title ${glitchActive ? 'animate-pulse text-red-800' : ''}`} 
                   style={{
                     textShadow: glitchActive 
-                      ? '0 0 20px rgba(239, 68, 68, 0.8), 0 0 40px rgba(239, 68, 68, 0.5)' 
-                      : '2px 2px 4px rgba(0,0,0,0.8), 0 0 15px rgba(239, 68, 68, 0.3)'
+                      ? '0 0 20px rgba(139, 0, 0, 0.8), 0 0 40px rgba(139, 0, 0, 0.5)' 
+                      : '2px 2px 4px rgba(0,0,0,0.3)'
                   }}>
                 LEGION DATABASE
               </h1>
               <div className="flex items-center gap-4 flex-wrap">
-                <p className="text-gray-400 text-lg uppercase tracking-wide flex items-center gap-2">
-                  <GiSkullCrossedBones className="text-red-500" />
+                <p className="text-black text-lg uppercase tracking-wide flex items-center gap-2 font-zine-body">
+                  <FaSkullCrossbones className="text-red-800" />
                   Underground Metal Encyclopedia
                 </p>
                 <div className="flex items-center gap-4">
-                  <span className="bg-red-600/20 text-red-400 px-3 py-1 rounded-full text-sm font-bold border border-red-600/50">
+                  <span className="bg-red-800 text-white px-3 py-1 rounded-none text-sm font-bold border-2 border-black">
                     {mockBands.length} Legions Archived
                   </span>
-                  <span className="bg-green-600/20 text-green-400 px-3 py-1 rounded-full text-sm font-bold border border-green-600/50 flex items-center gap-1">
+                  <span className="bg-black text-red-800 px-3 py-1 rounded-none text-sm font-bold border-2 border-red-800 flex items-center gap-1">
                     <FaEthereum className="text-xs" />
                     Web3 Verified
                   </span>
@@ -236,29 +252,29 @@ const LegionDatabase = () => {
             </div>
           </motion.div>
 
-          {/* Enhanced Search Bar */}
+          {/* Enhanced Search Bar w stylu Zine */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="relative mb-6"
           >
-            <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
+            <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-black text-lg" />
             <input
               type="text"
               placeholder="Search legions by name, genre, country, or tags..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-6 py-4 bg-gray-800/80 backdrop-blur-sm border-2 border-gray-600 hover:border-red-500 focus:border-red-500 text-white rounded-lg outline-none font-medium text-lg transition-all duration-300 shadow-lg"
+              className="w-full pl-12 pr-6 py-4 bg-[#e0e0d8] backdrop-blur-sm border-2 border-black hover:border-red-800 focus:border-red-800 text-black rounded-none outline-none font-medium text-lg transition-all duration-300 shadow-metal zine-card font-zine-body"
             />
-            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-xs text-gray-500 hidden lg:flex items-center gap-2">
-              <span className="px-2 py-1 bg-gray-700 rounded border">Ctrl</span>
+            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-xs text-black hidden lg:flex items-center gap-2 font-zine-body">
+              <span className="px-2 py-1 bg-black text-white rounded-none border border-black">Ctrl</span>
               <span>+</span>
-              <span className="px-2 py-1 bg-gray-700 rounded border">K</span>
+              <span className="px-2 py-1 bg-black text-white rounded-none border border-black">K</span>
             </div>
           </motion.div>
 
-          {/* Enhanced Controls */}
+          {/* Enhanced Controls w stylu Zine */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -268,10 +284,10 @@ const LegionDatabase = () => {
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className={`px-6 py-3 border-2 transition-all duration-300 uppercase font-bold text-sm tracking-wide rounded-lg hover:scale-105 ${
+                className={`px-6 py-3 border-2 transition-all duration-300 uppercase font-bold text-sm tracking-wide rounded-none hover:scale-105 font-zine-body ${
                   showFilters 
-                    ? 'bg-red-600 border-red-600 text-white shadow-lg shadow-red-600/50' 
-                    : 'bg-transparent border-gray-600 text-gray-300 hover:border-red-600 hover:text-red-400'
+                    ? 'bg-red-800 border-red-800 text-white shadow-metal' 
+                    : 'bg-[#f5f5e8] border-black text-black hover:border-red-800 hover:text-red-800'
                 }`}
               >
                 <FaFilter className="inline mr-2" /> 
@@ -281,7 +297,7 @@ const LegionDatabase = () => {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-3 bg-gray-800 border-2 border-gray-600 hover:border-red-500 focus:border-red-500 text-white rounded-lg outline-none font-medium text-sm uppercase transition-all duration-300"
+                className="px-4 py-3 bg-[#e0e0d8] border-2 border-black hover:border-red-800 focus:border-red-800 text-black rounded-none outline-none font-medium text-sm uppercase transition-all duration-300 font-zine-body"
               >
                 <option value="name">Sort by Name</option>
                 <option value="year">Sort by Year</option>
@@ -294,38 +310,38 @@ const LegionDatabase = () => {
             <div className="flex gap-3">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`px-4 py-3 border-2 transition-all duration-300 rounded-lg hover:scale-105 ${
+                className={`px-4 py-3 border-2 transition-all duration-300 rounded-none hover:scale-105 ${
                   viewMode === 'grid' 
-                    ? 'bg-red-600 border-red-600 text-white shadow-lg' 
-                    : 'bg-transparent border-gray-600 text-gray-300 hover:border-red-600'
+                    ? 'bg-red-800 border-red-800 text-white shadow-metal' 
+                    : 'bg-[#f5f5e8] border-black text-black hover:border-red-800'
                 }`}
               >
                 <div className="grid grid-cols-2 gap-1 w-4 h-4">
-                  <div className="bg-current w-1.5 h-1.5 rounded-sm"></div>
-                  <div className="bg-current w-1.5 h-1.5 rounded-sm"></div>
-                  <div className="bg-current w-1.5 h-1.5 rounded-sm"></div>
-                  <div className="bg-current w-1.5 h-1.5 rounded-sm"></div>
+                  <div className="bg-current w-1.5 h-1.5 rounded-none"></div>
+                  <div className="bg-current w-1.5 h-1.5 rounded-none"></div>
+                  <div className="bg-current w-1.5 h-1.5 rounded-none"></div>
+                  <div className="bg-current w-1.5 h-1.5 rounded-none"></div>
                 </div>
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`px-4 py-3 border-2 transition-all duration-300 rounded-lg hover:scale-105 ${
+                className={`px-4 py-3 border-2 transition-all duration-300 rounded-none hover:scale-105 ${
                   viewMode === 'list' 
-                    ? 'bg-red-600 border-red-600 text-white shadow-lg' 
-                    : 'bg-transparent border-gray-600 text-gray-300 hover:border-red-600'
+                    ? 'bg-red-800 border-red-800 text-white shadow-metal' 
+                    : 'bg-[#f5f5e8] border-black text-black hover:border-red-800'
                 }`}
               >
                 <div className="space-y-1 w-4 h-4">
-                  <div className="bg-current w-full h-0.5 rounded"></div>
-                  <div className="bg-current w-full h-0.5 rounded"></div>
-                  <div className="bg-current w-full h-0.5 rounded"></div>
-                  <div className="bg-current w-full h-0.5 rounded"></div>
+                  <div className="bg-current w-full h-0.5 rounded-none"></div>
+                  <div className="bg-current w-full h-0.5 rounded-none"></div>
+                  <div className="bg-current w-full h-0.5 rounded-none"></div>
+                  <div className="bg-current w-full h-0.5 rounded-none"></div>
                 </div>
               </button>
               
               <Link 
                 href="/bands/add" 
-                className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-6 py-3 border-2 border-red-600 transition-all duration-300 hover:scale-105 uppercase font-bold text-sm tracking-wide rounded-lg shadow-lg hover:shadow-red-600/50"
+                className="skull-button text-[#d0d0d0] px-6 py-3 border-2 border-red-800 transition-all duration-300 hover:scale-105 uppercase font-bold text-sm tracking-wide rounded-none shadow-metal font-zine-body"
               >
                 <FaPlus className="inline mr-2" /> ADD LEGION
               </Link>
@@ -334,7 +350,7 @@ const LegionDatabase = () => {
         </div>
       </header>
 
-      {/* Enhanced Filters */}
+      {/* Enhanced Filters w stylu Zine */}
       {showFilters && (
         <BandFilter
           genres={genres}
@@ -349,104 +365,126 @@ const LegionDatabase = () => {
         />
       )}
 
-      {/* Enhanced Stats Bar */}
-      <section className="bg-gradient-to-r from-gray-800 to-gray-900 border-b-2 border-gray-600 p-6 relative z-10">
+      {/* Enhanced Stats Bar w stylu Zine */}
+      <section 
+        className="bg-[#e0e0d8] border-b-2 border-black p-6 relative z-10 zine-card"
+        style={{
+          backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundColor: "rgba(224, 224, 216, 0.95)"
+        }}
+      >
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { icon: GiCrossedSwords, value: filteredBands.length, label: 'Found Legions', color: 'from-red-600/20 to-red-800/20', borderColor: 'border-red-600' },
-              { icon: FaMapMarkerAlt, value: countries.length - 1, label: 'Countries', color: 'from-blue-600/20 to-blue-800/20', borderColor: 'border-blue-600' },
-              { icon: FaMusic, value: genres.length - 1, label: 'Genres', color: 'from-green-600/20 to-green-800/20', borderColor: 'border-green-600' },
-              { icon: FaFire, value: mockBands.reduce((sum, band) => sum + band.albums, 0), label: 'Total Albums', color: 'from-yellow-600/20 to-yellow-800/20', borderColor: 'border-yellow-600' }
+              { icon: GiCrossedSwords, value: filteredBands.length, label: 'Found Legions' },
+              { icon: FaMapMarkerAlt, value: countries.length - 1, label: 'Countries' },
+              { icon: FaMusic, value: genres.length - 1, label: 'Genres' },
+              { icon: FaFire, value: mockBands.reduce((sum, band) => sum + band.albums, 0), label: 'Total Albums' }
             ].map((stat, index) => (
               <motion.div
                 key={stat.label}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className={`bg-gradient-to-br ${stat.color} border-2 ${stat.borderColor} rounded-xl p-6 text-center backdrop-blur-sm shadow-lg hover:scale-105 transition-all duration-300`}
+                className="bg-[#f5f5e8] border-2 border-black rounded-none p-4 text-center relative shadow-metal backdrop-blur-sm transition-all duration-300 hover:border-red-800 zine-card"
+                style={{
+                  backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  backgroundColor: "rgba(245, 245, 232, 0.9)"
+                }}
               >
-                <stat.icon className={`text-4xl mx-auto mb-3 ${stat.borderColor.replace('border', 'text')}`} />
-                <div className="text-3xl font-black text-white mb-1">{stat.value}</div>
-                <div className="text-xs uppercase text-gray-400 font-bold tracking-wide">{stat.label}</div>
+                <stat.icon className="text-red-800 text-3xl mx-auto mb-2" />
+                <div className="text-2xl font-bold text-black mb-1 font-zine-title">{stat.value}</div>
+                <div className="text-black text-xs uppercase tracking-wider font-bold font-zine-body">{stat.label}</div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Enhanced Bands Grid/List */}
-      <main className="max-w-7xl mx-auto p-6 relative z-10">
-        {sortedBands.length === 0 ? (
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center py-20"
-          >
-            <GiDeathSkull className="text-8xl text-gray-600 mx-auto mb-6 animate-pulse" />
-            <h3 className="text-2xl font-black text-gray-400 mb-4 uppercase tracking-wide">No Legions Found</h3>
-            <p className="text-gray-500 mb-8 text-lg">Try adjusting your search criteria or filters</p>
-            <button
-              onClick={() => {
-                setSearchTerm('');
-                setSelectedGenre('all');
-                setSelectedCountry('all');
-                setSelectedDecade('all');
-              }}
-              className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-bold uppercase tracking-wide transition-all duration-300 hover:scale-105"
+      {/* Main Content w stylu Zine */}
+      <main className="max-w-7xl mx-auto p-6">
+        <div className={`grid gap-6 ${
+          viewMode === 'grid' 
+            ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
+            : 'grid-cols-1'
+        }`}>
+          {sortedBands.map((band, index) => (
+            <motion.div
+              key={band.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              Clear All Filters
-            </button>
-          </motion.div>
-        ) : (
-          <div className={`${
-            viewMode === 'grid' 
-              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8' 
-              : 'space-y-6'
-          }`}>
-            {sortedBands.map((band, index) => (
-              <motion.div
-                key={band.id}
-                initial={{ opacity: 0, y: 30, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-              >
-                <BandCard band={band} viewMode={viewMode} />
-              </motion.div>
-            ))}
+              <BandCard band={band} viewMode={viewMode} />
+            </motion.div>
+          ))}
+        </div>
+
+        {filteredBands.length === 0 && (
+          <div 
+            className="text-center py-20 bg-[#f5f5e8] border-4 border-black zine-card"
+            style={{
+              backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            <GiWolfHead className="text-8xl mx-auto mb-6 opacity-50 text-black" />
+            <p className="text-xl font-bold text-black font-zine-title uppercase">No Legions Found</p>
+            <p className="text-sm mt-2 text-black font-zine-body">Try adjusting your search or filters</p>
           </div>
         )}
       </main>
 
-      {/* Enhanced Footer */}
-      <footer className="bg-gradient-to-b from-gray-900 to-black border-t-4 border-red-600 p-8 mt-16 relative z-10">
-        <div className="max-w-7xl mx-auto text-center">
-          <div className="flex justify-center gap-8 mb-6">
-            {[GiDeathSkull, GiCrossedSwords, GiCoffin, GiGhost, GiSkullCrossedBones].map((Icon, index) => (
-              <motion.div 
-                key={index}
-                whileHover={{ scale: 1.2, rotate: 15 }} 
-                className="cursor-pointer"
-              >
-                <Icon className="text-3xl text-gray-600 hover:text-red-500 transition-colors duration-300" />
-              </motion.div>
-            ))}
-          </div>
-          <h3 className="text-2xl font-black uppercase tracking-widest text-white mb-2">
-            LEGION DATABASE
-          </h3>
-          <p className="text-gray-400 uppercase tracking-wider mb-4">
-            Underground Metal Encyclopedia • Web3 Verified
-          </p>
-          <p className="text-gray-600 text-sm">
-            Preserving the history of extreme music • Add your legion to the eternal archives
-          </p>
-          <div className="mt-6 flex justify-center items-center gap-2 text-xs text-gray-500">
-            <FaEthereum className="text-blue-400" />
-            <span>Powered by Optimism Blockchain</span>
-          </div>
-        </div>
-      </footer>
+      <style jsx>{`
+        .zine-layout {
+          background-color: #f5f5e8;
+          background-image: url("/images/zine/paper_texture_distressed.jpg");
+          background-size: cover;
+          background-position: center;
+          position: relative;
+          overflow-x: hidden;
+        }
+        
+        .zine-header {
+          border-image: url("/images/zine/jagged_border.png") 30 round;
+        }
+        
+        .zine-card {
+          border-image: url("/images/zine/jagged_border.png") 30 round;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .shadow-metal {
+          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8), 0 4px 8px rgba(255, 0, 0, 0.2);
+        }
+        
+        .skull-button {
+          background: linear-gradient(to right, #b71c1c, #000000);
+          border: 2px solid #ff0000;
+          box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .skull-button:hover {
+          transform: scale(1.05);
+          box-shadow: 0 8px 20px rgba(255, 0, 0, 0.5);
+          filter: brightness(1.2);
+        }
+        
+        .font-zine-title {
+          font-family: "Blackletter", serif;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+        }
+
+        .font-zine-body {
+          font-family: "Special Elite", monospace;
+        }
+      `}</style>
     </div>
   );
 };

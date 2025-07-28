@@ -1,11 +1,10 @@
-// src/components/MetalDNA.tsx
 "use client";
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   FaTrophy, FaFire, FaCompactDisc, FaSearch, FaHandsHelping,
-  FaCrown, FaStar, FaShieldAlt, FaSkull
+  FaCrown, FaStar, FaShieldAlt, FaSkullCrossbones
 } from 'react-icons/fa';
 import { 
   GiDeathSkull, GiCrossedSwords, GiThorHammer, GiWolfHead,
@@ -33,9 +32,9 @@ const metalCircles = [
     name: "Poser", 
     requirement: "Join platform",
     minScore: 0,
-    icon: FaSkull,
-    color: "text-gray-400",
-    bgColor: "bg-gray-800"
+    icon: FaSkullCrossbones,
+    color: "text-black",
+    bgColor: "bg-[#e0e0d8]"
   },
   { 
     level: 2, 
@@ -43,8 +42,8 @@ const metalCircles = [
     requirement: "Add 5 bands to collection",
     minScore: 100,
     icon: GiDeathSkull,
-    color: "text-red-400",
-    bgColor: "bg-red-900"
+    color: "text-red-800",
+    bgColor: "bg-red-800"
   },
   { 
     level: 3, 
@@ -52,8 +51,8 @@ const metalCircles = [
     requirement: "Discover 10 unknown bands",
     minScore: 300,
     icon: FaSearch,
-    color: "text-blue-400",
-    bgColor: "bg-blue-900"
+    color: "text-red-800",
+    bgColor: "bg-black"
   },
   { 
     level: 4, 
@@ -61,8 +60,8 @@ const metalCircles = [
     requirement: "Attend 5 concerts",
     minScore: 600,
     icon: GiCrossedSwords,
-    color: "text-purple-400",
-    bgColor: "bg-purple-900"
+    color: "text-red-800",
+    bgColor: "bg-red-800"
   },
   { 
     level: 5, 
@@ -70,8 +69,8 @@ const metalCircles = [
     requirement: "Own rare vinyl/demos",
     minScore: 1000,
     icon: GiThorHammer,
-    color: "text-orange-400",
-    bgColor: "bg-orange-900"
+    color: "text-black",
+    bgColor: "bg-black"
   },
   { 
     level: 6, 
@@ -79,8 +78,8 @@ const metalCircles = [
     requirement: "Predict next big band",
     minScore: 1500,
     icon: GiWolfHead,
-    color: "text-yellow-400",
-    bgColor: "bg-yellow-900"
+    color: "text-red-800",
+    bgColor: "bg-red-800"
   },
   { 
     level: 7, 
@@ -88,8 +87,8 @@ const metalCircles = [
     requirement: "Ultimate metal dedication",
     minScore: 2500,
     icon: GiDragonHead,
-    color: "text-green-400",
-    bgColor: "bg-green-900"
+    color: "text-black",
+    bgColor: "bg-black"
   }
 ];
 
@@ -182,15 +181,23 @@ export default function MetalDNA({ userId }: MetalDNAProps) {
   };
 
   return (
-    <div className="bg-[#111] border-2 border-[#333] p-6">
+    <div 
+      className="bg-[#f5f5e8] border-4 border-black p-6 zine-card"
+      style={{
+        backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundColor: "rgba(245, 245, 232, 0.9)"
+      }}
+    >
       {/* HEADER */}
-      <div className="flex items-center gap-3 mb-6 border-b border-[#333] pb-4">
-        <GiDeathSkull className="text-3xl text-red-400" />
+      <div className="flex items-center gap-3 mb-6 border-b-2 border-black pb-4">
+        <FaSkullCrossbones className="text-3xl text-red-800 skull-icon" />
         <div>
-          <h2 className="text-2xl font-black uppercase tracking-wide text-[#e0e0e0]">
+          <h2 className="text-2xl font-bold uppercase tracking-wide text-black font-zine-title">
             METAL DNA
           </h2>
-          <p className="text-[#999] text-sm">Your Underground Reputation</p>
+          <p className="text-black text-sm font-zine-body">Your Underground Reputation</p>
         </div>
       </div>
 
@@ -199,15 +206,15 @@ export default function MetalDNA({ userId }: MetalDNAProps) {
         <div className="flex items-center gap-4 mb-4">
           {currentCircle && (
             <>
-              <div className={`w-16 h-16 ${currentCircle.bgColor} border-2 border-[#333] flex items-center justify-center`}>
+              <div className={`w-16 h-16 ${currentCircle.bgColor} border-2 border-black flex items-center justify-center zine-card`}>
                 <currentCircle.icon className={`text-2xl ${currentCircle.color}`} />
               </div>
               <div>
-                <h3 className={`text-xl font-bold ${currentCircle.color} uppercase`}>
+                <h3 className={`text-xl font-bold ${currentCircle.color} uppercase font-zine-title`}>
                   {currentCircle.name}
                 </h3>
-                <p className="text-[#999] text-sm">{currentCircle.requirement}</p>
-                <p className="text-[#ccc] text-sm">Score: {userDNA.totalScore}</p>
+                <p className="text-black text-sm font-zine-body">{currentCircle.requirement}</p>
+                <p className="text-black text-sm font-zine-body">Score: {userDNA.totalScore}</p>
               </div>
             </>
           )}
@@ -215,16 +222,16 @@ export default function MetalDNA({ userId }: MetalDNAProps) {
 
         {/* PROGRESS TO NEXT LEVEL */}
         {nextCircle && (
-          <div className="bg-[#0a0a0a] border border-[#333] p-4">
+          <div className="bg-[#e0e0d8] border-2 border-black p-4 zine-card">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-[#ccc]">Progress to {nextCircle.name}</span>
-              <span className="text-sm text-[#999]">
+              <span className="text-sm text-black font-zine-body">Progress to {nextCircle.name}</span>
+              <span className="text-sm text-black font-zine-body">
                 {userDNA.totalScore}/{nextCircle.minScore}
               </span>
             </div>
-            <div className="w-full bg-[#333] h-2">
+            <div className="w-full bg-black h-3 border border-black">
               <div 
-                className="bg-red-600 h-2 transition-all duration-500"
+                className="bg-red-800 h-full transition-all duration-500"
                 style={{ 
                   width: `${((userDNA.totalScore - (currentCircle?.minScore || 0)) / 
                     ((nextCircle.minScore - (currentCircle?.minScore || 0)))) * 100}%` 
@@ -237,57 +244,91 @@ export default function MetalDNA({ userId }: MetalDNAProps) {
 
       {/* DNA BREAKDOWN */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div className="bg-[#0a0a0a] border border-[#333] p-4">
+        <div className="bg-[#e0e0d8] border-2 border-black p-4 zine-card">
           <div className="flex items-center gap-2 mb-2">
-            <FaSearch className="text-blue-400" />
-            <span className="text-sm font-bold text-[#ccc] uppercase">Kvlt Points</span>
+            <FaSearch className="text-red-800" />
+            <span className="text-sm font-bold text-black uppercase font-zine-body">Kvlt Points</span>
           </div>
-          <div className="text-2xl font-bold text-blue-400">{userDNA.kvltPoints}</div>
-          <div className="text-xs text-[#666]">Underground discoveries</div>
+          <div className="text-2xl font-bold text-red-800 font-zine-title">{userDNA.kvltPoints}</div>
+          <div className="text-xs text-black font-zine-body">Underground discoveries</div>
         </div>
 
-        <div className="bg-[#0a0a0a] border border-[#333] p-4">
+        <div className="bg-[#e0e0d8] border-2 border-black p-4 zine-card">
           <div className="flex items-center gap-2 mb-2">
-            <FaFire className="text-red-400" />
-            <span className="text-sm font-bold text-[#ccc] uppercase">Battle Scars</span>
+            <FaFire className="text-red-800" />
+            <span className="text-sm font-bold text-black uppercase font-zine-body">Battle Scars</span>
           </div>
-          <div className="text-2xl font-bold text-red-400">{userDNA.battleScars}</div>
-          <div className="text-xs text-[#666]">Concerts attended</div>
+          <div className="text-2xl font-bold text-red-800 font-zine-title">{userDNA.battleScars}</div>
+          <div className="text-xs text-black font-zine-body">Concerts attended</div>
         </div>
 
-        <div className="bg-[#0a0a0a] border border-[#333] p-4">
+        <div className="bg-[#e0e0d8] border-2 border-black p-4 zine-card">
           <div className="flex items-center gap-2 mb-2">
-            <FaCompactDisc className="text-purple-400" />
-            <span className="text-sm font-bold text-[#ccc] uppercase">Vinyl Vault</span>
+            <FaCompactDisc className="text-red-800" />
+            <span className="text-sm font-bold text-black uppercase font-zine-body">Vinyl Vault</span>
           </div>
-          <div className="text-2xl font-bold text-purple-400">{userDNA.vinylVault}</div>
-          <div className="text-xs text-[#666]">Physical collection</div>
+          <div className="text-2xl font-bold text-red-800 font-zine-title">{userDNA.vinylVault}</div>
+          <div className="text-xs text-black font-zine-body">Physical collection</div>
         </div>
 
-        <div className="bg-[#0a0a0a] border border-[#333] p-4">
+        <div className="bg-[#e0e0d8] border-2 border-black p-4 zine-card">
           <div className="flex items-center gap-2 mb-2">
-            <FaHandsHelping className="text-green-400" />
-            <span className="text-sm font-bold text-[#ccc] uppercase">Scene Support</span>
+            <FaHandsHelping className="text-red-800" />
+            <span className="text-sm font-bold text-black uppercase font-zine-body">Scene Support</span>
           </div>
-          <div className="text-2xl font-bold text-green-400">{userDNA.sceneSupporter}</div>
-          <div className="text-xs text-[#666]">Bands supported</div>
+          <div className="text-2xl font-bold text-red-800 font-zine-title">{userDNA.sceneSupporter}</div>
+          <div className="text-xs text-black font-zine-body">Bands supported</div>
         </div>
       </div>
 
       {/* TODAY'S CHALLENGE */}
-      <div className="bg-[#0a0a0a] border border-[#333] p-4">
+      <div className="bg-[#e0e0d8] border-2 border-black p-4 zine-card">
         <div className="flex items-center gap-2 mb-3">
-          <todayChallenge.icon className="text-yellow-400" />
-          <h3 className="font-bold text-[#ccc] uppercase">{todayChallenge.name}</h3>
+          <todayChallenge.icon className="text-red-800" />
+          <h3 className="font-bold text-black uppercase font-zine-body">{todayChallenge.name}</h3>
         </div>
-        <p className="text-[#999] text-sm mb-3">{todayChallenge.description}</p>
+        <p className="text-black text-sm mb-3 font-zine-body">{todayChallenge.description}</p>
         <div className="flex justify-between items-center">
-          <span className="text-xs text-[#666]">Reward: +{todayChallenge.reward} points</span>
-          <button className="bg-yellow-600 hover:bg-yellow-700 text-black px-3 py-1 text-xs uppercase font-bold">
+          <span className="text-xs text-black font-zine-body">Reward: +{todayChallenge.reward} points</span>
+          <button className="skull-button text-[#d0d0d0] px-3 py-1 text-xs uppercase font-bold font-zine-body">
             COMPLETE
           </button>
         </div>
       </div>
+
+      <style jsx>{`
+        .skull-icon {
+          text-shadow: 0 0 10px rgba(139, 0, 0, 0.6);
+          filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
+        }
+        
+        .zine-card {
+          border-image: url("/images/zine/jagged_border.png") 30 round;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .skull-button {
+          background: linear-gradient(to right, #b71c1c, #000000);
+          border: 2px solid #ff0000;
+          box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .skull-button:hover {
+          transform: scale(1.05);
+          box-shadow: 0 8px 20px rgba(255, 0, 0, 0.5);
+          filter: brightness(1.2);
+        }
+        
+        .font-zine-title {
+          font-family: "Blackletter", serif;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+        }
+
+        .font-zine-body {
+          font-family: "Special Elite", monospace;
+        }
+      `}</style>
     </div>
   );
 }
