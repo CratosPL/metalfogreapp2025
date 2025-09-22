@@ -3,7 +3,7 @@
 import { useReadContract, useWriteContract } from 'wagmi';
 import { useState } from 'react';
 
-// ABI dla naszego kontraktu
+// ABI dla naszego Base kontraktu
 const BADGE_ABI = [
   {
     "inputs": [{"name": "user", "type": "address"}],
@@ -26,7 +26,8 @@ interface BadgeDisplayProps {
 }
 
 export function BadgeDisplay({ address }: BadgeDisplayProps) {
-  const CONTRACT_ADDRESS = '0xC67ffAd6e443D76Daa242b6Bbcd395Ebe840cF38'
+  // 🚀 UPDATED CONTRACT ADDRESS - Base Network
+  const CONTRACT_ADDRESS = '0xFA45e05917c220116b58E043F1CE60a8b1C11365'
   const [isUpdating, setIsUpdating] = useState(false);
   
   // Sprawdź ile zespołów ma user
@@ -50,30 +51,34 @@ export function BadgeDisplay({ address }: BadgeDisplayProps) {
   // Write contract dla testowania
   const { writeContract } = useWriteContract();
 
-  const handleTestBadge = async () => {
-    if (!address) return;
-    
-    setIsUpdating(true);
-    try {
-      await writeContract({
-        address: CONTRACT_ADDRESS as `0x${string}`,
-        abi: [{
-          "inputs": [{"name": "user", "type": "address"}, {"name": "newCount", "type": "uint256"}],
-          "name": "updateBandCount",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        }],
-        functionName: 'updateBandCount',
-        args: [address as `0x${string}`, BigInt(7)],
-        chainId: 8453
-      });
-    } catch (error) {
-      console.error('Badge update failed:', error);
-    } finally {
-      setIsUpdating(false);
-    }
-  };
+// Lub usuń gas limit całkowicie (wagmi ustali automatycznie):
+const handleTestBadge = async () => {
+  if (!address) return;
+  
+  setIsUpdating(true);
+  try {
+    await writeContract({
+      address: CONTRACT_ADDRESS as `0x${string}`,
+      abi: [{
+        "inputs": [{"name": "user", "type": "address"}, {"name": "newCount", "type": "uint256"}],
+        "name": "updateBandCount",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }],
+      functionName: 'updateBandCount',
+      args: [address as `0x${string}`, BigInt(1)], // ✅ Główna oszczędność tutaj!
+      chainId: 8453,
+      // No gas limit - wagmi will estimate
+    });
+  } catch (error) {
+    console.error('Badge update failed:', error);
+  } finally {
+    setIsUpdating(false);
+  }
+};
+
+
 
   if (!address) return null;
 
@@ -89,13 +94,16 @@ export function BadgeDisplay({ address }: BadgeDisplayProps) {
           disabled={isUpdating}
           className="px-3 py-1 bg-orange-600 text-white text-xs rounded hover:bg-orange-700 disabled:opacity-50"
         >
-          {isUpdating ? 'Updating...' : 'Test Badge'}
+          {isUpdating ? 'Updating...' : 'Test Badge ($0.10)'}
         </button>
       </div>
       
       <div className="badge-stats mb-4">
         <p className="text-gray-300">
           Bands Added: <span className="text-white font-bold">{bandCount?.toString() || '0'}</span>
+        </p>
+        <p className="text-gray-400 text-xs">
+          Network: Base • Contract: {CONTRACT_ADDRESS.substring(0,10)}...
         </p>
       </div>
 
@@ -112,7 +120,7 @@ export function BadgeDisplay({ address }: BadgeDisplayProps) {
           <div className="text-gray-400 text-sm">
             Add your first band to earn the Bronze Veteran badge! 🥉
             <br />
-            <span className="text-xs text-gray-500">Or click "Test Badge" to try it now!</span>
+            <span className="text-xs text-gray-500">Switch to Base network and click "Test Badge"!</span>
           </div>
         )}
       </div>
