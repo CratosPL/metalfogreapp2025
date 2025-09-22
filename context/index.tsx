@@ -3,7 +3,7 @@
 import { wagmiAdapter, projectId } from '@/config';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createAppKit } from '@reown/appkit/react';
-import { optimism } from '@reown/appkit/networks'; // TYLKO MAINNET
+import { optimism, base } from '@reown/appkit/networks'; // ✅ DODAJ base
 import React, { ReactNode } from 'react';
 import { cookieToInitialState, WagmiProvider, type Config } from 'wagmi';
 
@@ -16,15 +16,15 @@ if (!projectId) {
 const metadata = {
   name: "Metal Forge", 
   description: "Underground Metal Community Platform",
-  url: "https://metalfogreapp2025-6fur.vercel.app", // ✅ TO
+  url: "https://metalfogreapp2025-6fur.vercel.app",
   icons: ["/logometalforge.jpeg"]
 };
 
 createAppKit({
   adapters: [wagmiAdapter],
   projectId,
-  networks: [optimism], // ✅ Tylko mainnet
-  defaultNetwork: optimism, // ✅ Mainnet jako default
+  networks: [optimism, base], // ✅ DODAJ base
+  defaultNetwork: optimism, // Optimism jako default
   metadata,
   features: {
     socials: ['google', 'github', 'apple', 'facebook'],

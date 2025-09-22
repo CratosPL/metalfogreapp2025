@@ -1,6 +1,6 @@
 import { cookieStorage, createStorage } from '@wagmi/core';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
-import { optimism } from '@reown/appkit/networks';
+import { optimism, base } from '@reown/appkit/networks'; // ✅ DODAJ base
 
 export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 
@@ -28,7 +28,8 @@ const customOptimism = {
   },
 };
 
-export const networks = [customOptimism];
+// ✅ DODAJ Base network
+export const networks = [customOptimism, base]; // DODAJ base tutaj
 
 export const wagmiAdapter = new WagmiAdapter({
   storage: createStorage({
