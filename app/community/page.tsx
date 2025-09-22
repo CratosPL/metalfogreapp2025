@@ -16,6 +16,7 @@ import {
   GiFlame, GiBlackFlag, GiCrown
 } from "react-icons/gi";
 import Link from "next/link";
+import Footer from "../../components/Footer";
 
 // Enhanced mock users
 const mockUsers = [
@@ -147,25 +148,28 @@ const mockPosts = [
   }
 ];
 
-const badgeIcons: Record<string, { icon: JSX.Element; color: string; title: string }> = {
-  founder: { icon: <GiCrown />, color: "text-yellow-400", title: "Platform Founder" },
-  kvlt: { icon: <GiDeathSkull />, color: "text-red-400", title: "KVLT Member" },
-  newsmaniac: { icon: <FaFire />, color: "text-orange-400", title: "News Maniac" },
-  hunter: { icon: <GiCrossedSwords />, color: "text-green-400", title: "Band Hunter" },
-  reviewer: { icon: <FaStar />, color: "text-blue-400", title: "Master Reviewer" },
-  top10: { icon: <FaTrophy />, color: "text-yellow-400", title: "Top 10 Contributor" },
-  legendary: { icon: <GiDragonHead />, color: "text-purple-400", title: "Legendary Status" },
-  veteran: { icon: <GiVikingHelmet />, color: "text-cyan-400", title: "Veteran Member" },
-  chronicler: { icon: <FaPen />, color: "text-indigo-400", title: "Underground Chronicler" },
-  nordic: { icon: <GiWolfHead />, color: "text-gray-300", title: "Nordic Metal Expert" }
+import React from 'react';
+
+const badgeIcons: Record<string, { icon: React.ReactElement; color: string; title: string }> = {
+  founder: { icon: <GiCrown />, color: "text-red-800", title: "Platform Founder" },
+  kvlt: { icon: <GiDeathSkull />, color: "text-red-800", title: "KVLT Member" },
+  newsmaniac: { icon: <FaFire />, color: "text-red-800", title: "News Maniac" },
+  hunter: { icon: <GiCrossedSwords />, color: "text-red-800", title: "Band Hunter" },
+  reviewer: { icon: <FaStar />, color: "text-red-800", title: "Master Reviewer" },
+  top10: { icon: <FaTrophy />, color: "text-red-800", title: "Top 10 Contributor" },
+  legendary: { icon: <GiDragonHead />, color: "text-red-800", title: "Legendary Status" },
+  veteran: { icon: <GiVikingHelmet />, color: "text-red-800", title: "Veteran Member" },
+  chronicler: { icon: <FaPen />, color: "text-red-800", title: "Underground Chronicler" },
+  nordic: { icon: <GiWolfHead />, color: "text-red-800", title: "Nordic Metal Expert" }
 };
 
-const postTypeIcons: Record<string, { icon: JSX.Element; color: string; bgColor: string }> = {
-  announcement: { icon: <FaBullhorn />, color: "text-orange-400", bgColor: "from-orange-600/20 to-orange-800/20" },
-  event: { icon: <FaCalendarAlt />, color: "text-blue-400", bgColor: "from-blue-600/20 to-blue-800/20" },
-  trade: { icon: <GiCrossedSwords />, color: "text-green-400", bgColor: "from-green-600/20 to-green-800/20" },
-  discussion: { icon: <FaComment />, color: "text-purple-400", bgColor: "from-purple-600/20 to-purple-800/20" }
+const postTypeIcons: Record<string, { icon: React.ReactElement; color: string; bgColor: string }> = {
+  announcement: { icon: <FaBullhorn />, color: "text-red-800", bgColor: "bg-red-800" },
+  event: { icon: <FaCalendarAlt />, color: "text-red-800", bgColor: "bg-red-800" },
+  trade: { icon: <GiCrossedSwords />, color: "text-red-800", bgColor: "bg-red-800" },
+  discussion: { icon: <FaComment />, color: "text-red-800", bgColor: "bg-red-800" }
 };
+
 
 export default function CommunityPage() {
   const [search, setSearch] = useState("");
@@ -173,6 +177,7 @@ export default function CommunityPage() {
   const [selectedPostType, setSelectedPostType] = useState('announcement');
   const [showTipModal, setShowTipModal] = useState<string | null>(null);
   const [glitchActive, setGlitchActive] = useState(false);
+  const [displayStats] = useState({ bands: 2847, demos: 15392, users: 8921, earnings: 127.5 });
 
   // Enhanced glitch effect
   useEffect(() => {
@@ -215,18 +220,32 @@ export default function CommunityPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white font-inter overflow-x-hidden">
-      
-      {/* Enhanced Background Runes */}
-      <div className="absolute inset-0 opacity-5 pointer-events-none">
-        <div className="animate-pulse text-6xl text-red-300 absolute top-20 left-20 transform rotate-15" style={{ animationDuration: '8s' }}>ᚦ</div>
-        <div className="animate-pulse text-5xl text-blue-300 absolute top-40 right-40 transform -rotate-12" style={{ animationDuration: '10s', animationDelay: '2s' }}>ᚱ</div>
-        <div className="animate-pulse text-4xl text-yellow-300 absolute bottom-40 left-1/3 transform rotate-10" style={{ animationDuration: '7s', animationDelay: '4s' }}>ᚠ</div>
-        <div className="animate-pulse text-5xl text-purple-300 absolute bottom-20 right-20 transform -rotate-8" style={{ animationDuration: '9s', animationDelay: '6s' }}>ᚹ</div>
+    <div 
+      className="min-h-screen bg-[#f5f5e8] text-black font-zine-body overflow-x-hidden zine-layout"
+      style={{
+        backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      {/* Decorative skulls w tle */}
+      <div className="absolute inset-0 opacity-10 pointer-events-none">
+        <div className="animate-pulse text-6xl text-red-800 absolute top-32 left-20 transform rotate-15" style={{ animationDuration: '8s' }}>☠</div>
+        <div className="animate-pulse text-5xl text-black absolute top-60 right-40 transform -rotate-12" style={{ animationDuration: '10s', animationDelay: '2s' }}>☠</div>
+        <div className="animate-pulse text-4xl text-red-800 absolute bottom-40 left-1/3 transform rotate-10" style={{ animationDuration: '7s', animationDelay: '4s' }}>☠</div>
+        <div className="animate-pulse text-5xl text-black absolute bottom-20 right-20 transform -rotate-8" style={{ animationDuration: '9s', animationDelay: '6s' }}>☠</div>
       </div>
 
-      {/* ENHANCED HEADER */}
-      <header className="bg-gradient-to-b from-gray-800 to-gray-900 border-b-4 border-red-600 p-8 relative z-10 shadow-2xl">
+      {/* ENHANCED HEADER w stylu Zine */}
+      <header 
+        className="bg-[#f5f5e8] border-b-4 border-black p-8 mt-32 relative z-10 zine-header"
+        style={{
+          backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundColor: "rgba(245, 245, 232, 0.95)"
+        }}
+      >
         <div className="max-w-7xl mx-auto">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
@@ -236,32 +255,32 @@ export default function CommunityPage() {
           >
             <div className="flex items-center gap-6">
               <div className={`relative transition-all duration-300 ${glitchActive ? 'filter brightness-125 saturate-150' : ''}`}>
-                <GiWolfHead className="text-6xl md:text-7xl text-red-500 drop-shadow-2xl" />
+                <GiWolfHead className="text-6xl md:text-7xl text-red-800 drop-shadow-2xl filter grayscale contrast-200" />
                 {glitchActive && (
-                  <GiWolfHead className="absolute top-0 left-0 text-6xl md:text-7xl text-red-400 animate-ping opacity-30" />
+                  <GiWolfHead className="absolute top-0 left-0 text-6xl md:text-7xl text-red-600 animate-ping opacity-30" />
                 )}
               </div>
               <div>
                 <h1
-                  className={`text-4xl md:text-6xl lg:text-7xl font-black uppercase tracking-widest text-white mb-2 ${glitchActive ? 'animate-pulse text-red-100' : ''}`}
+                  className={`text-4xl md:text-6xl lg:text-7xl font-bold uppercase tracking-widest text-black mb-2 font-zine-title ${glitchActive ? 'animate-pulse text-red-800' : ''}`}
                   style={{
                     textShadow: glitchActive 
-                      ? '0 0 20px rgba(239, 68, 68, 0.8), 0 0 40px rgba(239, 68, 68, 0.5)' 
-                      : '2px 2px 4px rgba(0,0,0,0.8), 0 0 15px rgba(239, 68, 68, 0.3)'
+                      ? '0 0 20px rgba(139, 0, 0, 0.8), 0 0 40px rgba(139, 0, 0, 0.5)' 
+                      : '2px 2px 4px rgba(0,0,0,0.3)'
                   }}
                 >
                   METAL BROTHERHOOD
                 </h1>
                 <div className="flex items-center gap-4 flex-wrap">
-                  <p className="text-gray-400 text-xl uppercase tracking-wide flex items-center gap-2">
-                    <GiSkullCrossedBones className="text-red-500" />
+                  <p className="text-black text-xl uppercase tracking-wide flex items-center gap-2 font-zine-body">
+                    <GiSkullCrossedBones className="text-red-800" />
                     Underground Dispatch • Rankings • Crypto Tips
                   </p>
                   <div className="flex items-center gap-4">
-                    <span className="bg-red-600/20 text-red-400 px-3 py-1 rounded-full text-sm font-bold border border-red-600/50">
+                    <span className="bg-red-800 text-white px-3 py-1 rounded-none text-sm font-bold border-2 border-black font-zine-body">
                       {mockUsers.length} Active Metalheads
                     </span>
-                    <span className="bg-green-600/20 text-green-400 px-3 py-1 rounded-full text-sm font-bold border border-green-600/50 flex items-center gap-1">
+                    <span className="bg-black text-red-800 px-3 py-1 rounded-none text-sm font-bold border-2 border-red-800 flex items-center gap-1 font-zine-body">
                       <FaEthereum className="text-xs" />
                       Web3 Powered
                     </span>
@@ -272,7 +291,7 @@ export default function CommunityPage() {
             <div className="flex gap-4">
               <Link
                 href="/register"
-                className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-6 py-3 border-2 border-red-600 transition-all duration-300 hover:scale-105 uppercase font-bold text-sm tracking-wide rounded-lg shadow-lg hover:shadow-red-600/50 flex items-center gap-2"
+                className="skull-button text-[#d0d0d0] px-6 py-3 border-2 border-red-800 transition-all duration-300 hover:scale-105 uppercase font-bold text-sm tracking-wide rounded-none shadow-metal flex items-center gap-2 font-zine-body"
               >
                 <FaUserFriends /> JOIN BROTHERHOOD
               </Link>
@@ -281,21 +300,29 @@ export default function CommunityPage() {
         </div>
       </header>
 
-      {/* ENHANCED TABS */}
-      <nav className="bg-gradient-to-r from-gray-800 to-gray-900 border-b-2 border-gray-600 p-6 relative z-10">
+      {/* ENHANCED TABS w stylu Zine */}
+      <nav 
+        className="bg-[#e0e0d8] border-b-4 border-black p-6 relative z-10 zine-section"
+        style={{
+          backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundColor: "rgba(224, 224, 216, 0.95)"
+        }}
+      >
         <div className="max-w-7xl mx-auto flex gap-4 flex-wrap">
           {[
-            { key: 'board', label: 'UNDERGROUND DISPATCH', icon: FaBullhorn, color: 'orange' },
-            { key: 'ranking', label: 'METALHEADS LEADERBOARD', icon: FaTrophy, color: 'yellow' },
-            { key: 'create', label: 'SHOUT TO THE HORDES', icon: FaPlus, color: 'green' }
+            { key: 'board', label: 'UNDERGROUND DISPATCH', icon: FaBullhorn },
+            { key: 'ranking', label: 'METALHEADS LEADERBOARD', icon: FaTrophy },
+            { key: 'create', label: 'SHOUT TO THE HORDES', icon: FaPlus }
           ].map(tab => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key as any)}
-              className={`px-6 py-3 text-sm font-bold uppercase tracking-wide border-2 transition-all duration-300 hover:scale-105 rounded-lg flex items-center gap-2 ${
+              className={`px-6 py-3 text-sm font-bold uppercase tracking-wide border-2 transition-all duration-300 hover:scale-105 rounded-none flex items-center gap-2 font-zine-body ${
                 activeTab === tab.key
-                  ? `bg-${tab.color}-600 border-${tab.color}-600 text-white shadow-lg`
-                  : 'bg-transparent border-gray-600 text-gray-300 hover:border-red-600 hover:text-red-400'
+                  ? 'bg-red-800 border-red-800 text-white shadow-metal'
+                  : 'bg-[#f5f5e8] border-black text-black hover:border-red-800 hover:text-red-800'
               }`}
             >
               <tab.icon /> {tab.label}
@@ -313,13 +340,13 @@ export default function CommunityPage() {
             animate={{ opacity: 1, y: 0 }}
             className="relative mb-8"
           >
-            <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg" />
+            <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-black text-lg" />
             <input
               type="text"
               placeholder="Search the underground dispatch..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-12 pr-6 py-4 bg-gray-800/80 backdrop-blur-sm border-2 border-gray-600 hover:border-red-500 focus:border-red-500 text-white rounded-lg outline-none font-medium text-lg transition-all duration-300 shadow-lg"
+              className="w-full pl-12 pr-6 py-4 bg-[#e0e0d8] border-2 border-black hover:border-red-800 focus:border-red-800 text-black rounded-none outline-none font-medium text-lg transition-all duration-300 shadow-metal zine-card font-zine-body"
             />
           </motion.div>
 
@@ -332,21 +359,26 @@ export default function CommunityPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 whileHover={{ y: -2, scale: 1.01 }}
-                className={`bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-gray-600 hover:border-red-600 transition-all duration-300 rounded-xl overflow-hidden shadow-2xl ${post.pinned ? 'border-yellow-600 shadow-yellow-600/20' : ''}`}
+                className={`bg-[#f5f5e8] border-4 border-black hover:border-red-800 transition-all duration-300 rounded-none overflow-hidden shadow-metal zine-card ${post.pinned ? 'border-red-800' : ''}`}
+                style={{
+                  backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  backgroundColor: "rgba(245, 245, 232, 0.9)"
+                }}
               >
                 {/* Post Header */}
-                <div className={`bg-gradient-to-r ${postTypeIcons[post.type].bgColor} border-b-2 border-gray-600 p-6`}>
+                <div className={`bg-[#e0e0d8] border-b-2 border-black p-6`}>
                   <div className="flex items-start gap-4">
                     <div className="relative">
                       <img
                         src={post.avatar}
                         alt={post.user}
-                        className="w-16 h-16 rounded-full border-2 border-gray-600 shadow-lg"
-                        style={{ filter: "grayscale(0.7) contrast(1.1) brightness(0.9)" }}
+                        className="w-16 h-16 rounded-none border-2 border-black shadow-metal filter grayscale contrast-200"
                       />
                       {post.reputation >= 900 && (
-                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-500 rounded-full border-2 border-gray-900 flex items-center justify-center">
-                          <GiCrown className="text-black text-xs" />
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-800 rounded-none border-2 border-black flex items-center justify-center">
+                          <GiCrown className="text-white text-xs" />
                         </div>
                       )}
                     </div>
@@ -356,16 +388,16 @@ export default function CommunityPage() {
                           {postTypeIcons[post.type].icon}
                         </span>
                         {post.pinned && (
-                          <div className="bg-yellow-600/20 text-yellow-400 px-2 py-1 rounded-full text-xs font-bold border border-yellow-600/50">
+                          <div className="bg-red-800 text-white px-2 py-1 rounded-none text-xs font-bold border-2 border-black font-zine-body">
                             📌 PINNED
                           </div>
                         )}
                       </div>
-                      <h3 className="font-black text-white text-xl md:text-2xl mb-3 leading-tight">{post.title}</h3>
-                      <div className="flex items-center gap-4 text-sm text-gray-400 flex-wrap">
+                      <h3 className="font-bold text-black text-xl md:text-2xl mb-3 leading-tight font-zine-title uppercase">{post.title}</h3>
+                      <div className="flex items-center gap-4 text-sm text-black flex-wrap font-zine-body">
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-red-400">{post.user}</span>
-                          <div className="flex items-center gap-1 text-yellow-400">
+                          <span className="font-bold text-red-800">{post.user}</span>
+                          <div className="flex items-center gap-1 text-red-800">
                             <FaTrophy className="text-xs" />
                             <span>{post.reputation}</span>
                           </div>
@@ -373,11 +405,11 @@ export default function CommunityPage() {
                         <span>{post.timestamp}</span>
                         {post.location && (
                           <span className="flex items-center gap-1">
-                            <FaMapMarkerAlt className="text-blue-400" /> {post.location}
+                            <FaMapMarkerAlt className="text-red-800" /> {post.location}
                           </span>
                         )}
                         {post.date && (
-                          <span className="flex items-center gap-1 bg-blue-600/20 text-blue-400 px-2 py-1 rounded">
+                          <span className="flex items-center gap-1 bg-red-800 text-white px-2 py-1 rounded-none">
                             <FaCalendarAlt /> {post.date}
                           </span>
                         )}
@@ -388,15 +420,15 @@ export default function CommunityPage() {
 
                 {/* Post Content */}
                 <div className="p-6">
-                  <p className="text-gray-300 mb-6 leading-relaxed text-lg">{post.content}</p>
+                  <p className="text-black mb-6 leading-relaxed text-lg font-zine-body">{post.content}</p>
                   
                   {post.contact && (
-                    <div className="bg-gray-900/50 border border-gray-700 rounded-lg p-4 mb-6">
+                    <div className="bg-[#e0e0d8] border-2 border-black rounded-none p-4 mb-6 zine-card">
                       <div className="flex items-center gap-2 mb-2">
-                        <FaPen className="text-green-400" />
-                        <span className="text-sm text-gray-400 uppercase font-bold">Contact Info:</span>
+                        <FaPen className="text-red-800" />
+                        <span className="text-sm text-black uppercase font-bold font-zine-title">Contact Info:</span>
                       </div>
-                      <span className="text-green-400 font-mono text-lg">{post.contact}</span>
+                      <span className="text-red-800 font-mono text-lg">{post.contact}</span>
                     </div>
                   )}
 
@@ -405,7 +437,7 @@ export default function CommunityPage() {
                     {post.tags.map((tag, i) => (
                       <span 
                         key={i} 
-                        className="bg-gray-700/50 text-gray-300 px-3 py-1 text-sm uppercase rounded-full border border-gray-600 hover:border-red-600 transition-colors duration-300"
+                        className="bg-black text-red-800 px-3 py-1 text-sm uppercase rounded-none border border-red-800 hover:bg-red-800 hover:text-white transition-colors duration-300 font-zine-body"
                       >
                         #{tag}
                       </span>
@@ -413,31 +445,31 @@ export default function CommunityPage() {
                   </div>
 
                   {/* Post Actions */}
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-700">
+                  <div className="flex items-center justify-between pt-4 border-t-2 border-black">
                     <div className="flex items-center gap-6">
-                      <button className="flex items-center gap-2 text-gray-400 hover:text-red-400 transition-colors duration-300">
+                      <button className="flex items-center gap-2 text-black hover:text-red-800 transition-colors duration-300 font-zine-body">
                         <FaThumbsUp className="text-lg" /> 
                         <span className="font-bold">{post.likes}</span>
                       </button>
-                      <button className="flex items-center gap-2 text-gray-400 hover:text-blue-400 transition-colors duration-300">
+                      <button className="flex items-center gap-2 text-black hover:text-red-800 transition-colors duration-300 font-zine-body">
                         <FaComment className="text-lg" /> 
                         <span className="font-bold">{post.comments}</span>
                       </button>
-                      <button className="flex items-center gap-2 text-gray-400 hover:text-green-400 transition-colors duration-300">
+                      <button className="flex items-center gap-2 text-black hover:text-red-800 transition-colors duration-300 font-zine-body">
                         <FaShare className="text-lg" /> Share
                       </button>
                     </div>
                     
                     <div className="flex items-center gap-3">
                       {post.tips > 0 && (
-                        <div className="flex items-center gap-2 bg-yellow-600/20 text-yellow-400 px-3 py-1 rounded-full border border-yellow-600/50">
+                        <div className="flex items-center gap-2 bg-red-800 text-white px-3 py-1 rounded-none border-2 border-black font-zine-body">
                           <FaCoins />
                           <span className="font-bold">{post.tips} ETH</span>
                         </div>
                       )}
                       <button
                         onClick={() => setShowTipModal(post.id)}
-                        className="bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 text-black px-4 py-2 text-sm uppercase font-bold rounded-lg transition-all duration-300 hover:scale-105 flex items-center gap-2 shadow-lg"
+                        className="skull-button text-[#d0d0d0] px-4 py-2 text-sm uppercase font-bold rounded-none transition-all duration-300 hover:scale-105 flex items-center gap-2 shadow-metal font-zine-body"
                       >
                         <FaCoins /> TIP
                       </button>
@@ -459,19 +491,19 @@ export default function CommunityPage() {
             className="mb-8"
           >
             <div className="flex items-center gap-4 mb-6">
-              <FaTrophy className="text-yellow-400 text-4xl" />
-              <h2 className="text-3xl font-black uppercase tracking-widest text-white">METALHEADS LEADERBOARD</h2>
+              <FaTrophy className="text-red-800 text-4xl" />
+              <h2 className="text-3xl font-bold uppercase tracking-widest text-black font-zine-title">METALHEADS LEADERBOARD</h2>
             </div>
             
             {/* Search for users */}
             <div className="relative mb-6">
-              <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-black" />
               <input
                 type="text"
                 placeholder="Search metalheads by name, country, or metal DNA..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-gray-800/80 border-2 border-gray-600 hover:border-yellow-500 focus:border-yellow-500 text-white rounded-lg outline-none transition-all duration-300"
+                className="w-full pl-12 pr-4 py-3 bg-[#e0e0d8] border-2 border-black hover:border-red-800 focus:border-red-800 text-black rounded-none outline-none transition-all duration-300 zine-card font-zine-body"
               />
             </div>
           </motion.div>
@@ -484,20 +516,22 @@ export default function CommunityPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: idx * 0.1 }}
                 whileHover={{ y: -5, scale: 1.02 }}
-                className={`bg-gradient-to-br from-gray-800 to-gray-900 border-2 ${
-                  idx === 0 ? "border-yellow-600 shadow-yellow-600/20" : 
-                  idx === 1 ? "border-gray-400 shadow-gray-400/20" : 
-                  idx === 2 ? "border-orange-600 shadow-orange-600/20" : 
-                  "border-gray-600 hover:border-red-600"
-                } transition-all duration-300 rounded-xl p-6 shadow-2xl relative overflow-hidden`}
+                className={`bg-[#f5f5e8] border-4 ${
+                  idx === 0 ? "border-red-800" : 
+                  "border-black hover:border-red-800"
+                } transition-all duration-300 rounded-none p-6 shadow-metal relative overflow-hidden zine-card`}
+                style={{
+                  backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  backgroundColor: "rgba(245, 245, 232, 0.9)"
+                }}
               >
                 {/* Rank badge */}
-                <div className={`absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center font-black text-sm ${
-                  idx === 0 ? 'bg-yellow-500 text-black' :
-                  idx === 1 ? 'bg-gray-400 text-black' :
-                  idx === 2 ? 'bg-orange-500 text-black' :
-                  'bg-gray-700 text-white'
-                }`}>
+                <div className={`absolute top-4 right-4 w-8 h-8 rounded-none flex items-center justify-center font-bold text-sm border-2 ${
+                  idx === 0 ? 'bg-red-800 text-white border-black' :
+                  'bg-black text-red-800 border-red-800'
+                } font-zine-title`}>
                   #{user.rank}
                 </div>
 
@@ -506,14 +540,13 @@ export default function CommunityPage() {
                     <img
                       src={user.avatar}
                       alt={user.name}
-                      className="w-20 h-20 rounded-full border-4 border-gray-600 shadow-lg"
-                      style={{ filter: "grayscale(0.7) contrast(1.1) brightness(0.9)" }}
+                      className="w-20 h-20 rounded-none border-4 border-black shadow-metal filter grayscale contrast-200"
                     />
                     {user.rank === 1 && (
-                      <GiCrown className="absolute -top-3 -right-2 text-yellow-400 text-3xl animate-bounce" />
+                      <GiCrown className="absolute -top-3 -right-2 text-red-800 text-3xl animate-bounce" />
                     )}
                     {user.reputation >= 900 && (
-                      <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-purple-500 rounded-full border-2 border-gray-900 flex items-center justify-center">
+                      <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-red-800 rounded-none border-2 border-black flex items-center justify-center">
                         <GiDragonHead className="text-white text-xs" />
                       </div>
                     )}
@@ -521,10 +554,10 @@ export default function CommunityPage() {
                   
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-2xl font-black uppercase tracking-wide text-white">
+                      <h3 className="text-2xl font-bold uppercase tracking-wide text-black font-zine-title">
                         {user.name}
                       </h3>
-                      <span className="text-sm bg-gray-700/50 text-gray-300 px-3 py-1 rounded-full font-bold border border-gray-600">
+                      <span className="text-sm bg-black text-red-800 px-3 py-1 rounded-none font-bold border border-red-800 font-zine-body">
                         {user.country}
                       </span>
                     </div>
@@ -532,34 +565,34 @@ export default function CommunityPage() {
                     {/* Stats */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 text-sm">
                       <div className="text-center">
-                        <FaTrophy className="inline text-yellow-400 mb-1" />
-                        <div className="font-bold text-white">{user.score.toLocaleString()}</div>
-                        <div className="text-gray-500 text-xs">Score</div>
+                        <FaTrophy className="inline text-red-800 mb-1" />
+                        <div className="font-bold text-black font-zine-title">{user.score.toLocaleString()}</div>
+                        <div className="text-black text-xs font-zine-body">Score</div>
                       </div>
                       <div className="text-center">
-                        <FaPlus className="inline text-green-400 mb-1" />
-                        <div className="font-bold text-white">{user.bandsAdded}</div>
-                        <div className="text-gray-500 text-xs">Bands</div>
+                        <FaPlus className="inline text-red-800 mb-1" />
+                        <div className="font-bold text-black font-zine-title">{user.bandsAdded}</div>
+                        <div className="text-black text-xs font-zine-body">Bands</div>
                       </div>
                       <div className="text-center">
-                        <FaFire className="inline text-orange-400 mb-1" />
-                        <div className="font-bold text-white">{user.news}</div>
-                        <div className="text-gray-500 text-xs">News</div>
+                        <FaFire className="inline text-red-800 mb-1" />
+                        <div className="font-bold text-black font-zine-title">{user.news}</div>
+                        <div className="text-black text-xs font-zine-body">News</div>
                       </div>
                       <div className="text-center">
-                        <FaComment className="inline text-blue-400 mb-1" />
-                        <div className="font-bold text-white">{user.comments}</div>
-                        <div className="text-gray-500 text-xs">Comments</div>
+                        <FaComment className="inline text-red-800 mb-1" />
+                        <div className="font-bold text-black font-zine-title">{user.comments}</div>
+                        <div className="text-black text-xs font-zine-body">Comments</div>
                       </div>
                     </div>
 
                     {/* Metal DNA */}
                     {user.metalDNA && (
                       <div className="mb-4">
-                        <div className="text-xs text-gray-500 uppercase font-bold mb-2">Metal DNA:</div>
+                        <div className="text-xs text-black uppercase font-bold mb-2 font-zine-title">Metal DNA:</div>
                         <div className="flex flex-wrap gap-1">
                           {user.metalDNA.map((genre, i) => (
-                            <span key={i} className="text-xs bg-red-600/20 text-red-400 px-2 py-1 rounded border border-red-600/50">
+                            <span key={i} className="text-xs bg-red-800 text-white px-2 py-1 rounded-none border border-black font-zine-body">
                               {genre}
                             </span>
                           ))}
@@ -574,7 +607,7 @@ export default function CommunityPage() {
                         return (
                           <span
                             key={badge}
-                            className={`inline-flex items-center gap-1 bg-gray-800/50 px-2 py-1 text-xs font-bold uppercase border border-gray-600 rounded ${badgeInfo.color}`}
+                            className={`inline-flex items-center gap-1 bg-black px-2 py-1 text-xs font-bold uppercase border border-red-800 rounded-none ${badgeInfo.color} font-zine-body`}
                             title={badgeInfo.title}
                           >
                             {badgeInfo.icon} {badge}
@@ -584,12 +617,12 @@ export default function CommunityPage() {
                     </div>
 
                     <div className="flex justify-between items-center">
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-black font-zine-body">
                         Joined {user.joined}
                       </div>
                       <Link
                         href={`/community/profile/${user.id}`}
-                        className="text-sm uppercase font-bold text-red-400 hover:text-red-300 transition-colors duration-300"
+                        className="text-sm uppercase font-bold text-red-800 hover:text-red-600 transition-colors duration-300 font-zine-body"
                       >
                         View Profile →
                       </Link>
@@ -608,29 +641,35 @@ export default function CommunityPage() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-gray-600 rounded-xl p-8 shadow-2xl"
+            className="bg-[#f5f5e8] border-4 border-black rounded-none p-8 shadow-metal zine-card"
+            style={{
+              backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundColor: "rgba(245, 245, 232, 0.9)"
+            }}
           >
             <div className="flex items-center gap-4 mb-8">
-              <GiThorHammer className="text-4xl text-red-400" />
-              <h2 className="text-3xl font-black uppercase tracking-wide text-white">SHOUT TO THE HORDES</h2>
+              <GiThorHammer className="text-4xl text-red-800" />
+              <h2 className="text-3xl font-bold uppercase tracking-wide text-black font-zine-title">SHOUT TO THE HORDES</h2>
             </div>
 
             <div className="space-y-8">
               {/* Post Type Selection */}
               <div>
-                <label className="block text-lg font-bold text-gray-300 mb-4 uppercase">Post Type</label>
+                <label className="block text-lg font-bold text-black mb-4 uppercase font-zine-title">Post Type</label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {Object.entries(postTypeIcons).map(([type, { icon, color, bgColor }]) => (
                     <button
                       key={type}
                       onClick={() => setNewPost(prev => ({ ...prev, type }))}
-                      className={`p-4 border-2 transition-all duration-300 hover:scale-105 rounded-lg flex flex-col items-center gap-2 text-sm uppercase font-bold ${
+                      className={`p-4 border-2 transition-all duration-300 hover:scale-105 rounded-none flex flex-col items-center gap-2 text-sm uppercase font-bold font-zine-body ${
                         newPost.type === type
-                          ? `bg-gradient-to-br ${bgColor} border-red-600 text-white shadow-lg`
-                          : 'bg-transparent border-gray-600 text-gray-300 hover:border-red-600'
+                          ? `bg-red-800 border-black text-white shadow-metal`
+                          : 'bg-[#e0e0d8] border-black text-black hover:border-red-800'
                       }`}
                     >
-                      <span className={color}>{icon}</span>
+                      <span className={newPost.type === type ? 'text-white' : 'text-red-800'}>{icon}</span>
                       {type}
                     </button>
                   ))}
@@ -639,92 +678,65 @@ export default function CommunityPage() {
 
               {/* Title */}
               <div>
-                <label className="block text-lg font-bold text-gray-300 mb-3 uppercase">Title</label>
+                <label className="block text-lg font-bold text-black mb-2 uppercase font-zine-title">Title</label>
                 <input
                   type="text"
                   value={newPost.title}
                   onChange={(e) => setNewPost(prev => ({ ...prev, title: e.target.value }))}
-                  className="w-full p-4 bg-gray-900 border-2 border-gray-600 hover:border-red-500 focus:border-red-500 text-white rounded-lg outline-none transition-all duration-300"
-                  placeholder="🔥 Your epic underground announcement..."
+                  placeholder="Your epic announcement title..."
+                  className="w-full p-4 bg-[#e0e0d8] border-2 border-black focus:border-red-800 text-black rounded-none outline-none font-medium transition-all duration-300 font-zine-body"
                 />
               </div>
 
               {/* Content */}
               <div>
-                <label className="block text-lg font-bold text-gray-300 mb-3 uppercase">Content</label>
+                <label className="block text-lg font-bold text-black mb-2 uppercase font-zine-title">Content</label>
                 <textarea
                   value={newPost.content}
                   onChange={(e) => setNewPost(prev => ({ ...prev, content: e.target.value }))}
-                  rows={8}
-                  className="w-full p-4 bg-gray-900 border-2 border-gray-600 hover:border-red-500 focus:border-red-500 text-white rounded-lg outline-none resize-none transition-all duration-300"
-                  placeholder="Share your metallic wisdom with the brotherhood..."
+                  rows={6}
+                  placeholder="Share your message with the underground brotherhood..."
+                  className="w-full p-4 bg-[#e0e0d8] border-2 border-black focus:border-red-800 text-black rounded-none outline-none resize-none transition-all duration-300 font-zine-body"
                 />
-              </div>
-
-              {/* Additional Fields */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-lg font-bold text-gray-300 mb-3 uppercase">Location</label>
-                  <input
-                    type="text"
-                    value={newPost.location}
-                    onChange={(e) => setNewPost(prev => ({ ...prev, location: e.target.value }))}
-                    className="w-full p-4 bg-gray-900 border-2 border-gray-600 hover:border-blue-500 focus:border-blue-500 text-white rounded-lg outline-none transition-all duration-300"
-                    placeholder="Oslo, Norway"
-                  />
-                </div>
-                
-                {newPost.type === 'event' && (
-                  <div>
-                    <label className="block text-lg font-bold text-gray-300 mb-3 uppercase">Event Date</label>
-                    <input
-                      type="date"
-                      value={newPost.date}
-                      onChange={(e) => setNewPost(prev => ({ ...prev, date: e.target.value }))}
-                      className="w-full p-4 bg-gray-900 border-2 border-gray-600 hover:border-blue-500 focus:border-blue-500 text-white rounded-lg outline-none transition-all duration-300"
-                    />
-                  </div>
-                )}
-                
-                {(newPost.type === 'announcement' || newPost.type === 'event') && (
-                  <div>
-                    <label className="block text-lg font-bold text-gray-300 mb-3 uppercase">Contact</label>
-                    <input
-                      type="text"
-                      value={newPost.contact}
-                      onChange={(e) => setNewPost(prev => ({ ...prev, contact: e.target.value }))}
-                      className="w-full p-4 bg-gray-900 border-2 border-gray-600 hover:border-green-500 focus:border-green-500 text-white rounded-lg outline-none transition-all duration-300"
-                      placeholder="underground@protonmail.com"
-                    />
-                  </div>
-                )}
               </div>
 
               {/* Tags */}
               <div>
-                <label className="block text-lg font-bold text-gray-300 mb-3 uppercase">Tags</label>
+                <label className="block text-lg font-bold text-black mb-2 uppercase font-zine-title">Tags</label>
                 <input
                   type="text"
                   value={newPost.tags}
                   onChange={(e) => setNewPost(prev => ({ ...prev, tags: e.target.value }))}
-                  className="w-full p-4 bg-gray-900 border-2 border-gray-600 hover:border-purple-500 focus:border-purple-500 text-white rounded-lg outline-none transition-all duration-300"
-                  placeholder="black metal, underground, brutal, kvlt (separated by commas)"
+                  placeholder="underground, metal, web3..."
+                  className="w-full p-4 bg-[#e0e0d8] border-2 border-black focus:border-red-800 text-black rounded-none outline-none font-medium transition-all duration-300 font-zine-body"
                 />
               </div>
 
-              {/* Submit Buttons */}
-              <div className="flex gap-6 pt-4">
-                <button
-                  onClick={() => setActiveTab('board')}
-                  className="flex-1 bg-transparent border-2 border-gray-600 text-gray-300 hover:bg-gray-700 hover:border-gray-500 py-4 text-lg font-bold uppercase tracking-wide rounded-lg transition-all duration-300 hover:scale-105"
-                >
-                  Cancel
-                </button>
+              {/* Location (optional) */}
+              <div>
+                <label className="block text-lg font-bold text-black mb-2 uppercase font-zine-title">Location (Optional)</label>
+                <input
+                  type="text"
+                  value={newPost.location}
+                  onChange={(e) => setNewPost(prev => ({ ...prev, location: e.target.value }))}
+                  placeholder="City, Country"
+                  className="w-full p-4 bg-[#e0e0d8] border-2 border-black focus:border-red-800 text-black rounded-none outline-none font-medium transition-all duration-300 font-zine-body"
+                />
+              </div>
+
+              {/* Submit Button */}
+              <div className="flex gap-4">
                 <button
                   onClick={handleCreatePost}
-                  className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white py-4 text-lg font-bold uppercase tracking-wide rounded-lg transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-red-600/50"
+                  className="skull-button text-[#d0d0d0] px-8 py-4 rounded-none font-bold uppercase tracking-wide transition-all duration-300 hover:scale-105 shadow-metal font-zine-body"
                 >
-                  UNLEASH TO THE BROTHERHOOD
+                  <FaPlus className="inline mr-2" /> SHOUT TO THE HORDES
+                </button>
+                <button
+                  onClick={() => setActiveTab('board')}
+                  className="bg-black border-2 border-red-800 text-red-800 hover:bg-red-800 hover:text-white px-8 py-4 rounded-none font-bold uppercase tracking-wide transition-all duration-300 hover:scale-105 font-zine-body"
+                >
+                  Cancel
                 </button>
               </div>
             </div>
@@ -732,20 +744,26 @@ export default function CommunityPage() {
         </section>
       )}
 
-      {/* ENHANCED TIP MODAL */}
+      {/* TIP MODAL */}
       {showTipModal && (
-        <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-yellow-600 max-w-md w-full p-8 rounded-xl shadow-2xl"
+            className="bg-[#f5f5e8] border-4 border-black max-w-md w-full p-8 rounded-none shadow-metal zine-card"
+            style={{
+              backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundColor: "rgba(245, 245, 232, 0.95)"
+            }}
           >
             <div className="flex items-center gap-4 mb-6">
-              <FaCoins className="text-4xl text-yellow-400" />
-              <h3 className="text-2xl font-bold text-white uppercase">Send Crypto Tip</h3>
+              <FaCoins className="text-4xl text-red-800" />
+              <h3 className="text-2xl font-bold text-black uppercase font-zine-title">Send Crypto Tip</h3>
             </div>
 
-            <p className="text-gray-300 mb-6 leading-relaxed">
+            <p className="text-black mb-6 leading-relaxed font-zine-body">
               Support this underground warrior with a crypto tip. All tips go directly to the poster via smart contract.
             </p>
 
@@ -754,10 +772,10 @@ export default function CommunityPage() {
                 <button
                   key={amount}
                   onClick={() => handleTip(showTipModal, amount)}
-                  className="bg-gray-900 border-2 border-gray-700 hover:border-yellow-600 hover:bg-yellow-600/10 p-4 text-center transition-all duration-300 hover:scale-105 rounded-lg"
+                  className="bg-[#e0e0d8] border-2 border-black hover:border-red-800 hover:bg-red-800 hover:text-white p-4 text-center transition-all duration-300 hover:scale-105 rounded-none font-zine-body"
                 >
-                  <div className="text-yellow-400 font-bold text-lg">{amount} ETH</div>
-                  <div className="text-xs text-gray-500">${(amount * 2400).toFixed(0)}</div>
+                  <div className="text-red-800 font-bold text-lg">{amount} ETH</div>
+                  <div className="text-xs text-black">${(amount * 2400).toFixed(0)}</div>
                 </button>
               ))}
             </div>
@@ -765,13 +783,13 @@ export default function CommunityPage() {
             <div className="flex gap-4">
               <button
                 onClick={() => setShowTipModal(null)}
-                className="flex-1 bg-transparent border-2 border-gray-600 text-gray-300 hover:bg-gray-700 py-3 uppercase font-bold text-sm rounded-lg transition-all duration-300"
+                className="flex-1 bg-black text-red-800 border-2 border-red-800 hover:bg-red-800 hover:text-white py-3 uppercase font-bold text-sm rounded-none transition-all duration-300 font-zine-body"
               >
                 Cancel
               </button>
               <button
                 onClick={() => setShowTipModal(null)}
-                className="flex-1 bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 text-black py-3 uppercase font-bold text-sm rounded-lg transition-all duration-300 hover:scale-105"
+                className="flex-1 skull-button text-[#d0d0d0] py-3 uppercase font-bold text-sm rounded-none transition-all duration-300 hover:scale-105 font-zine-body"
               >
                 Custom Amount
               </button>
@@ -780,35 +798,57 @@ export default function CommunityPage() {
         </div>
       )}
 
-      {/* ENHANCED FOOTER */}
-      <footer className="bg-gradient-to-b from-gray-900 to-black border-t-4 border-red-600 p-8 mt-16 relative">
-        <div className="max-w-7xl mx-auto text-center">
-          <div className="flex justify-center gap-8 mb-6">
-            {[GiDeathSkull, GiCrossedSwords, GiCoffin, GiGhost, GiSkullCrossedBones].map((Icon, index) => (
-              <motion.div 
-                key={index}
-                whileHover={{ scale: 1.2, rotate: 15 }} 
-                className="cursor-pointer"
-              >
-                <Icon className="text-4xl text-gray-600 hover:text-red-500 transition-colors duration-300" />
-              </motion.div>
-            ))}
-          </div>
-          <h3 className="text-3xl font-black uppercase tracking-widest text-white mb-2">
-            METAL BROTHERHOOD
-          </h3>
-          <p className="text-gray-400 uppercase tracking-wider mb-4">
-            Underground Dispatch • Web3 Tips • Metal Network
-          </p>
-          <p className="text-gray-600">
-            Connect • Support • Trade • No posers allowed in the brotherhood
-          </p>
-          <div className="mt-6 flex justify-center items-center gap-2 text-sm text-gray-500">
-            <FaEthereum className="text-blue-400" />
-            <span>Powered by Optimism Blockchain</span>
-          </div>
-        </div>
-      </footer>
+      <Footer displayStats={displayStats} />
+
+      <style jsx global>{`
+        .zine-layout {
+          background-color: #f5f5e8;
+          background-image: url("/images/zine/paper_texture_distressed.jpg");
+          background-size: cover;
+          background-position: center;
+          position: relative;
+          overflow-x: hidden;
+        }
+        
+        .zine-header {
+          border-image: url("/images/zine/jagged_border.png") 30 round;
+        }
+        
+        .zine-card {
+          border-image: url("/images/zine/jagged_border.png") 30 round;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .zine-section {
+          border-image: url("/images/zine/jagged_border.png") 30 round;
+        }
+        
+        .shadow-metal {
+          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8), 0 4px 8px rgba(255, 0, 0, 0.2);
+        }
+        
+        .skull-button {
+          background: linear-gradient(to right, #b71c1c, #000000);
+          border: 2px solid #ff0000;
+          box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .skull-button:hover {
+          transform: scale(1.05);
+          box-shadow: 0 8px 20px rgba(255, 0, 0, 0.5);
+          filter: brightness(1.2);
+        }
+        
+        .font-zine-title {
+          font-family: "Blackletter", serif;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+        }
+
+        .font-zine-body {
+          font-family: "Special Elite", monospace;
+        }
+      `}</style>
     </div>
   );
 }

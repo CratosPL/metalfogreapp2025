@@ -14,11 +14,9 @@ if (!projectId) {
 }
 
 const metadata = {
-  name: "Metal Forge",
+  name: "Metal Forge", 
   description: "Underground Metal Community Platform",
-  url: process.env.NODE_ENV === 'production' 
-    ? "https://metalforge.com" 
-    : "http://localhost:3000",
+  url: "https://metalfogreapp2025-6fur.vercel.app", // ✅ TO
   icons: ["/logometalforge.jpeg"]
 };
 
