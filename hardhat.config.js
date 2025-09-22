@@ -19,17 +19,23 @@ module.exports = {
       url: "https://goerli.optimism.io", 
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
       chainId: 420,
-      gasPrice: 1000000000, // 1 gwei
     },
     optimism: {
       url: "https://mainnet.optimism.io",
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
       chainId: 10,
-      gasPrice: 1000000000,
     },
+    base: {
+      url: "https://mainnet.base.org",
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
+      chainId: 8453,
+    }
   },
   etherscan: {
-    apiKey: ETHERSCAN_API_KEY,
+    apiKey: {
+      optimism: ETHERSCAN_API_KEY,
+      base: "NOKEY", // Base nie wymaga API key
+    },
     customChains: [
       {
         network: "optimism-goerli", 
@@ -37,6 +43,14 @@ module.exports = {
         urls: {
           apiURL: "https://api.etherscan.io/v2/api",
           browserURL: "https://goerli-optimism.etherscan.io"
+        }
+      },
+      {
+        network: "base",
+        chainId: 8453,
+        urls: {
+          apiURL: "https://api.basescan.org/api",
+          browserURL: "https://basescan.org"
         }
       }
     ]

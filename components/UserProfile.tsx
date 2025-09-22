@@ -35,6 +35,7 @@ import {
   FaSkullCrossbones
 } from 'react-icons/fa';
 import { useMetalForgeContract } from '@/hooks/useMetalForgeContract';
+import BadgeDisplay from '@/components/BadgeDisplay'; // 
 
 interface Band {
   id: number;
@@ -495,6 +496,18 @@ export default function UserProfile() {
             </motion.div>
           ))}
         </div>
+
+{/* 🎯 DODAJ TUTAJ Badge Display - NOWA SEKCJA */}
+{address && (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.8, delay: 0.5 }}
+    className="mb-8"
+  >
+    <BadgeDisplay address={address} />
+  </motion.div>
+)}
 
         {/* Reputation Progress w stylu Zine */}
         {userData && (
