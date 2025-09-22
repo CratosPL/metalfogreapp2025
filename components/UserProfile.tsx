@@ -140,16 +140,17 @@ export default function UserProfile() {
       .slice(0, 3)
       .map(([genre]) => genre);
 
-    const countries = bands.map(band => band.country).filter(Boolean);
-    const countryCounts = countries.reduce((acc, country) => {
-      acc[country] = (acc[country] || 0) + 1;
-      return acc;
-    }, {} as Record<string, string>);
-    
-    const topCountries = Object.entries(countryCounts)
-      .sort(([,a], [,b]) => b - a)
-      .slice(0, 3)
-      .map(([country]) => country);
+const countries = bands.map(band => band.country).filter(Boolean);
+const countryCounts = countries.reduce((acc, country) => {
+  acc[country] = (acc[country] || 0) + 1;
+  return acc;
+}, {} as Record<string, number>); // ✅ FIX - number values!
+
+const topCountries = Object.entries(countryCounts)
+  .sort(([,a], [,b]) => b - a) // ✅ numbers sorting correctly
+  .slice(0, 3)
+  .map(([country]) => country);
+
 
     const maxGenres = metalGenres.length;
     const discoveredGenres = Object.keys(genreCounts).length;
@@ -180,59 +181,50 @@ export default function UserProfile() {
     };
   };
 
-  useEffect(() => {
-    let cancelled = false;
+useEffect(() => {
+  let cancelled = false;
 
-    const loadBandsData = async () => {
-      if (isConnected && address && contractUserStats && contractUserBands && contractUserBands.length > 0) {
+  const loadBandsData = async () => {
+    if (isConnected && address && contractUserStats) {
+      if (cancelled) return;
+      
+      setLoadingBandDetails(true);
+      
+      try {
+        // ✅ FIX - używamy fetchUserBandDetails z address, nie contractUserBands
+        const realBandsData = await fetchUserBandDetails(address);
+        
         if (cancelled) return;
         
-        setLoadingBandDetails(true);
+        setUserBands(realBandsData);
+        const calculatedData = calculateUserData(contractUserStats, realBandsData);
+        setUserData(calculatedData);
         
-        try {
-          const realBandsData = await fetchUserBandDetails(contractUserBands);
-          
-          if (cancelled) return;
-          
-          setUserBands(realBandsData);
-          const calculatedData = calculateUserData(contractUserStats, realBandsData);
-          setUserData(calculatedData);
-          
-        } catch (error) {
-          if (cancelled) return;
-          
-          console.error('Error loading band details:', error);
-          setUserBands([]);
-          const fallbackData = calculateUserData(contractUserStats, []);
-          setUserData(fallbackData);
-        } finally {
-          if (!cancelled) {
-            setLoadingBandDetails(false);
-          }
-        }
-      } else if (isConnected && address && contractUserStats) {
+      } catch (error) {
+        console.error('Error loading bands:', error);
         if (!cancelled) {
           setUserBands([]);
-          const calculatedData = calculateUserData(contractUserStats, []);
-          setUserData(calculatedData);
-          setLoadingBandDetails(false);
+          setUserData(calculateUserData(contractUserStats, []));
         }
-      } else {
+      } finally {
         if (!cancelled) {
-          setUserData(null);
-          setUserBands([]);
           setLoadingBandDetails(false);
         }
       }
-    };
+    } else {
+      setUserData(null);
+      setUserBands([]);
+      setLoadingBandDetails(false);
+    }
+  };
 
-    loadBandsData();
+  loadBandsData();
 
-    return () => {
-      cancelled = true;
-    };
+  return () => {
+    cancelled = true;
+  };
+}, [address, isConnected, contractUserStats, fetchUserBandDetails]); // ✅ Usunięte contractUserBands
 
-  }, [address, isConnected, contractUserStats, contractUserBands]);
 
   const handleAddBand = async () => {
     if (!newBand.name || !newBand.genre || !newBand.country || !address) return;

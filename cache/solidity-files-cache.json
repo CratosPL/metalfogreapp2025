@@ -490,6 +490,44 @@
       "artifacts": [
         "IERC165"
       ]
+    },
+    "/Users/sebastiant/metalfogeapp/contracts/MetalForgeRegistry.sol": {
+      "lastModificationDate": 1758568526123,
+      "contentHash": "bd13c1a3fe4f6dad508fe8002ac840cf",
+      "sourceName": "contracts/MetalForgeRegistry.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/access/Ownable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "MetalForgeRegistry"
+      ]
     }
   }
 }
