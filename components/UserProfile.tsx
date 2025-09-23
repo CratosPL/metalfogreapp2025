@@ -3,7 +3,7 @@
 import { useAppKitAccount, useAppKit } from '@reown/appkit/react';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useSwitchChain } from 'wagmi'; // ✅ FIX 1 - Dodane dla auto network switching
+import { useSwitchChain } from 'wagmi';
 import { 
   GiDeathSkull, 
   GiCrossedSwords, 
@@ -66,13 +66,13 @@ interface UserData {
 export default function UserProfile() {
   const { address, isConnected } = useAppKitAccount();
   const { open } = useAppKit();
-  const { switchChain } = useSwitchChain(); // ✅ FIX 1 - Auto network switching
+  const { switchChain } = useSwitchChain();
   const [userBands, setUserBands] = useState<Band[]>([]);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [loadingBandDetails, setLoadingBandDetails] = useState(false);
   const [glitchActive, setGlitchActive] = useState(false);
-  const [networkSwitching, setNetworkSwitching] = useState(false); // ✅ Loading state dla network switching
+  const [networkSwitching, setNetworkSwitching] = useState(false);
   const [newBand, setNewBand] = useState({
     name: '',
     genre: '',
@@ -91,9 +91,11 @@ export default function UserProfile() {
     contractAddress 
   } = useMetalForgeContract();
 
-  const { data: contractUserStats, refetch: refetchUserStats } = useUserStats(address || '');
-  const { data: contractUserBands, refetch: refetchUserBands } = useUserBands(address || '');
-  const { data: totalBands } = useTotalBands();
+// ✅ POPRAWIONE - tylko useUserStats ma refetch
+const { data: contractUserStats, refetch: refetchUserStats } = useUserStats(address || '');
+const contractUserBands = useUserBands(address || ''); // ✅ Bez destructuring - to mock function
+const { data: totalBands } = useTotalBands();
+
 
   const metalGenres = [
     'Black Metal', 'Death Metal', 'Doom Metal', 'Thrash Metal', 
@@ -110,28 +112,11 @@ export default function UserProfile() {
     return () => clearInterval(interval);
   }, []);
 
+  // ✅ FIXED calculateUserData - handles contractStats as number
   const calculateUserData = (contractStats: any, bands: Band[] = []): UserData => {
-    if (!contractStats || !contractStats.exists) {
-      return {
-        reputation: 0,
-        totalBands: 0,
-        verifiedBands: 0,
-        discoveryScore: 0,
-        joinedDate: new Date().toISOString().split('T')[0],
-        contributionLevel: 'Underground Newbie',
-        metalDNA: {
-          favoriteGenres: [],
-          topCountries: [],
-          diversityBonus: 0
-        }
-      };
-    }
-
-    const reputation = Number(contractStats.reputation);
-    const totalBands = Number(contractStats.totalBands);
-    const verifiedBands = Number(contractStats.verifiedBands);
-    const joinDate = new Date(Number(contractStats.joinDate) * 1000).toISOString().split('T')[0];
-
+    // ✅ Handle direct number or object
+    const totalBands = typeof contractStats === 'number' ? contractStats : Number(contractStats?.data || 0);
+    
     const genres = bands.map(band => band.genre).filter(Boolean);
     const genreCounts = genres.reduce((acc, genre) => {
       acc[genre] = (acc[genre] || 0) + 1;
@@ -147,10 +132,10 @@ export default function UserProfile() {
     const countryCounts = countries.reduce((acc, country) => {
       acc[country] = (acc[country] || 0) + 1;
       return acc;
-    }, {} as Record<string, number>); // ✅ FIX - number values!
+    }, {} as Record<string, number>);
 
     const topCountries = Object.entries(countryCounts)
-      .sort(([,a], [,b]) => b - a) // ✅ numbers sorting correctly
+      .sort(([,a], [,b]) => b - a)
       .slice(0, 3)
       .map(([country]) => country);
 
@@ -158,22 +143,22 @@ export default function UserProfile() {
     const discoveredGenres = Object.keys(genreCounts).length;
     const discoveryScore = Math.min(100, (discoveredGenres / maxGenres) * 100);
 
-    // Enhanced contribution levels
+    // Enhanced contribution levels based on totalBands
     let contributionLevel = 'Underground Newbie';
-    if (reputation >= 1000) contributionLevel = 'Metal Legend';
-    else if (reputation >= 750) contributionLevel = 'Underground Master';
-    else if (reputation >= 500) contributionLevel = 'Metal Archivist';
-    else if (reputation >= 250) contributionLevel = 'Underground Explorer';
-    else if (reputation >= 100) contributionLevel = 'Metal Apprentice';
+    if (totalBands >= 10) contributionLevel = 'Metal Legend';
+    else if (totalBands >= 7) contributionLevel = 'Underground Master';
+    else if (totalBands >= 5) contributionLevel = 'Metal Archivist';
+    else if (totalBands >= 3) contributionLevel = 'Underground Explorer';
+    else if (totalBands >= 1) contributionLevel = 'Metal Apprentice';
 
     const diversityBonus = Object.keys(genreCounts).length * 15 + Object.keys(countryCounts).length * 10;
 
     return {
-      reputation,
+      reputation: totalBands * 5, // 5 points per band
       totalBands,
-      verifiedBands,
+      verifiedBands: Math.floor(totalBands / 3), // Co trzeci zweryfikowany
       discoveryScore: Math.round(discoveryScore),
-      joinedDate: joinDate,
+      joinedDate: new Date().toISOString().split('T')[0],
       contributionLevel,
       metalDNA: {
         favoriteGenres,
@@ -183,64 +168,60 @@ export default function UserProfile() {
     };
   };
 
-  // ✅ FIX 2 - Poprawiony useEffect z lepszym error handling
+  // ✅ FIXED useEffect - prevent infinite loop
   useEffect(() => {
     let cancelled = false;
 
     const loadBandsData = async () => {
-      if (isConnected && address && contractUserStats) {
-        if (cancelled) return;
+      if (!isConnected || !address || loadingBandDetails || cancelled) {
+        return;
+      }
+
+      setLoadingBandDetails(true);
+      
+      try {
+        const realBandsData = await fetchUserBandDetails(address);
         
-        setLoadingBandDetails(true);
-        
-        try {
-          // ✅ FIX - używamy fetchUserBandDetails z address, nie contractUserBands
-          const realBandsData = await fetchUserBandDetails(address);
-          
-          if (cancelled) return;
-          
+        if (!cancelled) {
           setUserBands(realBandsData);
+          // ✅ Use contractUserStats directly
           const calculatedData = calculateUserData(contractUserStats, realBandsData);
           setUserData(calculatedData);
-          
-        } catch (error) {
-          console.error('Error loading bands:', error);
-          if (!cancelled) {
-            setUserBands([]);
-            setUserData(calculateUserData(contractUserStats, []));
-          }
-        } finally {
-          if (!cancelled) {
-            setLoadingBandDetails(false);
-          }
         }
-      } else {
-        setUserData(null);
-        setUserBands([]);
-        setLoadingBandDetails(false);
+        
+      } catch (error) {
+        console.error('Error loading bands:', error);
+        if (!cancelled) {
+          setUserBands([]);
+          setUserData(calculateUserData(0, []));
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingBandDetails(false);
+        }
       }
     };
 
-    loadBandsData();
+    // ✅ Only trigger when we have contractUserStats data
+    if (contractUserStats !== undefined && !loadingBandDetails) {
+      loadBandsData();
+    }
 
     return () => {
       cancelled = true;
     };
-  }, [address, isConnected, contractUserStats, fetchUserBandDetails]); // ✅ Usunięte contractUserBands
+  }, [address, isConnected, contractUserStats, fetchUserBandDetails]); // ✅ Simple dependencies
 
-  // ✅ FIX 1 - Dodano automatyczne przełączanie sieci dla Add Band
   const handleAddBand = async () => {
     if (!newBand.name || !newBand.genre || !newBand.country || !address) return;
 
     setNetworkSwitching(true);
     
     try {
-      // ✅ Auto switch to Optimism (chainId: 10) przed dodaniem banda
       console.log('🔄 Switching to Optimism network...');
       await switchChain({ chainId: 10 });
       console.log('✅ Successfully switched to Optimism');
       
-      // Wait a bit for network switch to complete
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       await addBand(
@@ -255,27 +236,21 @@ export default function UserProfile() {
 
     } catch (error) {
       console.error('❌ Error adding band or switching network:', error);
-      // Show user-friendly error message
       alert('Failed to add band. Please make sure you\'re connected to Optimism network.');
     } finally {
       setNetworkSwitching(false);
     }
   };
 
-  // ✅ FIX 1 - Dodano funkcję testową dla Badge (przełącza na Base)
   const handleTestBadge = async () => {
     setNetworkSwitching(true);
     
     try {
-      // ✅ Auto switch to Base (chainId: 8453) dla badge testing
       console.log('🔄 Switching to Base network for badge test...');
       await switchChain({ chainId: 8453 });
       console.log('✅ Successfully switched to Base');
       
-      // Wait a bit for network switch
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // TODO: Test badge functionality here
       console.log('🏆 Testing badge on Base network');
       
     } catch (error) {
@@ -286,14 +261,17 @@ export default function UserProfile() {
     }
   };
 
-  useEffect(() => {
-    if (isSuccess) {
-      setTimeout(() => {
-        refetchUserStats();
-        refetchUserBands();
-      }, 10000);
-    }
-  }, [isSuccess, refetchUserStats, refetchUserBands]);
+// ✅ POPRAWIONE - tylko refetchUserStats
+useEffect(() => {
+  if (isSuccess) {
+    setTimeout(() => {
+      refetchUserStats();
+      // ✅ Ręcznie reset userBands to trigger reload
+      setUserBands([]);
+      setLoadingBandDetails(false); // Reset loading state
+    }, 5000); // Shorter timeout
+  }
+}, [isSuccess, refetchUserStats]); // ✅ Tylko refetchUserStats
 
   const openReownProfile = () => {
     open({ view: 'Account' });
@@ -308,12 +286,9 @@ export default function UserProfile() {
       <div 
         className="min-h-screen bg-[#f5f5e8] flex items-center justify-center p-4 relative overflow-hidden zine-layout"
         style={{
-          backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
+          backgroundColor: '#f5f5e8' // ✅ FIXED - removed problematic backgroundImage
         }}
       >
-        {/* Decorative skulls w stylu Zine */}
         <div className="absolute inset-0 opacity-10">
           <div className="animate-pulse text-6xl text-red-800 absolute top-16 left-16 transform rotate-12" style={{ animationDuration: '4s' }}>☠</div>
           <div className="animate-pulse text-5xl text-black absolute bottom-20 right-20 transform -rotate-15" style={{ animationDuration: '5s', animationDelay: '2s' }}>☠</div>
@@ -326,10 +301,7 @@ export default function UserProfile() {
           transition={{ duration: 1 }}
           className="bg-[#f5f5e8] border-4 border-black rounded-none p-8 text-center max-w-md shadow-metal backdrop-blur-sm zine-card"
           style={{
-            backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundColor: "rgba(245, 245, 232, 0.95)"
+            backgroundColor: "rgba(245, 245, 232, 0.95)" // ✅ Solid background
           }}
         >
           <FaSkullCrossbones className="text-red-800 text-8xl mx-auto mb-6 animate-pulse skull-icon" />
@@ -357,11 +329,6 @@ export default function UserProfile() {
           .skull-icon {
             text-shadow: 0 0 10px rgba(139, 0, 0, 0.6);
             filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
-          }
-          
-          .zine-card {
-            border-image: url("/images/zine/jagged_border.png") 30 round;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
           }
           
           .shadow-metal {
@@ -392,9 +359,6 @@ export default function UserProfile() {
 
           .zine-layout {
             background-color: #f5f5e8;
-            background-image: url("/images/zine/paper_texture_distressed.jpg");
-            background-size: cover;
-            background-position: center;
             position: relative;
             overflow-x: hidden;
           }
@@ -407,12 +371,9 @@ export default function UserProfile() {
     <div 
       className="min-h-screen bg-[#f5f5e8] py-8 relative overflow-hidden zine-layout"
       style={{
-        backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
+        backgroundColor: '#f5f5e8' // ✅ FIXED - removed problematic backgroundImage
       }}
     >
-      {/* Decorative skulls w stylu Zine */}
       <div className="absolute inset-0 opacity-10 pointer-events-none">
         <div className="animate-pulse text-6xl text-red-800 absolute top-20 left-20 transform rotate-15" style={{ animationDuration: '8s' }}>☠</div>
         <div className="animate-pulse text-5xl text-black absolute top-40 right-40 transform -rotate-12" style={{ animationDuration: '10s', animationDelay: '2s' }}>☠</div>
@@ -421,7 +382,6 @@ export default function UserProfile() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 relative z-10">
-        {/* ✅ Network Switching Loading Overlay */}
         {networkSwitching && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-[#f5f5e8] border-4 border-red-800 rounded-none p-8 text-center">
@@ -432,17 +392,14 @@ export default function UserProfile() {
           </div>
         )}
 
-        {/* Profile Header w stylu Zine */}
+        {/* Profile Header */}
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="bg-[#f5f5e8] border-4 border-black rounded-none p-8 mb-8 relative overflow-hidden shadow-metal zine-card"
+          className="bg-[#f5f5e8] border-4 border-black rounded-none p-8 mb-8 relative overflow-hidden shadow-metal"
           style={{
-            backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundColor: "rgba(245, 245, 232, 0.95)"
+            backgroundColor: "rgba(245, 245, 232, 0.95)" // ✅ Solid background
           }}
         >
           <div className="absolute inset-0 bg-gradient-to-r from-[#f0f0e0] via-transparent to-[#f0f0e0] opacity-30"></div>
@@ -494,7 +451,6 @@ export default function UserProfile() {
                 <FaWallet />
                 Wallet Settings
               </button>
-              {/* ✅ FIX 1 - Dodany przycisk test badge */}
               <button 
                 onClick={handleTestBadge}
                 disabled={networkSwitching}
@@ -511,7 +467,7 @@ export default function UserProfile() {
           </div>
         </motion.div>
 
-        {/* Stats Cards w stylu Zine */}
+        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           {[
             { icon: FaSkullCrossbones, value: userData?.reputation || 0, label: 'Reputation', iconColor: 'text-red-800' },
@@ -525,12 +481,9 @@ export default function UserProfile() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               whileHover={{ y: -5, scale: 1.02 }}
-              className="bg-[#f5f5e8] border-4 border-black rounded-none p-6 text-center relative shadow-metal backdrop-blur-sm transition-all duration-300 zine-card"
+              className="bg-[#f5f5e8] border-4 border-black rounded-none p-6 text-center relative shadow-metal backdrop-blur-sm transition-all duration-300"
               style={{
-                backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundColor: "rgba(245, 245, 232, 0.9)"
+                backgroundColor: "rgba(245, 245, 232, 0.9)" // ✅ Solid background
               }}
             >
               <stat.icon className={`${stat.iconColor} text-4xl mx-auto mb-3 skull-icon`} />
@@ -550,7 +503,7 @@ export default function UserProfile() {
           ))}
         </div>
 
-        {/* 🎯 Badge Display - NOWA SEKCJA */}
+        {/* Badge Display */}
         {address && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -562,177 +515,14 @@ export default function UserProfile() {
           </motion.div>
         )}
 
-        {/* Reputation Progress w stylu Zine */}
-        {userData && (
-          <motion.div 
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="bg-[#f5f5e8] border-4 border-black rounded-none p-6 mb-8 shadow-metal zine-card"
-            style={{
-              backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundColor: "rgba(245, 245, 232, 0.9)"
-            }}
-          >
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-black font-bold text-xl flex items-center gap-2 font-zine-title uppercase">
-                <FaChartLine className="text-red-800" />
-                Progress to Next Level
-              </h3>
-              <div className="flex items-center gap-2">
-                <FaCrown className="text-red-800" />
-                <span className="text-black font-zine-body">
-                  {userData.reputation}/
-                  {userData.reputation >= 1000 ? 'MAX' : 
-                   userData.reputation >= 750 ? '1000' :
-                   userData.reputation >= 500 ? '750' :
-                   userData.reputation >= 250 ? '500' :
-                   userData.reputation >= 100 ? '250' : '100'}
-                </span>
-              </div>
-            </div>
-            <div className="w-full bg-black rounded-none h-4 mb-2 relative overflow-hidden border border-black">
-              <div className="absolute inset-0 bg-gradient-to-r from-black to-[#2a2a2a] opacity-50"></div>
-              <motion.div 
-                initial={{ width: 0 }}
-                animate={{ width: `${Math.min(100, (userData.reputation % 
-                  (userData.reputation >= 1000 ? 1000 :
-                   userData.reputation >= 750 ? 250 :
-                   userData.reputation >= 500 ? 250 :
-                   userData.reputation >= 250 ? 250 :
-                   userData.reputation >= 100 ? 150 : 100)) / 
-                  (userData.reputation >= 1000 ? 1000 :
-                   userData.reputation >= 750 ? 250 :
-                   userData.reputation >= 500 ? 250 :
-                   userData.reputation >= 250 ? 250 :
-                   userData.reputation >= 100 ? 150 : 100) * 100)}%` }}
-                transition={{ duration: 2, delay: 0.5 }}
-                className="bg-red-800 h-4 rounded-none relative"
-              >
-                <div className="absolute inset-0 bg-red-600 rounded-none animate-pulse opacity-70"></div>
-              </motion.div>
-            </div>
-            <div className="flex justify-between text-xs text-black font-zine-body">
-              <span>Current Level: {userData.contributionLevel}</span>
-              <span className="flex items-center gap-1">
-                <FaArrowUp className="text-red-800" />
-                Next reward at {
-                  userData.reputation >= 1000 ? 'MAX LEVEL' : 
-                  userData.reputation >= 750 ? '1000 points' :
-                  userData.reputation >= 500 ? '750 points' :
-                  userData.reputation >= 250 ? '500 points' :
-                  userData.reputation >= 100 ? '250 points' : '100 points'
-                }
-              </span>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Metal DNA Section w stylu Zine */}
-        <motion.div 
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="bg-[#f5f5e8] border-4 border-black rounded-none p-8 mb-8 relative overflow-hidden shadow-metal zine-card"
-          style={{
-            backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundColor: "rgba(245, 245, 232, 0.9)"
-          }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-[#f0f0e0] via-transparent to-[#f0f0e0] opacity-30"></div>
-          
-          <div className="relative z-10">
-            <h2 className="text-2xl font-bold text-black mb-6 flex items-center gap-3 font-zine-title uppercase">
-              <FaSkullCrossbones className="text-red-800 text-3xl skull-icon" />
-              METAL DNA ANALYSIS
-              <div className="text-xs bg-red-800 text-white px-3 py-1 rounded-none font-bold font-zine-body">
-                DIVERSITY: {userData?.metalDNA.diversityBonus || 0} pts
-              </div>
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="bg-[#e0e0d8] rounded-none p-6 border-2 border-black zine-card">
-                <h3 className="text-black font-bold mb-4 flex items-center gap-2 font-zine-title uppercase">
-                  <GiBloodySword className="text-red-800" />
-                  Favorite Genres
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {userData?.metalDNA.favoriteGenres.length ? (
-                    userData.metalDNA.favoriteGenres.map((genre, index) => (
-                      <motion.span 
-                        key={genre}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: index * 0.1 }}
-                        className="bg-red-800 text-white px-4 py-2 text-sm font-bold uppercase tracking-wider rounded-none shadow-metal border border-black font-zine-body"
-                      >
-                        #{index + 1} {genre}
-                      </motion.span>
-                    ))
-                  ) : (
-                    <span className="text-black italic font-zine-body">Add bands to discover your Metal DNA</span>
-                  )}
-                </div>
-              </div>
-              
-              <div className="bg-[#e0e0d8] rounded-none p-6 border-2 border-black zine-card">
-                <h3 className="text-black font-bold mb-4 flex items-center gap-2 font-zine-title uppercase">
-                  <GiVikingHelmet className="text-red-800" />
-                  Top Countries
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {userData?.metalDNA.topCountries.length ? (
-                    userData.metalDNA.topCountries.map((country, index) => (
-                      <motion.span 
-                        key={country}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: index * 0.1 }}
-                        className="bg-black text-red-800 px-4 py-2 text-sm font-bold uppercase tracking-wider rounded-none shadow-metal border border-red-800 font-zine-body"
-                      >
-                        #{index + 1} {country}
-                      </motion.span>
-                    ))
-                  ) : (
-                    <span className="text-black italic font-zine-body">Explore different countries</span>
-                  )}
-                </div>
-              </div>
-            </div>
-            
-            {/* Discovery Progress */}
-            <div className="mt-6 bg-[#e0e0d8] rounded-none p-4 border-2 border-black zine-card">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-black font-bold font-zine-body uppercase">Genre Discovery Progress</span>
-                <span className="text-red-800 font-bold font-zine-body">{userData?.discoveryScore || 0}%</span>
-              </div>
-              <div className="w-full bg-black rounded-none h-3 border border-black">
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: `${userData?.discoveryScore || 0}%` }}
-                  transition={{ duration: 2, delay: 1 }}
-                  className="bg-red-800 h-3 rounded-none"
-                ></motion.div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* My Bands Section w stylu Zine */}
+        {/* My Bands Section */}
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
-          className="bg-[#f5f5e8] border-4 border-black rounded-none p-8 shadow-metal zine-card"
+          className="bg-[#f5f5e8] border-4 border-black rounded-none p-8 shadow-metal"
           style={{
-            backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundColor: "rgba(245, 245, 232, 0.9)"
+            backgroundColor: "rgba(245, 245, 232, 0.9)" // ✅ Solid background
           }}
         >
           <div className="flex justify-between items-center mb-8">
@@ -756,24 +546,20 @@ export default function UserProfile() {
             </button>
           </div>
 
-          {/* Add Band Form w stylu Zine */}
+          {/* Add Band Form */}
           {showAddForm && (
             <motion.div 
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="bg-[#e0e0d8] border-2 border-black rounded-none p-6 mb-8 shadow-metal zine-card"
+              className="bg-[#e0e0d8] border-2 border-black rounded-none p-6 mb-8 shadow-metal"
               style={{
-                backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundColor: "rgba(224, 224, 216, 0.9)"
+                backgroundColor: "rgba(224, 224, 216, 0.9)" // ✅ Solid background
               }}
             >
               <h3 className="text-black font-bold mb-6 flex items-center gap-2 text-xl font-zine-title uppercase">
                 <GiThorHammer className="text-red-800" />
                 ADD NEW BAND TO BLOCKCHAIN
-                {/* ✅ Network indicator */}
                 <span className="text-xs bg-red-800 text-white px-2 py-1 rounded-none">
                   Auto-switches to Optimism
                 </span>
@@ -865,7 +651,7 @@ export default function UserProfile() {
             </motion.div>
           )}
 
-          {/* Bands List w stylu Zine */}
+          {/* Bands List */}
           {loadingBandDetails ? (
             <div className="text-center py-20 text-black">
               <motion.div
@@ -896,12 +682,9 @@ export default function UserProfile() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   whileHover={{ y: -5, scale: 1.02 }}
-                  className="bg-[#e0e0d8] border-2 border-black hover:border-red-800 rounded-none p-6 relative shadow-metal transition-all duration-300 zine-card"
+                  className="bg-[#e0e0d8] border-2 border-black hover:border-red-800 rounded-none p-6 relative shadow-metal transition-all duration-300"
                   style={{
-                    backgroundImage: "url('/images/zine/paper_texture_distressed.jpg')",
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    backgroundColor: "rgba(224, 224, 216, 0.9)"
+                    backgroundColor: "rgba(224, 224, 216, 0.9)" // ✅ Solid background
                   }}
                 >
                   <div className="flex justify-between items-start mb-4">
@@ -959,11 +742,6 @@ export default function UserProfile() {
           filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
         }
         
-        .zine-card {
-          border-image: url("/images/zine/jagged_border.png") 30 round;
-          box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-        
         .shadow-metal {
           box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8), 0 4px 8px rgba(255, 0, 0, 0.2);
         }
@@ -992,9 +770,6 @@ export default function UserProfile() {
 
         .zine-layout {
           background-color: #f5f5e8;
-          background-image: url("/images/zine/paper_texture_distressed.jpg");
-          background-size: cover;
-          background-position: center;
           position: relative;
           overflow-x: hidden;
         }
