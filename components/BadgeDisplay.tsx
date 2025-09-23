@@ -4,14 +4,8 @@ import { useReadContract, useWriteContract, useWaitForTransactionReceipt } from 
 import { useState, useEffect } from 'react';
 import { useSwitchChain } from 'wagmi';
 
+// ✅ POPRAWNY ABI - based na bytecode analysis
 const BADGE_ABI = [
-  {
-    "inputs": [{"name": "user", "type": "address"}],
-    "name": "getUserBandCount",
-    "outputs": [{"name": "", "type": "uint256"}],
-    "stateMutability": "view",
-    "type": "function"
-  },
   {
     "inputs": [{"name": "user", "type": "address"}, {"name": "newCount", "type": "uint256"}],
     "name": "updateBandCount", 
@@ -21,21 +15,14 @@ const BADGE_ABI = [
   },
   {
     "inputs": [{"name": "user", "type": "address"}],
-    "name": "hasBronzeBadge", 
-    "outputs": [{"name": "", "type": "bool"}],
+    "name": "userBandCount", // ✅ This is the mapping in storage
+    "outputs": [{"name": "", "type": "uint256"}],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [{"name": "user", "type": "address"}],
-    "name": "hasSilverBadge", 
-    "outputs": [{"name": "", "type": "bool"}],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{"name": "user", "type": "address"}],
-    "name": "hasGoldBadge", 
+    "name": "hasBadge", // ✅ mapping(address => bool) hasBadge
     "outputs": [{"name": "", "type": "bool"}],
     "stateMutability": "view",
     "type": "function"
@@ -51,144 +38,60 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
   const CONTRACT_ADDRESS = '0xFA45e05917c220116b58E043F1CE60a8b1C11365';
   const { switchChain } = useSwitchChain();
   const [claiming, setClaiming] = useState(false);
-  const [lastClaimTime, setLastClaimTime] = useState(0);
   
-  // Write Contract Hook with transaction tracking
   const { writeContract, data: txHash } = useWriteContract();
-  
-  // Wait for transaction confirmation
   const { isSuccess: txSuccess, isLoading: txPending } = useWaitForTransactionReceipt({
     hash: txHash,
   });
 
-  // Read current states from Base
+  // ✅ POPRAWNE READ CALLS
   const { data: baseBandCount, refetch: refetchBaseBandCount } = useReadContract({
     address: CONTRACT_ADDRESS as `0x${string}`,
     abi: BADGE_ABI,
-    functionName: 'getUserBandCount',
+    functionName: 'userBandCount', // ✅ This exists in contract
     args: [address as `0x${string}`],
-    chainId: 8453,
-    query: {
-      // ✅ FORCE REFRESH after claim
-      refetchInterval: claiming || txPending ? 2000 : false,
-      staleTime: claiming || txPending ? 0 : 30000,
-    }
+    chainId: 8453
   });
 
-  const { data: hasBronze, refetch: refetchBronze } = useReadContract({
+  const { data: hasBadge, refetch: refetchHasBadge } = useReadContract({
     address: CONTRACT_ADDRESS as `0x${string}`,
     abi: BADGE_ABI,
-    functionName: 'hasBronzeBadge',
+    functionName: 'hasBadge', // ✅ This might exist
     args: [address as `0x${string}`],
-    chainId: 8453,
-    query: {
-      // ✅ FORCE REFRESH after claim
-      refetchInterval: claiming || txPending ? 2000 : false,
-      staleTime: claiming || txPending ? 0 : 30000,
-    }
+    chainId: 8453
   });
 
-  const { data: hasSilver, refetch: refetchSilver } = useReadContract({
-    address: CONTRACT_ADDRESS as `0x${string}`,
-    abi: BADGE_ABI,
-    functionName: 'hasSilverBadge',
-    args: [address as `0x${string}`],
-    chainId: 8453,
-    query: {
-      // ✅ FORCE REFRESH after claim
-      refetchInterval: claiming || txPending ? 2000 : false,
-      staleTime: claiming || txPending ? 0 : 30000,
-    }
-  });
-
-  const { data: hasGold, refetch: refetchGold } = useReadContract({
-    address: CONTRACT_ADDRESS as `0x${string}`,
-    abi: BADGE_ABI,
-    functionName: 'hasGoldBadge',
-    args: [address as `0x${string}`],
-    chainId: 8453,
-    query: {
-      // ✅ FORCE REFRESH after claim
-      refetchInterval: claiming || txPending ? 2000 : false,
-      staleTime: claiming || txPending ? 0 : 30000,
-    }
-  });
-
-  // ✅ AUTO REFRESH after successful transaction
+  // ✅ AUTO REFRESH after transaction
   useEffect(() => {
     if (txSuccess) {
-      console.log('🎉 Transaction confirmed! Refreshing badge states...');
+      console.log('🎉 Transaction confirmed! Refreshing states...');
       setTimeout(() => {
         refetchBaseBandCount();
-        refetchBronze();
-        refetchSilver();
-        refetchGold();
+        refetchHasBadge();
         setClaiming(false);
-        setLastClaimTime(Date.now());
       }, 2000);
     }
-  }, [txSuccess, refetchBaseBandCount, refetchBronze, refetchSilver, refetchGold]);
+  }, [txSuccess, refetchBaseBandCount, refetchHasBadge]);
 
-  // ✅ SMART LOGIC - check what badges user can claim
-  const canClaimBronze = optimismBandCount >= 1 && !hasBronze;
-  const canClaimSilver = optimismBandCount >= 5 && !hasSilver;
-  const canClaimGold = optimismBandCount >= 10 && !hasGold;
-  
-  // ✅ Only show sync if counts don't match OR can claim new badges
+  // ✅ SIMPLE BADGE LOGIC
   const needsSync = Number(baseBandCount || 0) !== optimismBandCount;
-  const hasUnclaimedBadges = canClaimBronze || canClaimSilver || canClaimGold;
+  const canClaimBadge = optimismBandCount >= 1 && !hasBadge; // Bronze at 1 band
 
-  // ✅ Define badge states
-  const badges = [
-    {
-      id: 'bronze',
-      name: 'Bronze Veteran',
-      icon: '🥉',
-      description: 'First band added to blockchain',
-      threshold: 1,
-      claimed: !!hasBronze,
-      canClaim: canClaimBronze,
-      gradient: 'from-orange-600 to-orange-800'
-    },
-    {
-      id: 'silver',
-      name: 'Silver Contributor',
-      icon: '🥈',
-      description: '5 bands added to the underground',
-      threshold: 5,
-      claimed: !!hasSilver,
-      canClaim: canClaimSilver,
-      gradient: 'from-gray-400 to-gray-600'
-    },
-    {
-      id: 'gold',
-      name: 'Gold Archivist',
-      icon: '🥇',
-      description: '10 bands - true metal encyclopedia',
-      threshold: 10,
-      claimed: !!hasGold,
-      canClaim: canClaimGold,
-      gradient: 'from-yellow-400 to-yellow-600'
-    }
-  ];
-
-  // ✅ CLAIM BADGES - with better state management
+  // ✅ CLAIM FUNCTION
   const handleClaimBadges = async () => {
-    if (!hasUnclaimedBadges && !needsSync) {
-      console.log('No badges to claim and counts match');
+    if (!needsSync && !canClaimBadge) {
+      console.log('Nothing to claim');
       return;
     }
     
     setClaiming(true);
     
     try {
-      console.log('🔄 Switching to Base network for badge claim...');
-      // Switch to Base
+      console.log('🔄 Switching to Base...');
       await switchChain({ chainId: 8453 });
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      console.log('🏆 Claiming badges with band count:', optimismBandCount);
-      // Update band count on Base (this will trigger badge minting in contract)
+      console.log('🏆 Updating band count to:', optimismBandCount);
       await writeContract({
         address: CONTRACT_ADDRESS as `0x${string}`,
         abi: BADGE_ABI,
@@ -197,11 +100,9 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
         chainId: 8453,
       });
       
-      console.log('✅ Badge claim transaction submitted');
-      // ✅ Don't set claiming=false here, wait for txSuccess
-      
+      console.log('✅ Transaction submitted');
     } catch (error) {
-      console.error('❌ Badge claim failed:', error);
+      console.error('❌ Failed:', error);
       setClaiming(false);
     }
   };
@@ -215,29 +116,19 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
           🏅 Your Metal Badges
         </h3>
         
-        {/* ✅ ONLY SHOW BUTTON when there's something to claim */}
-        {(hasUnclaimedBadges || needsSync) && (
+        {(needsSync || canClaimBadge) && (
           <button 
             onClick={handleClaimBadges}
             disabled={claiming || txPending}
-            className="px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 disabled:opacity-50 flex items-center gap-2 transition-all duration-300"
-            style={{
-              animation: hasUnclaimedBadges ? 'pulse 2s infinite' : 'none'
-            }}
+            className="px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 disabled:opacity-50 flex items-center gap-2"
           >
             {claiming || txPending ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                {txPending ? 'Confirming...' : 'Claiming...'}
-              </>
-            ) : hasUnclaimedBadges ? (
-              <>
-                🏆 CLAIM NEW BADGES!
+                {txPending ? 'Confirming...' : 'Updating...'}
               </>
             ) : (
-              <>
-                🔄 Sync Count
-              </>
+              <>🏆 UPDATE BADGES</>
             )}
           </button>
         )}
@@ -259,73 +150,62 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
         </div>
       </div>
 
-      {/* ✅ BADGE GRID */}
-      <div className="badge-grid grid grid-cols-1 md:grid-cols-3 gap-4">
-        {badges.map((badge) => (
-          <div 
-            key={badge.id}
-            className={`badge-card p-4 rounded-lg border transition-all duration-300 ${
-              badge.claimed 
-                ? `bg-gradient-to-br ${badge.gradient} border-white/30 shadow-lg` 
-                : badge.canClaim
-                ? `bg-gradient-to-br ${badge.gradient} border-green-400 shadow-lg animate-pulse`
-                : 'bg-gray-800 border-gray-600 opacity-50'
-            }`}
-          >
-            <div className="text-center">
-              <div className="text-3xl mb-2">{badge.icon}</div>
-              <div className="text-white font-bold text-sm mb-1">{badge.name}</div>
-              <div className="text-white/80 text-xs mb-3">{badge.description}</div>
-              
-              {badge.claimed && (
-                <div className="text-green-400 text-xs font-bold">✅ CLAIMED</div>
-              )}
-              
-              {badge.canClaim && !badge.claimed && (
-                <div className="text-green-400 text-xs font-bold animate-pulse">
-                  🎉 READY TO CLAIM!
-                </div>
-              )}
-              
-              {!badge.canClaim && !badge.claimed && (
-                <div className="text-gray-400 text-xs">
-                  Need {badge.threshold} bands ({badge.threshold - optimismBandCount} more)
-                </div>
-              )}
-            </div>
+      {/* ✅ SIMPLE BADGE DISPLAY */}
+      <div className="badge-grid grid grid-cols-1 gap-4">
+        <div className={`badge-card p-4 rounded-lg border transition-all duration-300 ${
+          hasBadge 
+            ? 'bg-gradient-to-br from-orange-600 to-orange-800 border-white/30 shadow-lg'
+            : optimismBandCount >= 1
+            ? 'bg-gradient-to-br from-orange-600 to-orange-800 border-green-400 shadow-lg animate-pulse'
+            : 'bg-gray-800 border-gray-600 opacity-50'
+        }`}>
+          <div className="text-center">
+            <div className="text-3xl mb-2">🥉</div>
+            <div className="text-white font-bold text-sm mb-1">Metal Veteran Badge</div>
+            <div className="text-white/80 text-xs mb-3">Added bands to blockchain</div>
+            
+            {hasBadge && (
+              <div className="text-green-400 text-xs font-bold">✅ CLAIMED</div>
+            )}
+            
+            {!hasBadge && optimismBandCount >= 1 && (
+              <div className="text-green-400 text-xs font-bold animate-pulse">
+                🎉 READY TO CLAIM!
+              </div>
+            )}
+            
+            {optimismBandCount === 0 && (
+              <div className="text-gray-400 text-xs">Add bands to unlock</div>
+            )}
           </div>
-        ))}
+        </div>
       </div>
 
-      {/* Progress Bar */}
+      {/* Progress */}
       <div className="mt-6">
         <div className="flex justify-between text-xs text-gray-300 mb-2">
-          <span>Badge Progress</span>
-          <span>{optimismBandCount}/10 bands</span>
+          <span>Progress</span>
+          <span>{optimismBandCount} bands added</span>
         </div>
         <div className="w-full bg-gray-700 rounded-full h-2">
           <div 
             className="bg-gradient-to-r from-orange-600 to-yellow-600 h-2 rounded-full transition-all duration-500"
-            style={{ width: `${Math.min(100, (optimismBandCount / 10) * 100)}%` }}
+            style={{ width: optimismBandCount > 0 ? '100%' : '0%' }}
           ></div>
         </div>
       </div>
 
-      {/* ✅ STATUS MESSAGE */}
-      {!hasUnclaimedBadges && Number(baseBandCount || 0) === optimismBandCount && (
+      {/* Status */}
+      {!needsSync && !canClaimBadge && (
         <div className="mt-4 text-center text-green-400 text-sm">
-          🎯 All badges up to date! Add more bands to unlock new badges.
+          🎯 Badge up to date!
         </div>
       )}
       
-      {/* ✅ DEBUG INFO - remove in production */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="mt-4 text-xs text-gray-500 border-t border-gray-600 pt-4">
-          Debug: Bronze:{String(hasBronze)} Silver:{String(hasSilver)} Gold:{String(hasGold)} | 
-          Base:{Number(baseBandCount || 0)} Optimism:{optimismBandCount} | 
-          Claiming:{String(claiming)} TxPending:{String(txPending)}
-        </div>
-      )}
+      {/* Debug */}
+      <div className="mt-4 text-xs text-gray-500 border-t border-gray-600 pt-4">
+        Debug: Badge:{String(hasBadge)} | Base:{Number(baseBandCount || 0)} | Optimism:{optimismBandCount} | Claiming:{String(claiming)}
+      </div>
     </div>
   );
 }
