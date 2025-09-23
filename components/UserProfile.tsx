@@ -254,25 +254,6 @@ const handleAddBand = async () => {
 };
 
 
-  const handleTestBadge = async () => {
-    setNetworkSwitching(true);
-    
-    try {
-      console.log('🔄 Switching to Base network for badge test...');
-      await switchChain({ chainId: 8453 });
-      console.log('✅ Successfully switched to Base');
-      
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('🏆 Testing badge on Base network');
-      
-    } catch (error) {
-      console.error('❌ Error switching to Base network:', error);
-      alert('Failed to switch to Base network for badge testing.');
-    } finally {
-      setNetworkSwitching(false);
-    }
-  };
-
   // ✅ POPRAWIONE - tylko refetchUserStats
   useEffect(() => {
     if (isSuccess) {
@@ -417,26 +398,20 @@ const handleAddBand = async () => {
             <div className="flex gap-3">
               <button 
                 onClick={openReownProfile}
-                className="bg-gradient-to-r from-red-800 to-black text-white px-6 py-3 font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 flex items-center gap-2 rounded-none shadow-lg"
+                className="skull-button text-[#d0d0d0] px-6 py-3 font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 flex items-center gap-2 rounded-none shadow-metal font-zine-body"
               >
                 <FaWallet />
                 Wallet Settings
               </button>
-              <button 
-                onClick={handleTestBadge}
-                disabled={networkSwitching}
-                className="bg-black border-2 border-red-800 text-red-800 hover:bg-red-800 hover:text-white disabled:opacity-50 px-6 py-3 font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 flex items-center gap-2 rounded-none shadow-lg"
-              >
-                <FaTrophy />
-                Test Badge
-              </button>
-              <button className="bg-black border-2 border-red-800 text-red-800 hover:bg-red-800 hover:text-white px-6 py-3 font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 flex items-center gap-2 rounded-none shadow-lg">
+              
+              <button className="bg-black border-2 border-red-800 text-red-800 hover:bg-red-800 hover:text-white px-6 py-3 font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 flex items-center gap-2 rounded-none shadow-metal font-zine-body">
                 <FaCog />
                 Settings
               </button>
             </div>
           </div>
         </motion.div>
+
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -482,7 +457,10 @@ const handleAddBand = async () => {
             transition={{ duration: 0.8, delay: 0.5 }}
             className="mb-8"
           >
-            <BadgeDisplay address={address} />
+            <BadgeDisplay 
+  address={address} 
+  optimismBandCount={Number(contractUserStats || 0)} 
+/>
           </motion.div>
         )}
 
