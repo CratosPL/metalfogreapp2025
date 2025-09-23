@@ -9,7 +9,7 @@ import { config } from '@/config';
 const CONTRACT_ADDRESS = '0xFA45e05917c220116b58E043F1CE60a8b1C11365' as `0x${string}`;
 const OPTIMISM_CHAIN_ID = 10; // Optimism Mainnet
 
-// ✅ SIMPLIFIED ABI - usunięte problematyczne funkcje
+// ✅ EXTENDED ABI - próbujemy dodać userBands z poprawną strukturą
 const ABI = [
   {
     "inputs": [
@@ -29,8 +29,22 @@ const ABI = [
     "outputs": [{"name": "", "type": "uint256"}],
     "stateMutability": "view",
     "type": "function"
+  },
+  // ✅ TRY TO ADD userBands - może zadziała z prostszą strukturą
+  {
+    "inputs": [{"name": "user", "type": "address"}, {"name": "index", "type": "uint256"}],
+    "name": "userBands",
+    "outputs": [
+      {"name": "name", "type": "string"},
+      {"name": "genre", "type": "string"}, 
+      {"name": "country", "type": "string"},
+      {"name": "year", "type": "uint256"},
+      {"name": "verified", "type": "bool"},
+      {"name": "timestamp", "type": "uint256"}
+    ],
+    "stateMutability": "view",
+    "type": "function"
   }
-  // ✅ USUNIĘTE userBands i getUserBands - powodowały błędy ABI
 ] as const;
 
 interface Band {
@@ -105,44 +119,43 @@ export function useMetalForgeContract() {
     return { data: null }; // Nie używamy tej funkcji
   };
 
-// ✅ UPDATED - Add Band Function dla Optimism
-const handleAddBand = async (name: string, genre: string, country: string, yearFormed: number, userAddress?: string) => {
-  if (!CONTRACT_ADDRESS) {
-    console.error('Contract address not configured');
-    return;
-  }
-
-  setIsLoading(true);
-  try {
-    console.log('🎸 Adding band to Optimism:', { name, genre, country, yearFormed });
-    
-    await writeContract({
-      address: CONTRACT_ADDRESS,
-      abi: ABI,
-      functionName: 'addBand',
-      args: [name, genre, country, BigInt(yearFormed)],
-      chainId: OPTIMISM_CHAIN_ID, // 🚀 OPTIMISM!
-    });
-    
-    console.log('✅ Band add transaction submitted');
-    
-    // ✅ CLEAR CACHE after successful add - use passed userAddress
-    if (userAddress) {
-      const cacheKey = `metalforge_bands_${userAddress}_${CONTRACT_ADDRESS}`;
-      localStorage.removeItem(cacheKey);
-      console.log('🗑️ Cleared cache for:', cacheKey);
+  // ✅ UPDATED - Add Band Function dla Optimism
+  const handleAddBand = async (name: string, genre: string, country: string, yearFormed: number, userAddress?: string) => {
+    if (!CONTRACT_ADDRESS) {
+      console.error('Contract address not configured');
+      return;
     }
-    
-  } catch (error) {
-    console.error('❌ Error adding band:', error);
-    throw error;
-  } finally {
-    setIsLoading(false);
-  }
-};
 
+    setIsLoading(true);
+    try {
+      console.log('🎸 Adding band to Optimism:', { name, genre, country, yearFormed });
+      
+      await writeContract({
+        address: CONTRACT_ADDRESS,
+        abi: ABI,
+        functionName: 'addBand',
+        args: [name, genre, country, BigInt(yearFormed)],
+        chainId: OPTIMISM_CHAIN_ID, // 🚀 OPTIMISM!
+      });
+      
+      console.log('✅ Band add transaction submitted');
+      
+      // ✅ CLEAR CACHE after successful add - use passed userAddress
+      if (userAddress) {
+        const cacheKey = `metalforge_bands_${userAddress}_${CONTRACT_ADDRESS}`;
+        localStorage.removeItem(cacheKey);
+        console.log('🗑️ Cleared cache for:', cacheKey);
+      }
+      
+    } catch (error) {
+      console.error('❌ Error adding band:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  // ✅ CRITICAL FIX - fetchUserBandDetails z PROPER CACHE
+  // ✅ FETCH REAL DATA - próbuje pobrać prawdziwe dane, jak nie może to pokazuje placeholder
   const fetchUserBandDetails = async (userAddress: string): Promise<Band[]> => {
     if (!CONTRACT_ADDRESS || !userAddress) return [];
     
@@ -166,7 +179,7 @@ const handleAddBand = async (name: string, genre: string, country: string, yearF
     try {
       console.log('📡 Fetching user band count from Optimism for:', userAddress);
       
-      // ✅ Pobierz tylko count - to działa bezpiecznie!
+      // ✅ Pobierz count
       const bandCount = await readContract(config, {
         address: CONTRACT_ADDRESS,
         abi: ABI,
@@ -187,44 +200,121 @@ const handleAddBand = async (name: string, genre: string, country: string, yearF
         return [];
       }
       
-      // ✅ Generate REALISTIC mock bands na podstawie prawdziwego count
-      const mockBands: Band[] = [];
+      // ✅ PRÓBUJ POBRAĆ PRAWDZIWE DANE - band by band
+      const realBands: Band[] = [];
       const totalBands = Number(bandCount);
       
-      // ✅ Realistic data based na tym że user dodał bandy
-      const metalGenres = ['Black Metal', 'Death Metal', 'Doom Metal', 'Thrash Metal', 'Folk Metal'];
-      const countries = ['Norway', 'Sweden', 'Finland', 'Poland', 'Germany'];
-      const bandNames = [
-        'Darkthrone', 'Mayhem', 'Burzum', 'Emperor', 'Immortal',
-        'Bathory', 'Venom', 'Celtic Frost', 'Mercyful Fate', 'Possessed'
-      ];
+      console.log(`🎯 Trying to fetch ${totalBands} real bands from blockchain...`);
       
       for (let i = 0; i < totalBands; i++) {
-        mockBands.push({
-          id: i + 1,
-          name: `${bandNames[i % bandNames.length]}${i > 9 ? ` Clone ${i}` : ''}`,
-          genre: metalGenres[i % metalGenres.length],
-          country: countries[i % countries.length],
-          yearFormed: 1980 + (i * 2),
-          addedBy: userAddress,
-          verified: i % 3 === 0, // Co trzeci band zweryfikowany
-          addedAt: new Date(Date.now() - (i * 24 * 60 * 60 * 1000)).toISOString().split('T')[0] // Różne daty
-        });
+        try {
+          console.log(`📡 Fetching band ${i} from blockchain...`);
+          
+          // ✅ PRÓBUJ POBRAĆ POJEDYNCZY BAND
+          const bandData = await readContract(config, {
+            address: CONTRACT_ADDRESS,
+            abi: ABI,
+            functionName: 'userBands',
+            args: [userAddress as `0x${string}`, BigInt(i)],
+            chainId: OPTIMISM_CHAIN_ID,
+          });
+          
+          console.log(`✅ Raw band data ${i}:`, bandData);
+          
+          // ✅ Parse prawdziwe dane
+          if (bandData && typeof bandData === 'object' && Array.isArray(bandData)) {
+            realBands.push({
+              id: i + 1,
+              name: bandData[0] || `Band ${i + 1}`, // name
+              genre: bandData[1] || 'Unknown', // genre  
+              country: bandData[2] || 'Unknown', // country
+              yearFormed: Number(bandData[3]) || new Date().getFullYear(), // year
+              addedBy: userAddress,
+              verified: bandData[4] || false, // verified
+              addedAt: bandData[5] ? new Date(Number(bandData[5]) * 1000).toISOString().split('T')[0] : new Date().toISOString().split('T')[0] // timestamp
+            });
+            console.log(`✅ Successfully parsed band ${i}: ${bandData[0]}`);
+          } else {
+            // ✅ Fallback - placeholder data
+            realBands.push({
+              id: i + 1,
+              name: `Band #${i + 1} (Real on blockchain)`,
+              genre: 'Metal',
+              country: 'Unknown',
+              yearFormed: new Date().getFullYear(),
+              addedBy: userAddress,
+              verified: false,
+              addedAt: new Date().toISOString().split('T')[0]
+            });
+            console.log(`⚠️ Using placeholder for band ${i}`);
+          }
+          
+        } catch (bandError) {
+          console.error(`❌ Error fetching band ${i}:`, bandError);
+          
+          // ✅ Fallback - placeholder
+          realBands.push({
+            id: i + 1,
+            name: `Band #${i + 1} (Real on blockchain - fetch failed)`,
+            genre: 'Unknown',
+            country: 'Unknown', 
+            yearFormed: new Date().getFullYear(),
+            addedBy: userAddress,
+            verified: false,
+            addedAt: new Date().toISOString().split('T')[0]
+          });
+        }
+        
+        // ✅ Delay between requests
+        if (i < totalBands - 1) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
       }
       
-      console.log(`✅ Generated ${mockBands.length} realistic bands based on blockchain count`);
+      console.log(`✅ Successfully fetched ${realBands.length} bands (${realBands.filter(b => !b.name.includes('fetch failed')).length} real, ${realBands.filter(b => b.name.includes('fetch failed')).length} placeholders)`);
       
       // ✅ SAVE TO CACHE
       localStorage.setItem(cacheKey, JSON.stringify({
-        data: mockBands,
+        data: realBands,
         timestamp: Date.now()
       }));
       
-      return mockBands;
+      return realBands;
       
     } catch (error) {
-      console.error('❌ Error fetching user band count:', error);
-      return [];
+      console.error('❌ Error fetching user bands:', error);
+      
+      // ✅ ULTIMATE FALLBACK - show że ma bandy ale nie można pobrać
+      const placeholderBands: Band[] = [];
+      
+      try {
+        // Try to get at least the count
+        const bandCount = await readContract(config, {
+          address: CONTRACT_ADDRESS,
+          abi: ABI,
+          functionName: 'userBandCount', 
+          args: [userAddress as `0x${string}`],
+          chainId: OPTIMISM_CHAIN_ID,
+        });
+        
+        const count = Number(bandCount) || 0;
+        for (let i = 0; i < count; i++) {
+          placeholderBands.push({
+            id: i + 1,
+            name: `Your Band #${i + 1} (Real on blockchain)`,
+            genre: 'Metal',
+            country: 'Unknown',
+            yearFormed: new Date().getFullYear(),
+            addedBy: userAddress,
+            verified: false,
+            addedAt: new Date().toISOString().split('T')[0]
+          });
+        }
+      } catch (countError) {
+        console.error('❌ Even count failed:', countError);
+      }
+      
+      return placeholderBands;
     }
   };
 
