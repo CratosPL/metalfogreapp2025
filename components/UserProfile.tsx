@@ -91,11 +91,10 @@ export default function UserProfile() {
     contractAddress 
   } = useMetalForgeContract();
 
-// ✅ POPRAWIONE - tylko useUserStats ma refetch
-const { data: contractUserStats, refetch: refetchUserStats } = useUserStats(address || '');
-const contractUserBands = useUserBands(address || ''); // ✅ Bez destructuring - to mock function
-const { data: totalBands } = useTotalBands();
-
+  // ✅ POPRAWIONE - tylko useUserStats ma refetch
+  const { data: contractUserStats, refetch: refetchUserStats } = useUserStats(address || '');
+  const contractUserBands = useUserBands(address || ''); // ✅ Bez destructuring - to mock function
+  const { data: totalBands } = useTotalBands();
 
   const metalGenres = [
     'Black Metal', 'Death Metal', 'Doom Metal', 'Thrash Metal', 
@@ -115,7 +114,7 @@ const { data: totalBands } = useTotalBands();
   // ✅ FIXED calculateUserData - handles contractStats as number
   const calculateUserData = (contractStats: any, bands: Band[] = []): UserData => {
     // ✅ Handle direct number or object
-    const totalBands = typeof contractStats === 'number' ? contractStats : Number(contractStats?.data || 0);
+    const totalBands = typeof contractStats === 'number' ? contractStats : Number(contractStats || 0);
     
     const genres = bands.map(band => band.genre).filter(Boolean);
     const genreCounts = genres.reduce((acc, genre) => {
@@ -168,29 +167,37 @@ const { data: totalBands } = useTotalBands();
     };
   };
 
-  // ✅ FIXED useEffect - prevent infinite loop
+  // ✅ CRITICAL FIX - useEffect prevent infinite loops
   useEffect(() => {
     let cancelled = false;
 
     const loadBandsData = async () => {
-      if (!isConnected || !address || loadingBandDetails || cancelled) {
+      // ✅ PREVENT multiple calls - check if already loading or have data
+      if (!isConnected || !address || loadingBandDetails || cancelled || userBands.length > 0) {
         return;
       }
 
+      // ✅ Only proceed if contractUserStats is valid
+      if (contractUserStats === undefined) {
+        return;
+      }
+
+      console.log('🔄 Starting to load bands data...', { contractUserStats, address });
       setLoadingBandDetails(true);
       
       try {
         const realBandsData = await fetchUserBandDetails(address);
+        console.log('📊 Fetched bands data:', realBandsData.length);
         
-        if (!cancelled) {
-          setUserBands(realBandsData);
-          // ✅ Use contractUserStats directly
+        if (!cancelled && realBandsData) {
+          setUserBands(realBandsData); // ✅ This should update UI!
+          console.log('✅ Updated userBands state to:', realBandsData.length);
           const calculatedData = calculateUserData(contractUserStats, realBandsData);
           setUserData(calculatedData);
         }
         
       } catch (error) {
-        console.error('Error loading bands:', error);
+        console.error('❌ Error loading bands:', error);
         if (!cancelled) {
           setUserBands([]);
           setUserData(calculateUserData(0, []));
@@ -202,45 +209,50 @@ const { data: totalBands } = useTotalBands();
       }
     };
 
-    // ✅ Only trigger when we have contractUserStats data
-    if (contractUserStats !== undefined && !loadingBandDetails) {
+    // ✅ TRIGGER only when we don't have data yet
+    if (contractUserStats !== undefined && userBands.length === 0 && !loadingBandDetails) {
+      console.log('🎯 Triggering loadBandsData for first time...');
       loadBandsData();
     }
 
     return () => {
       cancelled = true;
     };
-  }, [address, isConnected, contractUserStats, fetchUserBandDetails]); // ✅ Simple dependencies
+  }, [address, isConnected, contractUserStats]); // ✅ Minimal deps!
 
-  const handleAddBand = async () => {
-    if (!newBand.name || !newBand.genre || !newBand.country || !address) return;
+// ✅ FIXED - pass address to addBand
+const handleAddBand = async () => {
+  if (!newBand.name || !newBand.genre || !newBand.country || !address) return;
 
-    setNetworkSwitching(true);
+  setNetworkSwitching(true);
+  
+  try {
+    console.log('🔄 Switching to Optimism network...');
+    await switchChain({ chainId: 10 });
+    console.log('✅ Successfully switched to Optimism');
     
-    try {
-      console.log('🔄 Switching to Optimism network...');
-      await switchChain({ chainId: 10 });
-      console.log('✅ Successfully switched to Optimism');
-      
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      await addBand(
-        newBand.name,
-        newBand.genre, 
-        newBand.country,
-        newBand.yearFormed
-      );
-      
-      setNewBand({ name: '', genre: '', country: '', yearFormed: new Date().getFullYear() });
-      setShowAddForm(false);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // ✅ Pass address to addBand function
+    await addBand(
+      newBand.name,
+      newBand.genre, 
+      newBand.country,
+      newBand.yearFormed,
+      address // ✅ Pass address here!
+    );
+    
+    setNewBand({ name: '', genre: '', country: '', yearFormed: new Date().getFullYear() });
+    setShowAddForm(false);
 
-    } catch (error) {
-      console.error('❌ Error adding band or switching network:', error);
-      alert('Failed to add band. Please make sure you\'re connected to Optimism network.');
-    } finally {
-      setNetworkSwitching(false);
-    }
-  };
+  } catch (error) {
+    console.error('❌ Error adding band or switching network:', error);
+    alert('Failed to add band. Please make sure you\'re connected to Optimism network.');
+  } finally {
+    setNetworkSwitching(false);
+  }
+};
+
 
   const handleTestBadge = async () => {
     setNetworkSwitching(true);
@@ -261,17 +273,17 @@ const { data: totalBands } = useTotalBands();
     }
   };
 
-// ✅ POPRAWIONE - tylko refetchUserStats
-useEffect(() => {
-  if (isSuccess) {
-    setTimeout(() => {
-      refetchUserStats();
-      // ✅ Ręcznie reset userBands to trigger reload
-      setUserBands([]);
-      setLoadingBandDetails(false); // Reset loading state
-    }, 5000); // Shorter timeout
-  }
-}, [isSuccess, refetchUserStats]); // ✅ Tylko refetchUserStats
+  // ✅ POPRAWIONE - tylko refetchUserStats
+  useEffect(() => {
+    if (isSuccess) {
+      setTimeout(() => {
+        refetchUserStats();
+        // ✅ Ręcznie reset userBands to trigger reload
+        setUserBands([]);
+        setLoadingBandDetails(false); // Reset loading state
+      }, 5000); // Shorter timeout
+    }
+  }, [isSuccess, refetchUserStats]); // ✅ Tylko refetchUserStats
 
   const openReownProfile = () => {
     open({ view: 'Account' });
@@ -284,7 +296,7 @@ useEffect(() => {
   if (!isConnected) {
     return (
       <div 
-        className="min-h-screen bg-[#f5f5e8] flex items-center justify-center p-4 relative overflow-hidden zine-layout"
+        className="min-h-screen bg-[#f5f5e8] flex items-center justify-center p-4 relative overflow-hidden"
         style={{
           backgroundColor: '#f5f5e8' // ✅ FIXED - removed problematic backgroundImage
         }}
@@ -299,77 +311,38 @@ useEffect(() => {
           initial={{ opacity: 0, y: 50, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 1 }}
-          className="bg-[#f5f5e8] border-4 border-black rounded-none p-8 text-center max-w-md shadow-metal backdrop-blur-sm zine-card"
+          className="bg-[#f5f5e8] border-4 border-black rounded-none p-8 text-center max-w-md shadow-lg backdrop-blur-sm"
           style={{
             backgroundColor: "rgba(245, 245, 232, 0.95)" // ✅ Solid background
           }}
         >
-          <FaSkullCrossbones className="text-red-800 text-8xl mx-auto mb-6 animate-pulse skull-icon" />
-          <h2 className="text-3xl font-bold uppercase tracking-widest text-black mb-4 font-zine-title">JOIN THE UNDERGROUND</h2>
-          <p className="text-black mb-8 leading-relaxed font-zine-body">Connect your wallet to access your Metal Forge profile and start building your underground legacy on blockchain</p>
+          <FaSkullCrossbones className="text-red-800 text-8xl mx-auto mb-6 animate-pulse" />
+          <h2 className="text-3xl font-bold uppercase tracking-widest text-black mb-4">JOIN THE UNDERGROUND</h2>
+          <p className="text-black mb-8 leading-relaxed">Connect your wallet to access your Metal Forge profile and start building your underground legacy on blockchain</p>
           
           <button 
             onClick={() => open()}
-            className="skull-button text-[#d0d0d0] px-8 py-4 font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 w-full rounded-none shadow-metal relative overflow-hidden group font-zine-body"
+            className="bg-gradient-to-r from-red-800 to-black text-white px-8 py-4 font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 w-full rounded-none shadow-lg relative overflow-hidden group"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-[#d71c1c] to-[#000000] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-gray-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <span className="relative z-10 flex items-center justify-center gap-2">
               <FaWallet />
               Connect Wallet
             </span>
           </button>
           
-          <div className="mt-6 text-xs text-black flex items-center justify-center gap-2 font-zine-body">
+          <div className="mt-6 text-xs text-black flex items-center justify-center gap-2">
             <FaEthereum className="text-red-800" />
             <span>Powered by Optimism</span>
           </div>
         </motion.div>
-
-        <style jsx>{`
-          .skull-icon {
-            text-shadow: 0 0 10px rgba(139, 0, 0, 0.6);
-            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
-          }
-          
-          .shadow-metal {
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8), 0 4px 8px rgba(255, 0, 0, 0.2);
-          }
-          
-          .skull-button {
-            background: linear-gradient(to right, #b71c1c, #000000);
-            border: 2px solid #ff0000;
-            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
-          }
-
-          .skull-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 20px rgba(255, 0, 0, 0.5);
-            filter: brightness(1.2);
-          }
-          
-          .font-zine-title {
-            font-family: "Blackletter", serif;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-          }
-
-          .font-zine-body {
-            font-family: "Special Elite", monospace;
-          }
-
-          .zine-layout {
-            background-color: #f5f5e8;
-            position: relative;
-            overflow-x: hidden;
-          }
-        `}</style>
       </div>
     );
   }
 
   return (
     <div 
-      className="min-h-screen bg-[#f5f5e8] py-8 relative overflow-hidden zine-layout"
+      className="min-h-screen bg-[#f5f5e8] py-8 relative overflow-hidden"
       style={{
         backgroundColor: '#f5f5e8' // ✅ FIXED - removed problematic backgroundImage
       }}
@@ -386,8 +359,8 @@ useEffect(() => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-[#f5f5e8] border-4 border-red-800 rounded-none p-8 text-center">
               <FaBolt className="text-red-800 text-6xl mx-auto mb-4 animate-spin" />
-              <h3 className="text-black font-bold text-xl mb-2 font-zine-title">SWITCHING NETWORK</h3>
-              <p className="text-black font-zine-body">Please confirm network switch in your wallet...</p>
+              <h3 className="text-black font-bold text-xl mb-2">SWITCHING NETWORK</h3>
+              <p className="text-black">Please confirm network switch in your wallet...</p>
             </div>
           </div>
         )}
@@ -397,16 +370,14 @@ useEffect(() => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="bg-[#f5f5e8] border-4 border-black rounded-none p-8 mb-8 relative overflow-hidden shadow-metal"
+          className="bg-[#f5f5e8] border-4 border-black rounded-none p-8 mb-8 relative overflow-hidden shadow-lg"
           style={{
             backgroundColor: "rgba(245, 245, 232, 0.95)" // ✅ Solid background
           }}
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-[#f0f0e0] via-transparent to-[#f0f0e0] opacity-30"></div>
-          
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative z-10">
             <div className="flex items-center gap-6">
-              <div className={`relative w-20 h-20 bg-red-800 rounded-none flex items-center justify-center shadow-metal transition-all duration-300 ${glitchActive ? 'animate-pulse scale-105' : ''} border-2 border-black`}>
+              <div className={`relative w-20 h-20 bg-red-800 rounded-none flex items-center justify-center shadow-lg transition-all duration-300 ${glitchActive ? 'animate-pulse scale-105' : ''} border-2 border-black`}>
                 <FaSkullCrossbones className="text-white text-4xl" />
                 {glitchActive && (
                   <FaSkullCrossbones className="absolute text-white text-4xl opacity-30 animate-ping" />
@@ -424,18 +395,18 @@ useEffect(() => {
               </div>
               
               <div>
-                <h1 className={`text-3xl font-bold text-black mb-2 uppercase tracking-wide font-zine-title ${glitchActive ? 'animate-pulse' : ''}`}>
+                <h1 className={`text-3xl font-bold text-black mb-2 uppercase tracking-wide ${glitchActive ? 'animate-pulse' : ''}`}>
                   {userData?.contributionLevel || 'Underground Warrior'}
                 </h1>
-                <p className="text-black font-zine-body text-lg mb-1">
+                <p className="text-black text-lg mb-1">
                   {address?.slice(0, 8)}...{address?.slice(-6)}
                 </p>
                 <div className="flex items-center gap-4 text-sm">
-                  <span className="text-red-800 font-bold flex items-center gap-1 font-zine-body">
+                  <span className="text-red-800 font-bold flex items-center gap-1">
                     <FaBolt className="text-red-800" />
                     Member since {userData?.joinedDate || 'Today'}
                   </span>
-                  <span className="text-black font-bold flex items-center gap-1 font-zine-body">
+                  <span className="text-black font-bold flex items-center gap-1">
                     <FaEthereum className="text-red-800" />
                     Connected to Optimism
                   </span>
@@ -446,7 +417,7 @@ useEffect(() => {
             <div className="flex gap-3">
               <button 
                 onClick={openReownProfile}
-                className="skull-button text-[#d0d0d0] px-6 py-3 font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 flex items-center gap-2 rounded-none shadow-metal font-zine-body"
+                className="bg-gradient-to-r from-red-800 to-black text-white px-6 py-3 font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 flex items-center gap-2 rounded-none shadow-lg"
               >
                 <FaWallet />
                 Wallet Settings
@@ -454,12 +425,12 @@ useEffect(() => {
               <button 
                 onClick={handleTestBadge}
                 disabled={networkSwitching}
-                className="bg-black border-2 border-red-800 text-red-800 hover:bg-red-800 hover:text-white disabled:opacity-50 px-6 py-3 font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 flex items-center gap-2 rounded-none shadow-metal font-zine-body"
+                className="bg-black border-2 border-red-800 text-red-800 hover:bg-red-800 hover:text-white disabled:opacity-50 px-6 py-3 font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 flex items-center gap-2 rounded-none shadow-lg"
               >
                 <FaTrophy />
                 Test Badge
               </button>
-              <button className="bg-black border-2 border-red-800 text-red-800 hover:bg-red-800 hover:text-white px-6 py-3 font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 flex items-center gap-2 rounded-none shadow-metal font-zine-body">
+              <button className="bg-black border-2 border-red-800 text-red-800 hover:bg-red-800 hover:text-white px-6 py-3 font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 flex items-center gap-2 rounded-none shadow-lg">
                 <FaCog />
                 Settings
               </button>
@@ -481,21 +452,21 @@ useEffect(() => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               whileHover={{ y: -5, scale: 1.02 }}
-              className="bg-[#f5f5e8] border-4 border-black rounded-none p-6 text-center relative shadow-metal backdrop-blur-sm transition-all duration-300"
+              className="bg-[#f5f5e8] border-4 border-black rounded-none p-6 text-center relative shadow-lg backdrop-blur-sm transition-all duration-300"
               style={{
                 backgroundColor: "rgba(245, 245, 232, 0.9)" // ✅ Solid background
               }}
             >
-              <stat.icon className={`${stat.iconColor} text-4xl mx-auto mb-3 skull-icon`} />
-              <div className="text-3xl font-bold text-black mb-2 font-zine-title">{stat.value}</div>
-              <div className="text-black text-sm uppercase tracking-wider font-bold font-zine-body">{stat.label}</div>
+              <stat.icon className={`${stat.iconColor} text-4xl mx-auto mb-3`} />
+              <div className="text-3xl font-bold text-black mb-2">{stat.value}</div>
+              <div className="text-black text-sm uppercase tracking-wider font-bold">{stat.label}</div>
               {(stat.label === 'Reputation' && userData && userData.reputation >= 100) && (
                 <FaStar className="absolute top-3 right-3 text-red-800 animate-pulse" />
               )}
               {(stat.label === 'Verified' && userData && userData.verifiedBands >= 5) && (
                 <FaFire className="absolute top-3 right-3 text-red-800 animate-bounce" />
               )}
-              <div className="absolute bottom-2 right-2 text-xs text-black font-zine-body">
+              <div className="absolute bottom-2 right-2 text-xs text-black">
                 {stat.label === 'Reputation' && '+5 per band'}
                 {stat.label === 'Verified' && '+10 bonus'}
               </div>
@@ -520,14 +491,14 @@ useEffect(() => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
-          className="bg-[#f5f5e8] border-4 border-black rounded-none p-8 shadow-metal"
+          className="bg-[#f5f5e8] border-4 border-black rounded-none p-8 shadow-lg"
           style={{
             backgroundColor: "rgba(245, 245, 232, 0.9)" // ✅ Solid background
           }}
         >
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-bold text-black flex items-center gap-3 font-zine-title uppercase">
-              <GiCrossedSwords className="text-red-800 text-3xl skull-icon" />
+            <h2 className="text-2xl font-bold text-black flex items-center gap-3 uppercase">
+              <GiCrossedSwords className="text-red-800 text-3xl" />
               MY ADDED BANDS ({userBands.length})
               {loadingBandDetails && (
                 <div className="flex items-center gap-2 text-red-800 text-lg">
@@ -538,7 +509,7 @@ useEffect(() => {
             </h2>
             <button 
               onClick={() => setShowAddForm(!showAddForm)}
-              className="skull-button text-[#d0d0d0] px-6 py-3 font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 flex items-center gap-2 rounded-none shadow-metal disabled:opacity-50 font-zine-body"
+              className="bg-gradient-to-r from-red-800 to-black text-white px-6 py-3 font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 flex items-center gap-2 rounded-none shadow-lg disabled:opacity-50"
               disabled={isLoading || networkSwitching}
             >
               <FaPlus />
@@ -552,12 +523,12 @@ useEffect(() => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="bg-[#e0e0d8] border-2 border-black rounded-none p-6 mb-8 shadow-metal"
+              className="bg-[#e0e0d8] border-2 border-black rounded-none p-6 mb-8 shadow-lg"
               style={{
                 backgroundColor: "rgba(224, 224, 216, 0.9)" // ✅ Solid background
               }}
             >
-              <h3 className="text-black font-bold mb-6 flex items-center gap-2 text-xl font-zine-title uppercase">
+              <h3 className="text-black font-bold mb-6 flex items-center gap-2 text-xl uppercase">
                 <GiThorHammer className="text-red-800" />
                 ADD NEW BAND TO BLOCKCHAIN
                 <span className="text-xs bg-red-800 text-white px-2 py-1 rounded-none">
@@ -566,23 +537,23 @@ useEffect(() => {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-black text-sm font-bold mb-2 font-zine-body uppercase">Band Name *</label>
+                  <label className="block text-black text-sm font-bold mb-2 uppercase">Band Name *</label>
                   <input
                     type="text"
                     value={newBand.name}
                     onChange={(e) => setNewBand({...newBand, name: e.target.value})}
-                    className="w-full bg-[#f5f5e8] border-2 border-black focus:border-red-800 text-black px-4 py-3 rounded-none outline-none transition-colors duration-300 font-zine-body"
+                    className="w-full bg-[#f5f5e8] border-2 border-black focus:border-red-800 text-black px-4 py-3 rounded-none outline-none transition-colors duration-300"
                     placeholder="Enter band name..."
                     disabled={isLoading || networkSwitching}
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-black text-sm font-bold mb-2 font-zine-body uppercase">Genre *</label>
+                  <label className="block text-black text-sm font-bold mb-2 uppercase">Genre *</label>
                   <select
                     value={newBand.genre}
                     onChange={(e) => setNewBand({...newBand, genre: e.target.value})}
-                    className="w-full bg-[#f5f5e8] border-2 border-black focus:border-red-800 text-black px-4 py-3 rounded-none outline-none transition-colors duration-300 font-zine-body"
+                    className="w-full bg-[#f5f5e8] border-2 border-black focus:border-red-800 text-black px-4 py-3 rounded-none outline-none transition-colors duration-300"
                     disabled={isLoading || networkSwitching}
                   >
                     <option value="">Select genre...</option>
@@ -593,24 +564,24 @@ useEffect(() => {
                 </div>
                 
                 <div>
-                  <label className="block text-black text-sm font-bold mb-2 font-zine-body uppercase">Country *</label>
+                  <label className="block text-black text-sm font-bold mb-2 uppercase">Country *</label>
                   <input
                     type="text"
                     value={newBand.country}
                     onChange={(e) => setNewBand({...newBand, country: e.target.value})}
-                    className="w-full bg-[#f5f5e8] border-2 border-black focus:border-red-800 text-black px-4 py-3 rounded-none outline-none transition-colors duration-300 font-zine-body"
+                    className="w-full bg-[#f5f5e8] border-2 border-black focus:border-red-800 text-black px-4 py-3 rounded-none outline-none transition-colors duration-300"
                     placeholder="e.g., Norway, Sweden, Finland..."
                     disabled={isLoading || networkSwitching}
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-black text-sm font-bold mb-2 font-zine-body uppercase">Year Formed</label>
+                  <label className="block text-black text-sm font-bold mb-2 uppercase">Year Formed</label>
                   <input
                     type="number"
                     value={newBand.yearFormed}
                     onChange={(e) => setNewBand({...newBand, yearFormed: parseInt(e.target.value)})}
-                    className="w-full bg-[#f5f5e8] border-2 border-black focus:border-red-800 text-black px-4 py-3 rounded-none outline-none transition-colors duration-300 font-zine-body"
+                    className="w-full bg-[#f5f5e8] border-2 border-black focus:border-red-800 text-black px-4 py-3 rounded-none outline-none transition-colors duration-300"
                     min="1960"
                     max={new Date().getFullYear()}
                     disabled={isLoading || networkSwitching}
@@ -622,7 +593,7 @@ useEffect(() => {
                 <button 
                   onClick={handleAddBand}
                   disabled={isLoading || networkSwitching || !newBand.name || !newBand.genre || !newBand.country}
-                  className="skull-button text-[#d0d0d0] px-8 py-3 font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 flex items-center gap-2 rounded-none shadow-metal disabled:opacity-50 font-zine-body"
+                  className="bg-gradient-to-r from-red-800 to-black text-white px-8 py-3 font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 flex items-center gap-2 rounded-none shadow-lg disabled:opacity-50"
                 >
                   <FaCheck />
                   {networkSwitching ? (
@@ -642,7 +613,7 @@ useEffect(() => {
                 <button 
                   onClick={() => setShowAddForm(false)}
                   disabled={isLoading || networkSwitching}
-                  className="bg-black border-2 border-red-800 text-red-800 hover:bg-red-800 hover:text-white disabled:opacity-50 px-8 py-3 font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 flex items-center gap-2 rounded-none shadow-metal font-zine-body"
+                  className="bg-black border-2 border-red-800 text-red-800 hover:bg-red-800 hover:text-white disabled:opacity-50 px-8 py-3 font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 flex items-center gap-2 rounded-none shadow-lg"
                 >
                   <FaTimes />
                   Cancel
@@ -660,15 +631,15 @@ useEffect(() => {
               >
                 <FaSkullCrossbones className="text-8xl mx-auto mb-6 opacity-50" />
               </motion.div>
-              <p className="text-xl font-bold font-zine-title uppercase">Loading your bands from blockchain...</p>
-              <p className="text-sm mt-2 font-zine-body">⏳ Fetching band details from Optimism network...</p>
+              <p className="text-xl font-bold uppercase">Loading your bands from blockchain...</p>
+              <p className="text-sm mt-2">⏳ Fetching band details from Optimism network...</p>
             </div>
           ) : userBands.length === 0 ? (
             <div className="text-center py-20 text-black">
               <GiWolfHead className="text-8xl mx-auto mb-6 opacity-50" />
-              <p className="text-xl font-bold font-zine-title uppercase">No bands added yet</p>
-              <p className="text-sm mt-2 font-zine-body">Start building the underground encyclopedia and earn reputation!</p>
-              <div className="mt-6 text-xs text-black font-zine-body">
+              <p className="text-xl font-bold uppercase">No bands added yet</p>
+              <p className="text-sm mt-2">Start building the underground encyclopedia and earn reputation!</p>
+              <div className="mt-6 text-xs text-black">
                 <p>💰 Earn +5 reputation per band</p>
                 <p>🏆 Get +10 bonus when verified by community</p>
               </div>
@@ -682,24 +653,24 @@ useEffect(() => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   whileHover={{ y: -5, scale: 1.02 }}
-                  className="bg-[#e0e0d8] border-2 border-black hover:border-red-800 rounded-none p-6 relative shadow-metal transition-all duration-300"
+                  className="bg-[#e0e0d8] border-2 border-black hover:border-red-800 rounded-none p-6 relative shadow-lg transition-all duration-300"
                   style={{
                     backgroundColor: "rgba(224, 224, 216, 0.9)" // ✅ Solid background
                   }}
                 >
                   <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-black font-bold text-lg font-zine-title">{band.name}</h3>
+                    <h3 className="text-black font-bold text-lg">{band.name}</h3>
                     {band.verified ? (
                       <div className="flex items-center gap-2 bg-red-800 text-white px-3 py-1 rounded-none">
                         <FaCheck className="text-white" />
-                        <span className="text-white text-xs font-bold font-zine-body">+10 Rep</span>
+                        <span className="text-white text-xs font-bold">+10 Rep</span>
                       </div>
                     ) : (
                       <div className="flex items-center gap-2">
-                        <span className="text-black text-xs font-bold bg-[#f5f5e8] border border-black px-2 py-1 rounded-none font-zine-body">Pending</span>
+                        <span className="text-black text-xs font-bold bg-[#f5f5e8] border border-black px-2 py-1 rounded-none">Pending</span>
                         <button 
                           onClick={() => verifyBand(band.id)}
-                          className="text-xs bg-red-800 hover:bg-red-700 text-white px-3 py-1 rounded-none transition-colors duration-300 font-zine-body"
+                          className="text-xs bg-red-800 hover:bg-red-700 text-white px-3 py-1 rounded-none transition-colors duration-300"
                           title="Verify (TODO: Smart Contract)"
                         >
                           Verify
@@ -709,18 +680,18 @@ useEffect(() => {
                   </div>
                   
                   <div className="space-y-2">
-                    <p className="text-red-800 font-bold flex items-center gap-2 font-zine-body">
+                    <p className="text-red-800 font-bold flex items-center gap-2">
                       <GiFlame className="text-sm" />
                       {band.genre}
                     </p>
-                    <p className="text-black flex items-center gap-2 font-zine-body">
+                    <p className="text-black flex items-center gap-2">
                       <GiGothicCross className="text-sm" />
                       {band.country} • {band.yearFormed}
                     </p>
-                    <p className="text-black text-xs font-zine-body">Added {band.addedAt}</p>
+                    <p className="text-black text-xs">Added {band.addedAt}</p>
                   </div>
                   
-                  <div className="absolute top-3 left-3 text-xs text-white bg-red-800 px-2 py-1 rounded-none font-bold font-zine-body">
+                  <div className="absolute top-3 left-3 text-xs text-white bg-red-800 px-2 py-1 rounded-none font-bold">
                     +5
                   </div>
                   
@@ -735,45 +706,6 @@ useEffect(() => {
           )}
         </motion.div>
       </div>
-
-      <style jsx>{`
-        .skull-icon {
-          text-shadow: 0 0 10px rgba(139, 0, 0, 0.6);
-          filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
-        }
-        
-        .shadow-metal {
-          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8), 0 4px 8px rgba(255, 0, 0, 0.2);
-        }
-        
-        .skull-button {
-          background: linear-gradient(to right, #b71c1c, #000000);
-          border: 2px solid #ff0000;
-          box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
-        }
-
-        .skull-button:hover {
-          transform: scale(1.05);
-          box-shadow: 0 8px 20px rgba(255, 0, 0, 0.5);
-          filter: brightness(1.2);
-        }
-        
-        .font-zine-title {
-          font-family: "Blackletter", serif;
-          letter-spacing: 2px;
-          text-transform: uppercase;
-        }
-
-        .font-zine-body {
-          font-family: "Special Elite", monospace;
-        }
-
-        .zine-layout {
-          background-color: #f5f5e8;
-          position: relative;
-          overflow-x: hidden;
-        }
-      `}</style>
     </div>
   );
 }

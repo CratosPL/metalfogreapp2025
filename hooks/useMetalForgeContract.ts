@@ -105,39 +105,63 @@ export function useMetalForgeContract() {
     return { data: null }; // Nie używamy tej funkcji
   };
 
-  // ✅ UPDATED - Add Band Function dla Optimism
-  const handleAddBand = async (name: string, genre: string, country: string, yearFormed: number) => {
-    if (!CONTRACT_ADDRESS) {
-      console.error('Contract address not configured');
-      return;
+// ✅ UPDATED - Add Band Function dla Optimism
+const handleAddBand = async (name: string, genre: string, country: string, yearFormed: number, userAddress?: string) => {
+  if (!CONTRACT_ADDRESS) {
+    console.error('Contract address not configured');
+    return;
+  }
+
+  setIsLoading(true);
+  try {
+    console.log('🎸 Adding band to Optimism:', { name, genre, country, yearFormed });
+    
+    await writeContract({
+      address: CONTRACT_ADDRESS,
+      abi: ABI,
+      functionName: 'addBand',
+      args: [name, genre, country, BigInt(yearFormed)],
+      chainId: OPTIMISM_CHAIN_ID, // 🚀 OPTIMISM!
+    });
+    
+    console.log('✅ Band add transaction submitted');
+    
+    // ✅ CLEAR CACHE after successful add - use passed userAddress
+    if (userAddress) {
+      const cacheKey = `metalforge_bands_${userAddress}_${CONTRACT_ADDRESS}`;
+      localStorage.removeItem(cacheKey);
+      console.log('🗑️ Cleared cache for:', cacheKey);
     }
+    
+  } catch (error) {
+    console.error('❌ Error adding band:', error);
+    throw error;
+  } finally {
+    setIsLoading(false);
+  }
+};
 
-    setIsLoading(true);
-    try {
-      console.log('🎸 Adding band to Optimism:', { name, genre, country, yearFormed });
-      
-      await writeContract({
-        address: CONTRACT_ADDRESS,
-        abi: ABI,
-        functionName: 'addBand',
-        args: [name, genre, country, BigInt(yearFormed)],
-        chainId: OPTIMISM_CHAIN_ID, // 🚀 OPTIMISM!
-      });
-      
-      console.log('✅ Band add transaction submitted');
-    } catch (error) {
-      console.error('❌ Error adding band:', error);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
-  // ✅ REMOVED - getBandDetails funkcja usunięta (powodowała błędy)
-
-  // ✅ SAFE FETCH - tylko count + realistic mock data
+  // ✅ CRITICAL FIX - fetchUserBandDetails z PROPER CACHE
   const fetchUserBandDetails = async (userAddress: string): Promise<Band[]> => {
     if (!CONTRACT_ADDRESS || !userAddress) return [];
+    
+    // ✅ STRONG CACHE KEY - prevent multiple calls
+    const cacheKey = `metalforge_bands_${userAddress}_${CONTRACT_ADDRESS}`;
+    const cached = localStorage.getItem(cacheKey);
+    
+    if (cached) {
+      try {
+        const cachedData = JSON.parse(cached);
+        // Cache valid for 3 minutes
+        if (Date.now() - cachedData.timestamp < 3 * 60 * 1000) {
+          console.log('📁 Using cached band data, skipping fetch');
+          return cachedData.data;
+        }
+      } catch (e) {
+        localStorage.removeItem(cacheKey);
+      }
+    }
     
     try {
       console.log('📡 Fetching user band count from Optimism for:', userAddress);
@@ -155,6 +179,11 @@ export function useMetalForgeContract() {
       
       if (!bandCount || Number(bandCount) === 0) {
         console.log('No bands found for user');
+        // ✅ Cache empty result too!
+        localStorage.setItem(cacheKey, JSON.stringify({
+          data: [],
+          timestamp: Date.now()
+        }));
         return [];
       }
       
@@ -173,7 +202,7 @@ export function useMetalForgeContract() {
       for (let i = 0; i < totalBands; i++) {
         mockBands.push({
           id: i + 1,
-          name: `${bandNames[i % bandNames.length]} ${i > 9 ? `Clone ${i}` : ''}`,
+          name: `${bandNames[i % bandNames.length]}${i > 9 ? ` Clone ${i}` : ''}`,
           genre: metalGenres[i % metalGenres.length],
           country: countries[i % countries.length],
           yearFormed: 1980 + (i * 2),
@@ -184,6 +213,13 @@ export function useMetalForgeContract() {
       }
       
       console.log(`✅ Generated ${mockBands.length} realistic bands based on blockchain count`);
+      
+      // ✅ SAVE TO CACHE
+      localStorage.setItem(cacheKey, JSON.stringify({
+        data: mockBands,
+        timestamp: Date.now()
+      }));
+      
       return mockBands;
       
     } catch (error) {
