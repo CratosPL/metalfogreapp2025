@@ -3,6 +3,7 @@
 import { useAppKitAccount, useAppKit } from '@reown/appkit/react';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useSwitchChain } from 'wagmi'; // ✅ FIX 1 - Dodane dla auto network switching
 import { 
   GiDeathSkull, 
   GiCrossedSwords, 
@@ -35,7 +36,7 @@ import {
   FaSkullCrossbones
 } from 'react-icons/fa';
 import { useMetalForgeContract } from '@/hooks/useMetalForgeContract';
-import BadgeDisplay from '@/components/BadgeDisplay'; // 
+import BadgeDisplay from '@/components/BadgeDisplay';
 
 interface Band {
   id: number;
@@ -65,11 +66,13 @@ interface UserData {
 export default function UserProfile() {
   const { address, isConnected } = useAppKitAccount();
   const { open } = useAppKit();
+  const { switchChain } = useSwitchChain(); // ✅ FIX 1 - Auto network switching
   const [userBands, setUserBands] = useState<Band[]>([]);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [loadingBandDetails, setLoadingBandDetails] = useState(false);
   const [glitchActive, setGlitchActive] = useState(false);
+  const [networkSwitching, setNetworkSwitching] = useState(false); // ✅ Loading state dla network switching
   const [newBand, setNewBand] = useState({
     name: '',
     genre: '',
@@ -101,11 +104,11 @@ export default function UserProfile() {
   // Enhanced glitch effect
   useEffect(() => {
     const interval = setInterval(() => {
-      setGlitchActive(true)
-      setTimeout(() => setGlitchActive(false), 300)
-    }, 8000)
-    return () => clearInterval(interval)
-  }, [])
+      setGlitchActive(true);
+      setTimeout(() => setGlitchActive(false), 300);
+    }, 8000);
+    return () => clearInterval(interval);
+  }, []);
 
   const calculateUserData = (contractStats: any, bands: Band[] = []): UserData => {
     if (!contractStats || !contractStats.exists) {
@@ -140,17 +143,16 @@ export default function UserProfile() {
       .slice(0, 3)
       .map(([genre]) => genre);
 
-const countries = bands.map(band => band.country).filter(Boolean);
-const countryCounts = countries.reduce((acc, country) => {
-  acc[country] = (acc[country] || 0) + 1;
-  return acc;
-}, {} as Record<string, number>); // ✅ FIX - number values!
+    const countries = bands.map(band => band.country).filter(Boolean);
+    const countryCounts = countries.reduce((acc, country) => {
+      acc[country] = (acc[country] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>); // ✅ FIX - number values!
 
-const topCountries = Object.entries(countryCounts)
-  .sort(([,a], [,b]) => b - a) // ✅ numbers sorting correctly
-  .slice(0, 3)
-  .map(([country]) => country);
-
+    const topCountries = Object.entries(countryCounts)
+      .sort(([,a], [,b]) => b - a) // ✅ numbers sorting correctly
+      .slice(0, 3)
+      .map(([country]) => country);
 
     const maxGenres = metalGenres.length;
     const discoveredGenres = Object.keys(genreCounts).length;
@@ -181,55 +183,66 @@ const topCountries = Object.entries(countryCounts)
     };
   };
 
-useEffect(() => {
-  let cancelled = false;
+  // ✅ FIX 2 - Poprawiony useEffect z lepszym error handling
+  useEffect(() => {
+    let cancelled = false;
 
-  const loadBandsData = async () => {
-    if (isConnected && address && contractUserStats) {
-      if (cancelled) return;
-      
-      setLoadingBandDetails(true);
-      
-      try {
-        // ✅ FIX - używamy fetchUserBandDetails z address, nie contractUserBands
-        const realBandsData = await fetchUserBandDetails(address);
-        
+    const loadBandsData = async () => {
+      if (isConnected && address && contractUserStats) {
         if (cancelled) return;
         
-        setUserBands(realBandsData);
-        const calculatedData = calculateUserData(contractUserStats, realBandsData);
-        setUserData(calculatedData);
+        setLoadingBandDetails(true);
         
-      } catch (error) {
-        console.error('Error loading bands:', error);
-        if (!cancelled) {
-          setUserBands([]);
-          setUserData(calculateUserData(contractUserStats, []));
+        try {
+          // ✅ FIX - używamy fetchUserBandDetails z address, nie contractUserBands
+          const realBandsData = await fetchUserBandDetails(address);
+          
+          if (cancelled) return;
+          
+          setUserBands(realBandsData);
+          const calculatedData = calculateUserData(contractUserStats, realBandsData);
+          setUserData(calculatedData);
+          
+        } catch (error) {
+          console.error('Error loading bands:', error);
+          if (!cancelled) {
+            setUserBands([]);
+            setUserData(calculateUserData(contractUserStats, []));
+          }
+        } finally {
+          if (!cancelled) {
+            setLoadingBandDetails(false);
+          }
         }
-      } finally {
-        if (!cancelled) {
-          setLoadingBandDetails(false);
-        }
+      } else {
+        setUserData(null);
+        setUserBands([]);
+        setLoadingBandDetails(false);
       }
-    } else {
-      setUserData(null);
-      setUserBands([]);
-      setLoadingBandDetails(false);
-    }
-  };
+    };
 
-  loadBandsData();
+    loadBandsData();
 
-  return () => {
-    cancelled = true;
-  };
-}, [address, isConnected, contractUserStats, fetchUserBandDetails]); // ✅ Usunięte contractUserBands
+    return () => {
+      cancelled = true;
+    };
+  }, [address, isConnected, contractUserStats, fetchUserBandDetails]); // ✅ Usunięte contractUserBands
 
-
+  // ✅ FIX 1 - Dodano automatyczne przełączanie sieci dla Add Band
   const handleAddBand = async () => {
     if (!newBand.name || !newBand.genre || !newBand.country || !address) return;
 
+    setNetworkSwitching(true);
+    
     try {
+      // ✅ Auto switch to Optimism (chainId: 10) przed dodaniem banda
+      console.log('🔄 Switching to Optimism network...');
+      await switchChain({ chainId: 10 });
+      console.log('✅ Successfully switched to Optimism');
+      
+      // Wait a bit for network switch to complete
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       await addBand(
         newBand.name,
         newBand.genre, 
@@ -241,7 +254,35 @@ useEffect(() => {
       setShowAddForm(false);
 
     } catch (error) {
-      console.error('Error adding band:', error);
+      console.error('❌ Error adding band or switching network:', error);
+      // Show user-friendly error message
+      alert('Failed to add band. Please make sure you\'re connected to Optimism network.');
+    } finally {
+      setNetworkSwitching(false);
+    }
+  };
+
+  // ✅ FIX 1 - Dodano funkcję testową dla Badge (przełącza na Base)
+  const handleTestBadge = async () => {
+    setNetworkSwitching(true);
+    
+    try {
+      // ✅ Auto switch to Base (chainId: 8453) dla badge testing
+      console.log('🔄 Switching to Base network for badge test...');
+      await switchChain({ chainId: 8453 });
+      console.log('✅ Successfully switched to Base');
+      
+      // Wait a bit for network switch
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // TODO: Test badge functionality here
+      console.log('🏆 Testing badge on Base network');
+      
+    } catch (error) {
+      console.error('❌ Error switching to Base network:', error);
+      alert('Failed to switch to Base network for badge testing.');
+    } finally {
+      setNetworkSwitching(false);
     }
   };
 
@@ -380,6 +421,17 @@ useEffect(() => {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 relative z-10">
+        {/* ✅ Network Switching Loading Overlay */}
+        {networkSwitching && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-[#f5f5e8] border-4 border-red-800 rounded-none p-8 text-center">
+              <FaBolt className="text-red-800 text-6xl mx-auto mb-4 animate-spin" />
+              <h3 className="text-black font-bold text-xl mb-2 font-zine-title">SWITCHING NETWORK</h3>
+              <p className="text-black font-zine-body">Please confirm network switch in your wallet...</p>
+            </div>
+          </div>
+        )}
+
         {/* Profile Header w stylu Zine */}
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
@@ -442,6 +494,15 @@ useEffect(() => {
                 <FaWallet />
                 Wallet Settings
               </button>
+              {/* ✅ FIX 1 - Dodany przycisk test badge */}
+              <button 
+                onClick={handleTestBadge}
+                disabled={networkSwitching}
+                className="bg-black border-2 border-red-800 text-red-800 hover:bg-red-800 hover:text-white disabled:opacity-50 px-6 py-3 font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 flex items-center gap-2 rounded-none shadow-metal font-zine-body"
+              >
+                <FaTrophy />
+                Test Badge
+              </button>
               <button className="bg-black border-2 border-red-800 text-red-800 hover:bg-red-800 hover:text-white px-6 py-3 font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 flex items-center gap-2 rounded-none shadow-metal font-zine-body">
                 <FaCog />
                 Settings
@@ -489,17 +550,17 @@ useEffect(() => {
           ))}
         </div>
 
-{/* 🎯 DODAJ TUTAJ Badge Display - NOWA SEKCJA */}
-{address && (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.8, delay: 0.5 }}
-    className="mb-8"
-  >
-    <BadgeDisplay address={address} />
-  </motion.div>
-)}
+        {/* 🎯 Badge Display - NOWA SEKCJA */}
+        {address && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="mb-8"
+          >
+            <BadgeDisplay address={address} />
+          </motion.div>
+        )}
 
         {/* Reputation Progress w stylu Zine */}
         {userData && (
@@ -688,10 +749,10 @@ useEffect(() => {
             <button 
               onClick={() => setShowAddForm(!showAddForm)}
               className="skull-button text-[#d0d0d0] px-6 py-3 font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 flex items-center gap-2 rounded-none shadow-metal disabled:opacity-50 font-zine-body"
-              disabled={isLoading}
+              disabled={isLoading || networkSwitching}
             >
               <FaPlus />
-              {isLoading ? 'Adding to Blockchain...' : 'Add Band'}
+              {(isLoading || networkSwitching) ? 'Processing...' : 'Add Band'}
             </button>
           </div>
 
@@ -712,6 +773,10 @@ useEffect(() => {
               <h3 className="text-black font-bold mb-6 flex items-center gap-2 text-xl font-zine-title uppercase">
                 <GiThorHammer className="text-red-800" />
                 ADD NEW BAND TO BLOCKCHAIN
+                {/* ✅ Network indicator */}
+                <span className="text-xs bg-red-800 text-white px-2 py-1 rounded-none">
+                  Auto-switches to Optimism
+                </span>
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -722,7 +787,7 @@ useEffect(() => {
                     onChange={(e) => setNewBand({...newBand, name: e.target.value})}
                     className="w-full bg-[#f5f5e8] border-2 border-black focus:border-red-800 text-black px-4 py-3 rounded-none outline-none transition-colors duration-300 font-zine-body"
                     placeholder="Enter band name..."
-                    disabled={isLoading}
+                    disabled={isLoading || networkSwitching}
                   />
                 </div>
                 
@@ -732,7 +797,7 @@ useEffect(() => {
                     value={newBand.genre}
                     onChange={(e) => setNewBand({...newBand, genre: e.target.value})}
                     className="w-full bg-[#f5f5e8] border-2 border-black focus:border-red-800 text-black px-4 py-3 rounded-none outline-none transition-colors duration-300 font-zine-body"
-                    disabled={isLoading}
+                    disabled={isLoading || networkSwitching}
                   >
                     <option value="">Select genre...</option>
                     {metalGenres.map((genre) => (
@@ -749,7 +814,7 @@ useEffect(() => {
                     onChange={(e) => setNewBand({...newBand, country: e.target.value})}
                     className="w-full bg-[#f5f5e8] border-2 border-black focus:border-red-800 text-black px-4 py-3 rounded-none outline-none transition-colors duration-300 font-zine-body"
                     placeholder="e.g., Norway, Sweden, Finland..."
-                    disabled={isLoading}
+                    disabled={isLoading || networkSwitching}
                   />
                 </div>
                 
@@ -762,7 +827,7 @@ useEffect(() => {
                     className="w-full bg-[#f5f5e8] border-2 border-black focus:border-red-800 text-black px-4 py-3 rounded-none outline-none transition-colors duration-300 font-zine-body"
                     min="1960"
                     max={new Date().getFullYear()}
-                    disabled={isLoading}
+                    disabled={isLoading || networkSwitching}
                   />
                 </div>
               </div>
@@ -770,11 +835,16 @@ useEffect(() => {
               <div className="flex gap-4 mt-8">
                 <button 
                   onClick={handleAddBand}
-                  disabled={isLoading || !newBand.name || !newBand.genre || !newBand.country}
+                  disabled={isLoading || networkSwitching || !newBand.name || !newBand.genre || !newBand.country}
                   className="skull-button text-[#d0d0d0] px-8 py-3 font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 flex items-center gap-2 rounded-none shadow-metal disabled:opacity-50 font-zine-body"
                 >
                   <FaCheck />
-                  {isLoading ? (
+                  {networkSwitching ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Switching Network...
+                    </>
+                  ) : isLoading ? (
                     <>
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                       Adding to Blockchain...
@@ -785,7 +855,7 @@ useEffect(() => {
                 </button>
                 <button 
                   onClick={() => setShowAddForm(false)}
-                  disabled={isLoading}
+                  disabled={isLoading || networkSwitching}
                   className="bg-black border-2 border-red-800 text-red-800 hover:bg-red-800 hover:text-white disabled:opacity-50 px-8 py-3 font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 flex items-center gap-2 rounded-none shadow-metal font-zine-body"
                 >
                   <FaTimes />
