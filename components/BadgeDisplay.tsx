@@ -1,7 +1,7 @@
 'use client';
 
 import { useReadContract, useWriteContract } from 'wagmi';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSwitchChain } from 'wagmi';
 
 const BADGE_ABI = [
@@ -44,27 +44,16 @@ const BADGE_ABI = [
 
 interface BadgeDisplayProps {
   address: string;
-  optimismBandCount?: number; // ✅ Get from Optimism contract
-}
-
-interface Badge {
-  id: string;
-  name: string;
-  icon: string;
-  description: string;
-  threshold: number;
-  claimed: boolean;
-  canClaim: boolean;
-  gradient: string;
+  optimismBandCount?: number;
 }
 
 export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayProps) {
   const CONTRACT_ADDRESS = '0xFA45e05917c220116b58E043F1CE60a8b1C11365';
   const { switchChain } = useSwitchChain();
-  const [syncingBadges, setSyncingBadges] = useState(false);
+  const [claiming, setClaiming] = useState(false);
   
-  // ✅ Read current badge states from Base
-  const { data: baseBandCount } = useReadContract({
+  // Read current states from Base
+  const { data: baseBandCount, refetch: refetchBaseBandCount } = useReadContract({
     address: CONTRACT_ADDRESS as `0x${string}`,
     abi: BADGE_ABI,
     functionName: 'getUserBandCount',
@@ -72,7 +61,7 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
     chainId: 8453
   });
 
-  const { data: hasBronze } = useReadContract({
+  const { data: hasBronze, refetch: refetchBronze } = useReadContract({
     address: CONTRACT_ADDRESS as `0x${string}`,
     abi: BADGE_ABI,
     functionName: 'hasBronzeBadge',
@@ -80,7 +69,7 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
     chainId: 8453
   });
 
-  const { data: hasSilver } = useReadContract({
+  const { data: hasSilver, refetch: refetchSilver } = useReadContract({
     address: CONTRACT_ADDRESS as `0x${string}`,
     abi: BADGE_ABI,
     functionName: 'hasSilverBadge',
@@ -88,7 +77,7 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
     chainId: 8453
   });
 
-  const { data: hasGold } = useReadContract({
+  const { data: hasGold, refetch: refetchGold } = useReadContract({
     address: CONTRACT_ADDRESS as `0x${string}`,
     abi: BADGE_ABI,
     functionName: 'hasGoldBadge',
@@ -98,8 +87,17 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
 
   const { writeContract } = useWriteContract();
 
-  // ✅ Define badge thresholds
-  const badges: Badge[] = [
+  // ✅ SMART LOGIC - check what badges user can claim
+  const canClaimBronze = optimismBandCount >= 1 && !hasBronze;
+  const canClaimSilver = optimismBandCount >= 5 && !hasSilver;
+  const canClaimGold = optimismBandCount >= 10 && !hasGold;
+  
+  // ✅ Only show sync if counts don't match OR can claim new badges
+  const needsSync = Number(baseBandCount || 0) !== optimismBandCount;
+  const hasUnclaimedBadges = canClaimBronze || canClaimSilver || canClaimGold;
+
+  // ✅ Define badge states
+  const badges = [
     {
       id: 'bronze',
       name: 'Bronze Veteran',
@@ -107,7 +105,7 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
       description: 'First band added to blockchain',
       threshold: 1,
       claimed: !!hasBronze,
-      canClaim: optimismBandCount >= 1 && !hasBronze,
+      canClaim: canClaimBronze,
       gradient: 'from-orange-600 to-orange-800'
     },
     {
@@ -117,7 +115,7 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
       description: '5 bands added to the underground',
       threshold: 5,
       claimed: !!hasSilver,
-      canClaim: optimismBandCount >= 5 && !hasSilver,
+      canClaim: canClaimSilver,
       gradient: 'from-gray-400 to-gray-600'
     },
     {
@@ -127,21 +125,26 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
       description: '10 bands - true metal encyclopedia',
       threshold: 10,
       claimed: !!hasGold,
-      canClaim: optimismBandCount >= 10 && !hasGold,
+      canClaim: canClaimGold,
       gradient: 'from-yellow-400 to-yellow-600'
     }
   ];
 
-  // ✅ Sync Optimism count to Base contract
-  const handleSyncBadges = async () => {
-    setSyncingBadges(true);
+  // ✅ CLAIM BADGES - only when new badges available
+  const handleClaimBadges = async () => {
+    if (!hasUnclaimedBadges && !needsSync) {
+      console.log('No badges to claim and counts match');
+      return;
+    }
+    
+    setClaiming(true);
     
     try {
       // Switch to Base
       await switchChain({ chainId: 8453 });
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Update band count on Base contract
+      // Update band count on Base (this will trigger badge minting in contract)
       await writeContract({
         address: CONTRACT_ADDRESS as `0x${string}`,
         abi: BADGE_ABI,
@@ -150,15 +153,20 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
         chainId: 8453,
       });
       
+      // ✅ Refetch all badge states after transaction
+      setTimeout(() => {
+        refetchBaseBandCount();
+        refetchBronze();
+        refetchSilver();
+        refetchGold();
+      }, 3000);
+      
     } catch (error) {
-      console.error('Badge sync failed:', error);
+      console.error('Badge claim failed:', error);
     } finally {
-      setSyncingBadges(false);
+      setClaiming(false);
     }
   };
-
-  // ✅ Check if sync is needed
-  const needsSync = Number(baseBandCount || 0) !== optimismBandCount;
 
   if (!address) return null;
 
@@ -169,21 +177,25 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
           🏅 Your Metal Badges
         </h3>
         
-        {/* ✅ SYNC BUTTON instead of Test Badge */}
-        {needsSync && (
+        {/* ✅ ONLY SHOW BUTTON when there's something to claim */}
+        {(hasUnclaimedBadges || needsSync) && (
           <button 
-            onClick={handleSyncBadges}
-            disabled={syncingBadges}
-            className="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+            onClick={handleClaimBadges}
+            disabled={claiming}
+            className="px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 disabled:opacity-50 flex items-center gap-2 animate-pulse"
           >
-            {syncingBadges ? (
+            {claiming ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                Syncing...
+                Claiming...
+              </>
+            ) : hasUnclaimedBadges ? (
+              <>
+                🏆 CLAIM NEW BADGES!
               </>
             ) : (
               <>
-                🔄 Sync Badges ({optimismBandCount} bands)
+                🔄 Sync Count
               </>
             )}
           </button>
@@ -199,11 +211,14 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
         <div>
           <p className="text-gray-300">
             Base Count: <span className="text-white font-bold">{Number(baseBandCount || 0)}</span>
+            {Number(baseBandCount || 0) === optimismBandCount && (
+              <span className="text-green-400 ml-2">✅ Synced</span>
+            )}
           </p>
         </div>
       </div>
 
-      {/* ✅ BADGE GRID - Auto show available badges */}
+      {/* ✅ BADGE GRID */}
       <div className="badge-grid grid grid-cols-1 md:grid-cols-3 gap-4">
         {badges.map((badge) => (
           <div 
@@ -212,7 +227,7 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
               badge.claimed 
                 ? `bg-gradient-to-br ${badge.gradient} border-white/30 shadow-lg` 
                 : badge.canClaim
-                ? `bg-gradient-to-br ${badge.gradient} border-white/50 shadow-lg animate-pulse`
+                ? `bg-gradient-to-br ${badge.gradient} border-green-400 shadow-lg animate-pulse`
                 : 'bg-gray-800 border-gray-600 opacity-50'
             }`}
           >
@@ -226,13 +241,9 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
               )}
               
               {badge.canClaim && !badge.claimed && (
-                <button 
-                  onClick={handleSyncBadges}
-                  disabled={syncingBadges}
-                  className="text-xs bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded transition-colors duration-300 disabled:opacity-50"
-                >
-                  {syncingBadges ? 'Claiming...' : 'CLAIM BADGE!'}
-                </button>
+                <div className="text-green-400 text-xs font-bold animate-pulse">
+                  🎉 READY TO CLAIM!
+                </div>
               )}
               
               {!badge.canClaim && !badge.claimed && (
@@ -245,7 +256,7 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
         ))}
       </div>
 
-      {/* ✅ PROGRESS BAR */}
+      {/* Progress Bar */}
       <div className="mt-6">
         <div className="flex justify-between text-xs text-gray-300 mb-2">
           <span>Badge Progress</span>
@@ -258,6 +269,13 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
           ></div>
         </div>
       </div>
+
+      {/* ✅ STATUS MESSAGE */}
+      {!hasUnclaimedBadges && Number(baseBandCount || 0) === optimismBandCount && (
+        <div className="mt-4 text-center text-green-400 text-sm">
+          🎯 All badges up to date! Add more bands to unlock new badges.
+        </div>
+      )}
     </div>
   );
 }
