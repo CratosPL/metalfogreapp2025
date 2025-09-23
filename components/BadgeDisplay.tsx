@@ -1,7 +1,7 @@
 'use client';
 
-import { useReadContract, useWriteContract } from 'wagmi';
-import { useState } from 'react';
+import { useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useState, useEffect } from 'react';
 import { useSwitchChain } from 'wagmi';
 
 const BADGE_ABI = [
@@ -51,14 +51,28 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
   const CONTRACT_ADDRESS = '0xFA45e05917c220116b58E043F1CE60a8b1C11365';
   const { switchChain } = useSwitchChain();
   const [claiming, setClaiming] = useState(false);
+  const [lastClaimTime, setLastClaimTime] = useState(0);
   
+  // Write Contract Hook with transaction tracking
+  const { writeContract, data: txHash } = useWriteContract();
+  
+  // Wait for transaction confirmation
+  const { isSuccess: txSuccess, isLoading: txPending } = useWaitForTransactionReceipt({
+    hash: txHash,
+  });
+
   // Read current states from Base
   const { data: baseBandCount, refetch: refetchBaseBandCount } = useReadContract({
     address: CONTRACT_ADDRESS as `0x${string}`,
     abi: BADGE_ABI,
     functionName: 'getUserBandCount',
     args: [address as `0x${string}`],
-    chainId: 8453
+    chainId: 8453,
+    query: {
+      // ✅ FORCE REFRESH after claim
+      refetchInterval: claiming || txPending ? 2000 : false,
+      staleTime: claiming || txPending ? 0 : 30000,
+    }
   });
 
   const { data: hasBronze, refetch: refetchBronze } = useReadContract({
@@ -66,7 +80,12 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
     abi: BADGE_ABI,
     functionName: 'hasBronzeBadge',
     args: [address as `0x${string}`],
-    chainId: 8453
+    chainId: 8453,
+    query: {
+      // ✅ FORCE REFRESH after claim
+      refetchInterval: claiming || txPending ? 2000 : false,
+      staleTime: claiming || txPending ? 0 : 30000,
+    }
   });
 
   const { data: hasSilver, refetch: refetchSilver } = useReadContract({
@@ -74,7 +93,12 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
     abi: BADGE_ABI,
     functionName: 'hasSilverBadge',
     args: [address as `0x${string}`],
-    chainId: 8453
+    chainId: 8453,
+    query: {
+      // ✅ FORCE REFRESH after claim
+      refetchInterval: claiming || txPending ? 2000 : false,
+      staleTime: claiming || txPending ? 0 : 30000,
+    }
   });
 
   const { data: hasGold, refetch: refetchGold } = useReadContract({
@@ -82,10 +106,28 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
     abi: BADGE_ABI,
     functionName: 'hasGoldBadge',
     args: [address as `0x${string}`],
-    chainId: 8453
+    chainId: 8453,
+    query: {
+      // ✅ FORCE REFRESH after claim
+      refetchInterval: claiming || txPending ? 2000 : false,
+      staleTime: claiming || txPending ? 0 : 30000,
+    }
   });
 
-  const { writeContract } = useWriteContract();
+  // ✅ AUTO REFRESH after successful transaction
+  useEffect(() => {
+    if (txSuccess) {
+      console.log('🎉 Transaction confirmed! Refreshing badge states...');
+      setTimeout(() => {
+        refetchBaseBandCount();
+        refetchBronze();
+        refetchSilver();
+        refetchGold();
+        setClaiming(false);
+        setLastClaimTime(Date.now());
+      }, 2000);
+    }
+  }, [txSuccess, refetchBaseBandCount, refetchBronze, refetchSilver, refetchGold]);
 
   // ✅ SMART LOGIC - check what badges user can claim
   const canClaimBronze = optimismBandCount >= 1 && !hasBronze;
@@ -130,7 +172,7 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
     }
   ];
 
-  // ✅ CLAIM BADGES - only when new badges available
+  // ✅ CLAIM BADGES - with better state management
   const handleClaimBadges = async () => {
     if (!hasUnclaimedBadges && !needsSync) {
       console.log('No badges to claim and counts match');
@@ -140,10 +182,12 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
     setClaiming(true);
     
     try {
+      console.log('🔄 Switching to Base network for badge claim...');
       // Switch to Base
       await switchChain({ chainId: 8453 });
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
+      console.log('🏆 Claiming badges with band count:', optimismBandCount);
       // Update band count on Base (this will trigger badge minting in contract)
       await writeContract({
         address: CONTRACT_ADDRESS as `0x${string}`,
@@ -153,17 +197,11 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
         chainId: 8453,
       });
       
-      // ✅ Refetch all badge states after transaction
-      setTimeout(() => {
-        refetchBaseBandCount();
-        refetchBronze();
-        refetchSilver();
-        refetchGold();
-      }, 3000);
+      console.log('✅ Badge claim transaction submitted');
+      // ✅ Don't set claiming=false here, wait for txSuccess
       
     } catch (error) {
-      console.error('Badge claim failed:', error);
-    } finally {
+      console.error('❌ Badge claim failed:', error);
       setClaiming(false);
     }
   };
@@ -181,13 +219,16 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
         {(hasUnclaimedBadges || needsSync) && (
           <button 
             onClick={handleClaimBadges}
-            disabled={claiming}
-            className="px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 disabled:opacity-50 flex items-center gap-2 animate-pulse"
+            disabled={claiming || txPending}
+            className="px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 disabled:opacity-50 flex items-center gap-2 transition-all duration-300"
+            style={{
+              animation: hasUnclaimedBadges ? 'pulse 2s infinite' : 'none'
+            }}
           >
-            {claiming ? (
+            {claiming || txPending ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                Claiming...
+                {txPending ? 'Confirming...' : 'Claiming...'}
               </>
             ) : hasUnclaimedBadges ? (
               <>
@@ -274,6 +315,15 @@ export function BadgeDisplay({ address, optimismBandCount = 0 }: BadgeDisplayPro
       {!hasUnclaimedBadges && Number(baseBandCount || 0) === optimismBandCount && (
         <div className="mt-4 text-center text-green-400 text-sm">
           🎯 All badges up to date! Add more bands to unlock new badges.
+        </div>
+      )}
+      
+      {/* ✅ DEBUG INFO - remove in production */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="mt-4 text-xs text-gray-500 border-t border-gray-600 pt-4">
+          Debug: Bronze:{String(hasBronze)} Silver:{String(hasSilver)} Gold:{String(hasGold)} | 
+          Base:{Number(baseBandCount || 0)} Optimism:{optimismBandCount} | 
+          Claiming:{String(claiming)} TxPending:{String(txPending)}
         </div>
       )}
     </div>
